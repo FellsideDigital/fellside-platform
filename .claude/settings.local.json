@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet *)"
+      "Bash(dotnet *)",
+      "Bash(ls src/FellsideDigital.UI/Layout/)",
+      "Bash(ls src/FellsideDigital.UI/Components/Layout/)",
+      "Bash(docker-compose up *)",
+      "Bash(docker-compose down *)",
+      "Bash(docker rm *)",
+      "Bash(docker network *)",
+      "Bash(docker container *)"
     ]
   }
 }

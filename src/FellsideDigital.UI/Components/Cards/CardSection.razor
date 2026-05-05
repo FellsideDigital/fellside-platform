@@ -1,0 +1,30 @@
+<div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm @(OverflowHidden ? "overflow-hidden" : "") @Class">
+    @if (Header is not null || !string.IsNullOrEmpty(Title))
+    {
+        <div class="px-6 @HeaderPadding border-b border-gray-100 dark:border-white/5">
+            @if (Header is not null)
+            {
+                @Header
+            }
+            else
+            {
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">@Title</h2>
+                @if (!string.IsNullOrEmpty(Subtitle))
+                {
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-neutral-400">@Subtitle</p>
+                }
+            }
+        </div>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public RenderFragment? Header { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public bool OverflowHidden { get; set; } = true;
+    [Parameter] public string HeaderPadding { get; set; } = "py-4";
+    [Parameter] public string? Class { get; set; }
+}

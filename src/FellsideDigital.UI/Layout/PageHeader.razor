@@ -1,0 +1,26 @@
+<div class="@(Actions is not null ? "flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between " : "")mb-8">
+    <div>
+        @if (!string.IsNullOrEmpty(Eyebrow))
+        {
+            <p class="text-xs font-semibold text-indigo-500 dark:text-orange-400 uppercase tracking-widest mb-1">@Eyebrow</p>
+        }
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@Title</h1>
+        @if (!string.IsNullOrEmpty(Description))
+        {
+            <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">@Description</p>
+        }
+    </div>
+    @if (Actions is not null)
+    {
+        <div class="flex items-center gap-3 shrink-0">
+            @Actions
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Eyebrow { get; set; }
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+}

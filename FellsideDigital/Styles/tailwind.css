@@ -1,9 +1,0 @@
-﻿@import "tailwindcss";
-
-/*@theme {
-    --color-accent-light: #6366f1;
-    --color-accent-dark: #f59e0b;*/
-    /*--color-accent: #F07A3A;*/
-/*}*/
-
-@variant dark (&:where(.dark, .dark *));

@@ -1,0 +1,36 @@
+@inject IJSRuntime JS
+
+<div class="app-loader" @ref="loaderRef">
+    <div class="loader-content">
+        <div class="loader-glow"></div>
+
+        <div class="loader-brand">
+            <h1 class="loader-title">Fellside Digital</h1>
+            <div class="loader-underline"></div>
+        </div>
+
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+    </div>
+
+    <div class="grain-overlay"></div>
+</div>
+
+@code {
+    private ElementReference loaderRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        await JS.InvokeVoidAsync("appLoader.init", loaderRef);
+    }
+
+    public async Task HideAsync()
+    {
+        await Task.Delay(2200);
+
+        await JS.InvokeVoidAsync("appLoader.hide", loaderRef);
+    }
+}

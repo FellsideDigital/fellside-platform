@@ -1,0 +1,97 @@
+@using Microsoft.AspNetCore.Components.Routing
+
+<div class="flex h-16 shrink-0 items-center gap-3 border-b border-gray-200/80 dark:border-white/5 mt-1 mb-1">
+    <div class="flex size-8 items-center justify-center rounded-lg bg-indigo-400 dark:bg-orange-400 shadow-sm">
+        <svg class="size-4 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+        </svg>
+    </div>
+    <div>
+        <p class="text-sm font-semibold text-gray-900 dark:text-white leading-none">Admin Panel</p>
+        <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">Fellside Digital</p>
+    </div>
+</div>
+
+<nav class="flex flex-1 flex-col py-2">
+    <ul role="list" class="flex flex-1 flex-col gap-y-1">
+
+        <li>
+            <p class="px-2 py-1.5 text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+                Clients
+            </p>
+        </li>
+
+        <li>
+            <NavLink href="/Admin/Projects"
+                     Match="NavLinkMatch.All"
+                     class="group flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                     ActiveClass="bg-indigo-50 dark:bg-orange-400/10 text-indigo-600 dark:text-orange-400 font-semibold">
+                <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v8.25m19.5 0v2.25a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25v-2.25m19.5 0H2.25" />
+                </svg>
+                Projects
+            </NavLink>
+        </li>
+
+        <li>
+            <NavLink href="/Admin/Invitations"
+                     Match="NavLinkMatch.All"
+                     class="group flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                     ActiveClass="bg-indigo-50 dark:bg-orange-400/10 text-indigo-600 dark:text-orange-400 font-semibold">
+                <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                </svg>
+                Invitations
+            </NavLink>
+        </li>
+
+        <li>
+            <NavLink href="/Admin/Enquiries"
+                     Match="NavLinkMatch.All"
+                     class="group flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                     ActiveClass="bg-indigo-50 dark:bg-orange-400/10 text-indigo-600 dark:text-orange-400 font-semibold">
+                <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                </svg>
+                Enquiries
+            </NavLink>
+        </li>
+
+        <li class="mt-4">
+            <p class="px-2 py-1.5 text-xs font-semibold text-gray-400 dark:text-neutral-500 uppercase tracking-widest">
+                Portal
+            </p>
+        </li>
+
+        <li>
+            <NavLink href="/Portal"
+                     Match="NavLinkMatch.All"
+                     class="group flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                     ActiveClass="bg-indigo-50 dark:bg-orange-400/10 text-indigo-600 dark:text-orange-400 font-semibold">
+                <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+                View as Client
+            </NavLink>
+        </li>
+
+    </ul>
+
+    <!-- User footer -->
+    <div class="border-t border-gray-200/80 dark:border-white/5 pt-4 pb-2">
+        <div class="flex items-center gap-3 px-2">
+            <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-400 dark:bg-orange-400 text-xs font-bold text-white">
+                @(UserInitials.Length > 0 ? UserInitials : "A")
+            </div>
+            <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">@UserName</p>
+                <p class="text-xs text-gray-500 dark:text-neutral-400">Site Admin</p>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    [Parameter] public string UserName { get; set; } = "";
+    [Parameter] public string UserInitials { get; set; } = "";
+}

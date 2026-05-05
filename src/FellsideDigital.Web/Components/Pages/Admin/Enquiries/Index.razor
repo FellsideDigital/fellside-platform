@@ -1,0 +1,189 @@
+@page "/Admin/Enquiries"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Components.Layout
+@using FellsideDigital.UI.Layout
+
+<PageTitle>Contact Enquiries — Fellside Digital Admin</PageTitle>
+
+<PageHeader Eyebrow="Admin" Title="Contact Enquiries" Description="Messages submitted through the contact form." />
+
+@if (_enquiries is null)
+{
+    <div class="animate-pulse space-y-3">
+        @for (int i = 0; i < 5; i++)
+        {
+            <div class="rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-16"></div>
+        }
+    </div>
+}
+else if (_enquiries.Count == 0)
+{
+    <EmptyState Padding="p-14"
+                IconContainerClass="size-12 rounded-2xl mb-4"
+                Title="No enquiries yet"
+                Subtitle="When someone submits the contact form, it will appear here.">
+        <Icon>
+            <svg class="size-6 text-gray-400 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+            </svg>
+        </Icon>
+    </EmptyState>
+}
+else
+{
+    <div class="rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden bg-white dark:bg-neutral-900">
+
+        <!-- Table header -->
+        <div class="grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-4 px-5 py-3
+                    border-b border-gray-100 dark:border-white/5
+                    text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">
+            <span>Name</span>
+            <span>Service</span>
+            <span>Budget</span>
+            <span>Date</span>
+            <span></span>
+        </div>
+
+        @foreach (var e in _enquiries)
+        {
+            <div class="@(e.IsRead ? "" : "bg-indigo-50/40 dark:bg-orange-400/5")
+                        grid grid-cols-[1fr_1fr_1fr_auto_auto] gap-4 items-center
+                        px-5 py-4 border-b border-gray-100 dark:border-white/5 last:border-0
+                        hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        @if (!e.IsRead)
+                        {
+                            <span class="size-1.5 rounded-full bg-indigo-400 dark:bg-orange-400 shrink-0"></span>
+                        }
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">@e.Name</p>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-neutral-400 truncate mt-0.5">@e.Email</p>
+                </div>
+
+                <p class="text-sm text-gray-700 dark:text-neutral-300 truncate">@e.ServiceType</p>
+
+                <p class="text-sm text-gray-500 dark:text-neutral-400">@(e.Budget ?? "—")</p>
+
+                <p class="text-xs text-gray-400 dark:text-neutral-500 whitespace-nowrap">
+                    @e.SubmittedAt.ToLocalTime().ToString("d MMM yyyy")
+                </p>
+
+                <button type="button"
+                        @onclick="() => OpenEnquiry(e)"
+                        class="text-xs font-medium text-indigo-500 dark:text-orange-400
+                               hover:underline underline-offset-2 whitespace-nowrap">
+                    View
+                </button>
+            </div>
+        }
+    </div>
+}
+
+<!-- Detail drawer -->
+@if (_selected is not null)
+{
+    <div class="fixed inset-0 z-40 flex justify-end" @onclick="CloseDrawer">
+        <div class="absolute inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"></div>
+
+        <div class="relative z-50 w-full max-w-lg bg-white dark:bg-neutral-900
+                    shadow-2xl flex flex-col h-full overflow-y-auto"
+             @onclick:stopPropagation>
+
+            <!-- Drawer header -->
+            <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-white/5">
+                <div>
+                    <p class="text-base font-semibold text-gray-900 dark:text-white">@_selected.Name</p>
+                    <a href="mailto:@_selected.Email"
+                       class="text-sm text-indigo-500 dark:text-orange-400 hover:underline">
+                        @_selected.Email
+                    </a>
+                </div>
+                <button type="button" @onclick="CloseDrawer"
+                        class="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Detail rows -->
+            <div class="px-6 py-5 space-y-5 flex-1">
+
+                <dl class="grid grid-cols-2 gap-x-6 gap-y-4">
+                    @if (_selected.Phone is not null)
+                    {
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Phone</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">@_selected.Phone</dd>
+                        </div>
+                    }
+                    @if (_selected.Company is not null)
+                    {
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Company</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">@_selected.Company</dd>
+                        </div>
+                    }
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Service</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-white">@_selected.ServiceType</dd>
+                    </div>
+                    @if (_selected.Budget is not null)
+                    {
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Budget</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">@_selected.Budget</dd>
+                        </div>
+                    }
+                    @if (_selected.HowHeard is not null)
+                    {
+                        <div>
+                            <dt class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Via</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">@_selected.HowHeard</dd>
+                        </div>
+                    }
+                    <div>
+                        <dt class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Submitted</dt>
+                        <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                            @_selected.SubmittedAt.ToLocalTime().ToString("d MMM yyyy 'at' HH:mm")
+                        </dd>
+                    </div>
+                </dl>
+
+                <div class="rounded-xl bg-gray-50 dark:bg-white/5 ring-1 ring-gray-200 dark:ring-white/5 p-5">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-3">Message</p>
+                    <p class="text-sm text-gray-800 dark:text-neutral-200 whitespace-pre-wrap leading-relaxed">@_selected.Message</p>
+                </div>
+            </div>
+
+            <!-- Drawer footer -->
+            <div class="px-6 py-4 border-t border-gray-100 dark:border-white/5 flex gap-3">
+                <a href="mailto:@_selected.Email"
+                   class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+                          text-sm font-semibold bg-indigo-500 dark:bg-orange-400 text-white
+                          hover:opacity-90 transition-opacity">
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                    </svg>
+                    Reply by email
+                </a>
+                @if (!_selected.IsRead)
+                {
+                    <button type="button" @onclick="MarkAsRead"
+                            class="rounded-xl px-4 py-2.5 text-sm font-medium
+                                   ring-1 ring-gray-200 dark:ring-white/10
+                                   text-gray-700 dark:text-neutral-300
+                                   hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                        Mark read
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}

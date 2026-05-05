@@ -1,0 +1,180 @@
+@page "/Admin/Projects/Create"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using System.ComponentModel.DataAnnotations
+@using FellsideDigital.Domain.Enums
+@using FellsideDigital.Domain.Extensions
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Services
+@using FellsideDigital.Web.Components.Layout
+@using FellsideDigital.Web.Components.Shared
+
+<PageTitle>New Project — Fellside Digital Admin</PageTitle>
+
+<div class="mb-8">
+    <a href="/Admin/Projects"
+       class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
+        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+        Projects
+    </a>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">New client project</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">
+        Assign a project to a client so they can track progress in their portal.
+    </p>
+</div>
+
+<AlertBanner Message="@_errorMessage" Variant="error" Class="mb-6" />
+
+<div class="max-w-2xl">
+    <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8">
+        <EditForm Model="Input" OnValidSubmit="CreateAsync" class="space-y-6">
+            <DataAnnotationsValidator />
+
+            <!-- Client -->
+            <div>
+                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                    Client <span class="text-red-500">*</span>
+                </label>
+                <InputSelect @bind-Value="Input.ClientId" class="@InputClass">
+                    <option value="">Select a client…</option>
+                    @foreach (var client in _clients)
+                    {
+                        <option value="@client.Id">@client.CompanyName — @client.Email</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Input.ClientId" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+            </div>
+
+            <!-- Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                    Project name <span class="text-red-500">*</span>
+                </label>
+                <InputText @bind-Value="Input.Name" placeholder="e.g. Acme Ltd Website" class="@InputClass" />
+                <ValidationMessage For="() => Input.Name" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                    Description <span class="text-red-500">*</span>
+                </label>
+                <InputTextArea @bind-Value="Input.Description" rows="3"
+                               placeholder="Brief summary shown to the client in their portal…"
+                               class="@($"{InputClass} resize-none")" />
+                <ValidationMessage For="() => Input.Description" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+            </div>
+
+            <!-- Type + Status -->
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                        Type <span class="text-red-500">*</span>
+                    </label>
+                    <!-- Type tab switcher -->
+                    <div class="flex rounded-xl border border-gray-200 dark:border-white/10 p-1 bg-gray-50 dark:bg-white/5 gap-1">
+                        <button type="button"
+                                @onclick='() => Input.Type = ProjectType.Website'
+                                class="@($"flex-1 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all " +
+                                         (Input.Type == ProjectType.Website
+                                             ? "bg-white dark:bg-neutral-800 text-indigo-600 dark:text-orange-400 shadow-sm"
+                                             : "text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"))">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3" />
+                            </svg>
+                            Website
+                        </button>
+                        <button type="button"
+                                @onclick='() => Input.Type = ProjectType.Automation'
+                                class="@($"flex-1 flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all " +
+                                         (Input.Type == ProjectType.Automation
+                                             ? "bg-white dark:bg-neutral-800 text-indigo-600 dark:text-orange-400 shadow-sm"
+                                             : "text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"))">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                            </svg>
+                            Automation
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Status</label>
+                    <InputSelect @bind-Value="Input.Status" class="@InputClass">
+                        @foreach (var opt in EnumExtensions.ToOptions<ProjectStatus>())
+                        {
+                            <option value="@opt.Value">@opt.Display</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <!-- Type-specific deployment fields -->
+            <div class="border-t border-gray-100 dark:border-white/5 pt-6 space-y-5">
+                <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">
+                    @(Input.Type == ProjectType.Website ? "Website details" : "Deployment") (optional)
+                </p>
+
+                @if (Input.Type == ProjectType.Website)
+                {
+                    <!-- Website: preview iframe + live URL -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                            Railway preview URL
+                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— shown as live iframe embed in the client portal</span>
+                        </label>
+                        <InputText @bind-Value="Input.PreviewUrl"
+                                   placeholder="https://mysite.up.railway.app"
+                                   class="@InputClass" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                            Live website URL
+                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— "Visit live site" button in portal (optional)</span>
+                        </label>
+                        <InputText @bind-Value="Input.ProjectUrl"
+                                   placeholder="https://yourclient.co.uk"
+                                   class="@InputClass" />
+                    </div>
+                }
+                else
+                {
+                    <!-- Automation: live tool URL (prominent card) + optional production URL -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                            Live tool URL
+                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— shown as "Your automation tool" card in portal</span>
+                        </label>
+                        <InputText @bind-Value="Input.ProjectUrl"
+                                   placeholder="https://tool.yourclient.co.uk"
+                                   class="@InputClass" />
+                    </div>
+                }
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                        Notes for client
+                        <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— shown in their portal</span>
+                    </label>
+                    <InputTextArea @bind-Value="Input.DeploymentNotes" rows="2"
+                                   placeholder="@(Input.Type == ProjectType.Website ? "Any notes about the build or deployment…" : "Notes about the automation setup…")"
+                                   class="@($"{InputClass} resize-none")" />
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 pt-2 border-t border-gray-100 dark:border-white/5">
+                <a href="/Admin/Projects"
+                   class="text-sm font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    Cancel
+                </a>
+                <SpinnerButton IsLoading="@_submitting" LoadingText="Creating…" Class="px-5">
+                    Create @(Input.Type == ProjectType.Website ? "website" : "automation")
+                </SpinnerButton>
+            </div>
+        </EditForm>
+    </div>
+</div>

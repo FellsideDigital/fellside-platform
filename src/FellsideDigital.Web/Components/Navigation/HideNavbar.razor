@@ -1,0 +1,8 @@
+@using FellsideDigital.Web.Services
+@inject LayoutStateService LayoutState
+@implements IDisposable
+
+@code {
+    protected override void OnInitialized() => LayoutState.SetNavbar(false);
+    public void Dispose() => LayoutState.SetNavbar(true);
+}

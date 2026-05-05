@@ -1,0 +1,162 @@
+html {
+    scroll-behavior: smooth;
+}
+
+/* ── Hero aura ────────────────────────────────────────────────────────────── */
+.hero-aura {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100vw; height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-aura::before,
+.hero-aura::after,
+.hero-aura-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.hero-aura::before {
+    content: '';
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, #f97316 0%, #fb923c 40%, transparent 70%);
+    top: -10%; left: -5%;
+    animation: aura-drift-1 18s ease-in-out infinite alternate;
+}
+
+.hero-aura::after {
+    content: '';
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, #6366f1 0%, #818cf8 40%, transparent 70%);
+    bottom: -15%; left: 10%;
+    animation: aura-drift-2 22s ease-in-out infinite alternate;
+}
+
+.hero-aura-blob {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #f43f5e 0%, #fb7185 40%, transparent 70%);
+    top: 25%; left: 35%;
+    animation: aura-drift-3 26s ease-in-out infinite alternate;
+}
+
+.dark .hero-aura::before { opacity: 0.35; }
+.dark .hero-aura::after  { opacity: 0.30; }
+.dark .hero-aura-blob    { opacity: 0.25; }
+
+:root:not(.dark) .hero-aura::before { opacity: 0.18; }
+:root:not(.dark) .hero-aura::after  { opacity: 0.14; }
+:root:not(.dark) .hero-aura-blob    { opacity: 0.12; }
+
+@keyframes aura-drift-1 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(60px, 40px) scale(1.08); }
+    66%  { transform: translate(20px, 80px) scale(0.95); }
+    100% { transform: translate(80px, -30px) scale(1.05); }
+}
+
+@keyframes aura-drift-2 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(-40px, -60px) scale(1.10); }
+    66%  { transform: translate(50px, 30px) scale(0.92); }
+    100% { transform: translate(-60px, 50px) scale(1.06); }
+}
+
+@keyframes aura-drift-3 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(30px, 60px) scale(1.12); }
+    66%  { transform: translate(-50px, -20px) scale(0.97); }
+    100% { transform: translate(40px, -60px) scale(1.04); }
+}
+
+html, body {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Animated utility */
+.animated {
+    opacity: 0;
+}
+
+/* Card base */
+.card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+    /* Hover lift */
+    .card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(99, 102, 241, 0.4);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Cursor glow */
+    .card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient( 800px circle at var(--x, 50%) var(--y, 50%), rgba(99, 102, 241, 0.18), transparent 45% );
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
+    }
+
+    .card:hover::after {
+        opacity: 1;
+    }
+
+/* Scroll reveal start state */
+.scroll-card {
+    opacity: 0;
+    transform: translateY(80px) scale(0.97);
+    will-change: transform, opacity;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.7s ease;
+}
+
+/* Ripple effect */
+.card .ripple {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient( circle at center, rgba(99, 102, 241, 0.35), transparent 70% );
+    transform: scale(0);
+    opacity: 0;
+    transition: transform 0.7s ease, opacity 0.7s ease;
+    pointer-events: none;
+}
+
+/* Accessibility focus */
+.card:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.6);
+}
+
+/* Disable scroll animation on mobile */
+@media (max-width: 768px) {
+    .scroll-card {
+        transform: none !important;
+        opacity: 1 !important;
+        transition: none !important;
+    }
+}
+
+/* In your app.css or a <HeadContent> style block */
+
+/* Anime.js splits text into these wrapper spans � descenders get clipped without this */
+[data-anime-words] span,
+[data-anime-chars] span {
+    padding-bottom: 0.17em;
+    margin-bottom: -0.17em;
+}
+
+h1 span,
+h2 span {
+    padding-bottom: 0.17em;
+    margin-bottom: -0.17em;
+}

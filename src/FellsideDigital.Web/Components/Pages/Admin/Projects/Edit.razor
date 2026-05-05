@@ -1,0 +1,115 @@
+@page "/Admin/Projects/{Id:guid}/Edit"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using System.ComponentModel.DataAnnotations
+@using FellsideDigital.Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Services
+@using FellsideDigital.Web.Components.Layout
+@using FellsideDigital.Web.Components.Shared
+
+<PageTitle>Edit Project — Fellside Digital Admin</PageTitle>
+
+<div class="mb-8">
+    <a href="@($"/Admin/Projects/{Id}")"
+       class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
+        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+        </svg>
+        Back to project
+    </a>
+    <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Edit project</h1>
+    <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">Update project details and configuration.</p>
+</div>
+
+@if (_project is null)
+{
+    <div class="animate-pulse space-y-4 max-w-2xl">
+        <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-48"></div>
+        <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-64"></div>
+    </div>
+}
+else
+{
+    <AlertBanner Message="@_errorMessage" Variant="error" Class="mb-6" />
+
+    <div class="max-w-2xl">
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8">
+            <EditForm Model="Input" OnValidSubmit="SaveAsync" class="space-y-6">
+                <DataAnnotationsValidator />
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                        Project name <span class="text-red-500">*</span>
+                    </label>
+                    <InputText @bind-Value="Input.Name" class="@InputClass" />
+                    <ValidationMessage For="() => Input.Name" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <InputTextArea @bind-Value="Input.Description" rows="3" class="@($"{InputClass} resize-none")" />
+                    <ValidationMessage For="() => Input.Description" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                </div>
+
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Type</label>
+                        <InputSelect @bind-Value="Input.Type" class="@InputClass">
+                            <option value="@ProjectType.Website">Website</option>
+                            <option value="@ProjectType.Automation">Automation</option>
+                        </InputSelect>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Status</label>
+                        <InputSelect @bind-Value="Input.Status" class="@InputClass">
+                            @foreach (var options in EnumExtensions.ToOptions<ProjectStatus>())
+                            {
+                                <option value="@options.Value">@options.Display</option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 dark:border-white/5 pt-6 space-y-5">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Deployment</p>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                            Railway preview URL
+                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— iframe embed</span>
+                        </label>
+                        <InputText @bind-Value="Input.PreviewUrl" placeholder="https://myapp.up.railway.app" class="@InputClass" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
+                            Project URL
+                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— external link</span>
+                        </label>
+                        <InputText @bind-Value="Input.ProjectUrl" placeholder="https://railway.app/project/..." class="@InputClass" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Deployment notes</label>
+                        <InputTextArea @bind-Value="Input.DeploymentNotes" rows="2" class="@($"{InputClass} resize-none")" />
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-2 border-t border-gray-100 dark:border-white/5">
+                    <a href="@($"/Admin/Projects/{Id}")"
+                       class="text-sm font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                        Cancel
+                    </a>
+                    <SpinnerButton IsLoading="@_submitting" LoadingText="Saving…" Class="px-5">
+                        Save changes
+                    </SpinnerButton>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}

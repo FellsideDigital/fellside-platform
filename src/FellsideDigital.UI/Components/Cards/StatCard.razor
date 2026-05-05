@@ -1,0 +1,19 @@
+<div class="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-200/80 dark:border-white/5 p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">@Label</span>
+        <span class="flex size-7 items-center justify-center rounded-lg @IconBg">
+            @Icon
+        </span>
+    </div>
+    <p class="@ValueSize font-bold tracking-tight text-gray-900 dark:text-white">@Value</p>
+    <p class="mt-1 text-xs text-gray-500 dark:text-neutral-400">@Subtext</p>
+</div>
+
+@code {
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter] public RenderFragment? Icon { get; set; }
+    [Parameter] public string IconBg { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string Subtext { get; set; } = "";
+    [Parameter] public string ValueSize { get; set; } = "text-3xl";
+}

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\Buttons\" />
+    <Folder Include="Components\Forms\Editors\" />
+    <Folder Include="Components\Forms\Selects\" />
+    <Folder Include="wwwroot\" />
+    <Folder Include="Theme\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FellsideDigital.Domain\FellsideDigital.Domain.csproj" />
+  </ItemGroup>
+
+
+
+</Project>

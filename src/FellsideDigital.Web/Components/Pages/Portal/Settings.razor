@@ -1,0 +1,86 @@
+@page "/Portal/Settings"
+@attribute [Authorize]
+@layout PortalLayout
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Components.Layout
+
+<PageTitle>Settings — Fellside Digital Portal</PageTitle>
+
+<PageHeader Eyebrow="Account" Title="Settings" Description="Manage your profile and account preferences." />
+
+<div class="space-y-8 max-w-4xl">
+
+    <CardSection Title="Personal information"
+                 Subtitle="Update your name and display details."
+                 HeaderPadding="py-5">
+        <div class="px-6 py-6">
+            <AlertBanner Message="@_profileSuccess" Variant="success" Class="mb-5" />
+            <AlertBanner Message="@_profileError" Variant="error" Class="mb-5" />
+            <EditForm Model="ProfileInput" OnValidSubmit="SaveProfileAsync">
+                <DataAnnotationsValidator />
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-6 sm:max-w-xl">
+                    <div class="sm:col-span-3">
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">First name</label>
+                        <InputText @bind-Value="ProfileInput.FirstName" class="@InputClass" />
+                        <ValidationMessage For="() => ProfileInput.FirstName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Last name</label>
+                        <InputText @bind-Value="ProfileInput.LastName" class="@InputClass" />
+                        <ValidationMessage For="() => ProfileInput.LastName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                    <div class="col-span-full">
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Email address</label>
+                        <input type="email" value="@_email" disabled
+                               class="block w-full rounded-xl bg-gray-100 dark:bg-white/5 px-3.5 py-2.5 text-sm text-gray-400 dark:text-neutral-500 ring-1 ring-inset ring-gray-200 dark:ring-white/5 cursor-not-allowed" />
+                        <p class="mt-1.5 text-xs text-gray-400 dark:text-neutral-500">Contact support to change your email address.</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <SpinnerButton IsLoading="@_savingProfile" LoadingText="Saving…">
+                        Save changes
+                    </SpinnerButton>
+                </div>
+            </EditForm>
+        </div>
+    </CardSection>
+
+    <CardSection Title="Change password"
+                 Subtitle="Keep your account secure with a strong password."
+                 HeaderPadding="py-5">
+        <div class="px-6 py-6">
+            <AlertBanner Message="@_passwordSuccess" Variant="success" Class="mb-5" />
+            <AlertBanner Message="@_passwordError" Variant="error" Class="mb-5" />
+            <EditForm Model="PasswordInput" OnValidSubmit="ChangePasswordAsync">
+                <DataAnnotationsValidator />
+                <div class="space-y-5 sm:max-w-md">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Current password</label>
+                        <InputText type="password" @bind-Value="PasswordInput.CurrentPassword" class="@InputClass" />
+                        <ValidationMessage For="() => PasswordInput.CurrentPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">New password</label>
+                        <InputText type="password" @bind-Value="PasswordInput.NewPassword" class="@InputClass" />
+                        <ValidationMessage For="() => PasswordInput.NewPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Confirm new password</label>
+                        <InputText type="password" @bind-Value="PasswordInput.ConfirmPassword" class="@InputClass" />
+                        <ValidationMessage For="() => PasswordInput.ConfirmPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <SpinnerButton IsLoading="@_changingPassword" LoadingText="Updating…">
+                        Update password
+                    </SpinnerButton>
+                </div>
+            </EditForm>
+        </div>
+    </CardSection>
+
+</div>
