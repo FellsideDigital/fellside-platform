@@ -21,6 +21,7 @@ public static class StartupCompositionExtensions
             .ConfigureHttp()
             .ConfigureFormOptions()
             .ConfigureEmailService(configuration)
+            .ConfigureStorageService(configuration)
             .ConfigureInvitationServices()
             .ConfigurePortalServices();
 

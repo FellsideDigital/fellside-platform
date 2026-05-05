@@ -1,0 +1,85 @@
+<div class="space-y-2">
+
+    <!-- Block row -->
+    <div class="flex items-end gap-1.5">
+        @for (int i = 0; i < Steps.Length; i++)
+        {
+            var filled = Variant == "success" || CurrentStep > i;
+            var active = Variant != "success" && CurrentStep == i;
+
+            <div class="flex-1 rounded transition-all duration-300 @BlockClass(filled, active)"></div>
+        }
+    </div>
+
+    <!-- Label row -->
+    @if (Variant == "success")
+    {
+        <!-- All complete — single centred label -->
+        <div class="flex items-center justify-center gap-1.5">
+            <svg class="size-3 text-emerald-500 dark:text-emerald-400" fill="none" viewBox="0 0 24 24"
+                 stroke-width="2.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            <span class="text-[11px] font-semibold text-emerald-500 dark:text-emerald-400">Complete</span>
+        </div>
+    }
+    else
+    {
+        <!-- Parallel cells — only active cell shows text, naturally aligned under its block -->
+        <div class="flex gap-1.5">
+            @for (int i = 0; i < Steps.Length; i++)
+            {
+                var isActive = CurrentStep == i;
+                <div class="flex-1 flex justify-center">
+                    @if (isActive)
+                    {
+                        <span class="text-[11px] font-semibold @LabelColor whitespace-nowrap">
+                            @(OverrideLabel ?? Steps[i])
+                        </span>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>Ordered step labels (left → right).</summary>
+    [Parameter] public string[] Steps { get; set; } = [];
+
+    /// <summary>
+    /// 0-based active step index. Everything before it is "completed".
+    /// Pass Steps.Length to mark all complete (use with Variant="success").
+    /// </summary>
+    [Parameter] public int CurrentStep { get; set; }
+
+    /// <summary>"default" | "success" | "blocked" | "paused"</summary>
+    [Parameter] public string Variant { get; set; } = "default";
+
+    /// <summary>Overrides the step label under the active block (e.g. "Blocked", "On Hold").</summary>
+    [Parameter] public string? OverrideLabel { get; set; }
+
+    private string LabelColor => Variant switch
+    {
+        "success" => "text-emerald-500 dark:text-emerald-400",
+        "blocked" => "text-rose-500   dark:text-rose-400",
+        "paused"  => "text-amber-500  dark:text-amber-400",
+        _         => "text-indigo-500 dark:text-orange-400",
+    };
+
+    private string BlockClass(bool filled, bool active)
+    {
+        var height = active ? "h-3" : "h-2";
+
+        var colour = (Variant, filled || active) switch
+        {
+            ("success", _)     => "bg-emerald-400 dark:bg-emerald-500",
+            ("blocked", true)  => "bg-rose-400    dark:bg-rose-500",
+            ("paused",  true)  => "bg-amber-400   dark:bg-amber-500",
+            (_,         true)  => "bg-indigo-400  dark:bg-orange-400",
+            _                  => "bg-gray-200    dark:bg-white/10",
+        };
+
+        return $"{height} {colour}";
+    }
+}

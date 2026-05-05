@@ -2,6 +2,78 @@ html {
     scroll-behavior: smooth;
 }
 
+/* ── Hero aura ────────────────────────────────────────────────────────────── */
+.hero-aura {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100vw; height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-aura::before,
+.hero-aura::after,
+.hero-aura-blob {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(80px);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.hero-aura::before {
+    content: '';
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, #f97316 0%, #fb923c 40%, transparent 70%);
+    top: -10%; left: -5%;
+    animation: aura-drift-1 18s ease-in-out infinite alternate;
+}
+
+.hero-aura::after {
+    content: '';
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, #6366f1 0%, #818cf8 40%, transparent 70%);
+    bottom: -15%; left: 10%;
+    animation: aura-drift-2 22s ease-in-out infinite alternate;
+}
+
+.hero-aura-blob {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #f43f5e 0%, #fb7185 40%, transparent 70%);
+    top: 25%; left: 35%;
+    animation: aura-drift-3 26s ease-in-out infinite alternate;
+}
+
+.dark .hero-aura::before { opacity: 0.35; }
+.dark .hero-aura::after  { opacity: 0.30; }
+.dark .hero-aura-blob    { opacity: 0.25; }
+
+:root:not(.dark) .hero-aura::before { opacity: 0.18; }
+:root:not(.dark) .hero-aura::after  { opacity: 0.14; }
+:root:not(.dark) .hero-aura-blob    { opacity: 0.12; }
+
+@keyframes aura-drift-1 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(60px, 40px) scale(1.08); }
+    66%  { transform: translate(20px, 80px) scale(0.95); }
+    100% { transform: translate(80px, -30px) scale(1.05); }
+}
+
+@keyframes aura-drift-2 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(-40px, -60px) scale(1.10); }
+    66%  { transform: translate(50px, 30px) scale(0.92); }
+    100% { transform: translate(-60px, 50px) scale(1.06); }
+}
+
+@keyframes aura-drift-3 {
+    0%   { transform: translate(0px, 0px) scale(1); }
+    33%  { transform: translate(30px, 60px) scale(1.12); }
+    66%  { transform: translate(-50px, -20px) scale(0.97); }
+    100% { transform: translate(40px, -60px) scale(1.04); }
+}
+
 html, body {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
@@ -76,7 +148,7 @@ html, body {
 
 /* In your app.css or a <HeadContent> style block */
 
-/* Anime.js splits text into these wrapper spans � descenders get clipped without this */
+/* Anime.js splits text into these wrapper spans � descenders get clipped without this */
 [data-anime-words] span,
 [data-anime-chars] span {
     padding-bottom: 0.17em;

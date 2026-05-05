@@ -51,6 +51,12 @@ public class EmailService : IEmailSender<ApplicationUser>
             "Welcome to your Fellside Digital client portal",
             WelcomeTemplate(user));
 
+    public Task SendContactEnquiryAsync(ContactEnquiry enquiry) =>
+        SendAsync(
+            _settings.AdminEmail,
+            $"New enquiry from {enquiry.Name} — {enquiry.ServiceType}",
+            ContactEnquiryTemplate(enquiry));
+
     // ── Core send ──────────────────────────────────────────────────────────────
 
     private async Task SendAsync(string to, string subject, string htmlBody)
@@ -175,6 +181,32 @@ private static string InvitationTemplate(ClientInvitation inv, string url) => $"
             <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Click the button below to choose a new password. This link expires in 1 hour.</p>
             <a href="{url}" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:600;font-size:15px;">
                 Reset password →
+            </a>
+        """)}
+        """;
+
+    private static string ContactEnquiryTemplate(ContactEnquiry e) => $"""
+        {BaseLayout($"""
+            <h2 style="margin:0 0 8px;font-size:22px;color:#111827;">New contact enquiry</h2>
+            <p style="margin:0 0 16px;color:#6b7280;font-size:15px;">Someone submitted the contact form on your website.</p>
+
+            <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+                <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:8px 0;color:#6b7280;font-size:14px;width:140px;">Name</td><td style="padding:8px 0;font-size:14px;color:#111827;">{e.Name}</td></tr>
+                <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:8px 0;color:#6b7280;font-size:14px;">Email</td><td style="padding:8px 0;font-size:14px;"><a href="mailto:{e.Email}" style="color:#6366f1;text-decoration:underline;">{e.Email}</a></td></tr>
+                {(e.Phone is not null ? $"<tr style=\"border-bottom:1px solid #f1f5f9;\"><td style=\"padding:8px 0;color:#6b7280;font-size:14px;\">Phone</td><td style=\"padding:8px 0;font-size:14px;color:#111827;\">{e.Phone}</td></tr>" : "")}
+                {(e.Company is not null ? $"<tr style=\"border-bottom:1px solid #f1f5f9;\"><td style=\"padding:8px 0;color:#6b7280;font-size:14px;\">Company</td><td style=\"padding:8px 0;font-size:14px;color:#111827;\">{e.Company}</td></tr>" : "")}
+                <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:8px 0;color:#6b7280;font-size:14px;">Service</td><td style="padding:8px 0;font-size:14px;color:#111827;">{e.ServiceType}</td></tr>
+                {(e.Budget is not null ? $"<tr style=\"border-bottom:1px solid #f1f5f9;\"><td style=\"padding:8px 0;color:#6b7280;font-size:14px;\">Budget</td><td style=\"padding:8px 0;font-size:14px;color:#111827;\">{e.Budget}</td></tr>" : "")}
+                {(e.HowHeard is not null ? $"<tr style=\"border-bottom:1px solid #f1f5f9;\"><td style=\"padding:8px 0;color:#6b7280;font-size:14px;\">Via</td><td style=\"padding:8px 0;font-size:14px;color:#111827;\">{e.HowHeard}</td></tr>" : "")}
+            </table>
+
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
+                <p style="margin:0 0 6px;font-size:13px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Message</p>
+                <p style="margin:0;font-size:14px;color:#0f172a;line-height:1.65;white-space:pre-wrap;">{e.Message}</p>
+            </div>
+
+            <a href="mailto:{e.Email}" style="display:inline-block;background:#6366f1;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;letter-spacing:.2px;">
+                Reply to {e.Name} →
             </a>
         """)}
         """;

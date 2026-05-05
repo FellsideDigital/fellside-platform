@@ -1,0 +1,497 @@
+@page "/automation"
+@using FellsideDigital.Web.Components.Pages
+
+<PageTitle>Intelligent Automation — Fellside Digital</PageTitle>
+
+<div class="flex flex-col w-full max-w-full overflow-x-hidden
+            bg-white dark:bg-neutral-950 text-slate-900 dark:text-white
+            transition-colors duration-300">
+
+    <!-- ── HERO ──────────────────────────────────────────────────────────── -->
+    <section class="relative overflow-hidden py-24 sm:py-32 px-6 bg-white dark:bg-neutral-950">
+        <div class="grain-overlay" aria-hidden="true"></div>
+        <div class="hero-aura" aria-hidden="true">
+            <div class="hero-aura-blob"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto">
+            <div class="flex flex-col lg:flex-row lg:items-center gap-12">
+                <div class="max-w-2xl">
+                    <a href="/"
+                       class="inline-flex items-center gap-1.5 text-xs font-medium
+                              text-slate-400 dark:text-neutral-500
+                              hover:text-slate-600 dark:hover:text-neutral-300 mb-8 transition-colors">
+                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                        </svg>
+                        Back to home
+                    </a>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-indigo-400 dark:text-orange-400 mb-3">
+                        Intelligent Automation
+                    </p>
+                    <h1 class="text-5xl sm:text-6xl font-semibold tracking-tight text-balance
+                               text-slate-900 dark:text-white mb-6">
+                        Automation that works while
+                        <span class="text-indigo-400 dark:text-orange-400"> you sleep</span>
+                    </h1>
+                    <p class="text-lg text-slate-500 dark:text-neutral-400 leading-relaxed mb-8">
+                        From eliminating manual processes to embedding AI into your workflows,
+                        we build automation that is reliable, maintainable, and designed to grow
+                        with your business — not against it.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="/contact"
+                           class="rounded-xl bg-indigo-400 dark:bg-orange-400 px-6 py-3 text-sm font-semibold
+                                  text-white shadow-sm hover:opacity-90 transition-all text-center">
+                            Start automating
+                        </a>
+                        <a href="#tiers"
+                           class="rounded-xl px-6 py-3 text-sm font-semibold text-center
+                                  text-slate-700 dark:text-neutral-200
+                                  ring-1 ring-slate-200 dark:ring-white/10
+                                  hover:bg-slate-50 dark:hover:bg-white/5 transition-all">
+                            See our approach
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Automation pipeline visual -->
+                <div class="flex-1 hidden lg:flex items-center justify-center">
+                    <div class="rounded-2xl bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/10 p-10 shadow-2xl w-full max-w-sm">
+                        <div class="flex flex-col items-start w-full space-y-0">
+                            @foreach (var (icon, label, isLast) in _pipelineSteps)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-slate-50 dark:bg-neutral-800 ring-1 ring-slate-200 dark:ring-white/5 w-10 h-10 rounded-[10px] flex-shrink-0 flex items-center justify-center">
+                                        @((MarkupString)icon)
+                                    </div>
+                                    <span class="text-sm text-slate-600 dark:text-neutral-300 font-medium">@label</span>
+                                </div>
+                                @if (!isLast)
+                                {
+                                    <div class="bg-indigo-400/30 dark:bg-orange-400/30 w-px h-5 ml-[19px]"></div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── AUTOMATION TIERS ───────────────────────────────────────────────── -->
+    <section id="tiers" class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto">
+            <SectionHeader Label="Our offerings"
+                           Heading="Automation for every scale."
+                           Description="Whether you're a growing business or a large enterprise, we build solutions that fit where you are and scale with where you're going." />
+
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach (var tier in _tiers)
+                {
+                    <div class="group rounded-2xl bg-white dark:bg-neutral-900
+                                ring-1 ring-slate-200 dark:ring-white/5
+                                hover:ring-indigo-400/40 dark:hover:ring-orange-400/40
+                                hover:shadow-lg transition-all duration-200 flex flex-col">
+                        <!-- Tags -->
+                        <div class="flex flex-wrap gap-2 px-6 pt-6">
+                            @foreach (var tag in tier.Tags)
+                            {
+                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
+                                             bg-slate-100 text-slate-600
+                                             dark:bg-neutral-800 dark:text-neutral-400">@tag</span>
+                            }
+                        </div>
+                        <div class="px-6 pt-4 pb-2 flex-1">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-neutral-100
+                                       group-hover:text-indigo-400 dark:group-hover:text-orange-400 transition-colors mb-1">
+                                @tier.Title
+                            </h3>
+                            <p class="text-sm leading-relaxed text-slate-500 dark:text-neutral-400 mb-4">
+                                @tier.Description
+                            </p>
+                            <ul class="space-y-2.5">
+                                @foreach (var feature in tier.Features)
+                                {
+                                    <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
+                                        <span class="mt-0.5 font-bold text-indigo-400 dark:text-orange-400">✓</span>
+                                        @feature
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="px-6 pb-6 mt-6">
+                            <a href="/contact"
+                               class="inline-flex items-center gap-1 text-sm font-semibold
+                                      text-indigo-400 dark:text-orange-400
+                                      group-hover:gap-2 transition-all duration-200">
+                                Get started →
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ── BENTO: HOW IT WORKS ────────────────────────────────────────────── -->
+    <section class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto">
+            <SectionHeader Label="About us"
+                           Heading="End-to-end pipelines, built properly."
+                           Description="From trigger to outcome, we design and build every step of your automation stack." />
+
+            <div class="mt-12 flex flex-col lg:flex-row gap-3 items-stretch">
+
+                <!-- LEFT: Workflow dots visual -->
+                <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5
+                            rounded-[18px] overflow-hidden flex flex-col
+                            w-full lg:w-[300px] lg:flex-shrink-0">
+                    <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center p-8" style="min-height:300px;">
+                        <div class="flex items-center gap-6">
+                            <div class="grid grid-cols-4 gap-2">
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <div class="h-2.5 w-24 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                                <div class="h-2.5 w-16 rounded-full bg-indigo-400/25 dark:bg-orange-400/25"></div>
+                                <div class="h-2.5 w-20 rounded-full bg-indigo-400/15 dark:bg-orange-400/15"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">What we build</p>
+                        <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">Intelligent workflows</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-neutral-400">Automation that connects your tools and handles decisions automatically.</p>
+                    </div>
+                </div>
+
+                <!-- MIDDLE: Two stacked cards -->
+                <div class="flex flex-col gap-3 flex-1 min-w-0">
+
+                    <!-- AI Decision card -->
+                    <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 rounded-[18px] overflow-hidden flex flex-col flex-1">
+                        <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center" style="min-height:160px;">
+                            <div class="flex items-center gap-2 py-6 px-8">
+                                <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                                <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
+                            </div>
+                        </div>
+                        <div class="px-8 py-6">
+                            <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">AI-powered</p>
+                            <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">Smarter than rules-based logic</p>
+                        </div>
+                    </div>
+
+                    <!-- Scale card -->
+                    <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 rounded-[18px] overflow-hidden flex flex-col flex-1">
+                        <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center" style="min-height:160px;">
+                            <div class="flex items-end gap-2 h-24 w-full px-12 py-6">
+                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:38px"></div>
+                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:58px"></div>
+                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:43px"></div>
+                                <div class="flex-1 rounded-t-md bg-indigo-400 dark:bg-orange-400" style="height:77px"></div>
+                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:62px"></div>
+                            </div>
+                        </div>
+                        <div class="px-8 py-6">
+                            <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">Data-driven</p>
+                            <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">Measurable impact from day one</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: End-to-end pipeline steps -->
+                <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5
+                            rounded-[18px] overflow-hidden flex flex-col
+                            w-full lg:w-[300px] lg:flex-shrink-0">
+                    <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center p-8" style="min-height:300px;">
+                        <div class="flex flex-col items-start w-full space-y-0">
+                            @foreach (var (icon, label, isLast) in _pipelineSteps)
+                            {
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 w-9 h-9 rounded-[10px] flex-shrink-0 flex items-center justify-center">
+                                        @((MarkupString)icon)
+                                    </div>
+                                    <span class="text-sm text-slate-500 dark:text-neutral-400">@label</span>
+                                </div>
+                                @if (!isLast)
+                                {
+                                    <div class="bg-slate-200 dark:bg-neutral-700 w-px h-4 ml-[17px]"></div>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="p-8">
+                        <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">How it works</p>
+                        <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">End-to-end pipelines</p>
+                        <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-neutral-400">From trigger to outcome, we design and build every step.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── AUTOMATION SERVICES ────────────────────────────────────────────── -->
+    <section class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto">
+            <SectionHeader Label="Services"
+                           Heading="Everything your automation needs."
+                           Description="From process discovery to AI-powered decision engines — all delivered by the same team." />
+
+            <div class="mt-16 flex flex-col divide-y divide-slate-200 dark:divide-white/5">
+                @foreach (var (svc, index) in _autoServices.Select((s, i) => (s, i)))
+                {
+                    bool reverse = index % 2 != 0;
+                    <div class="grid md:grid-cols-2 gap-12 py-16 items-center">
+
+                        <!-- Visual panel -->
+                        <div class="@(reverse ? "md:order-last" : "")
+                                    rounded-2xl bg-white dark:bg-neutral-900
+                                    ring-1 ring-slate-200 dark:ring-white/5
+                                    h-52 flex items-center justify-center overflow-hidden px-8">
+                            @((MarkupString)svc.Visual)
+                        </div>
+
+                        <!-- Content panel -->
+                        <div class="flex flex-col gap-4">
+                            <p class="text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">
+                                @svc.Number
+                            </p>
+                            <h3 class="text-2xl font-semibold text-slate-900 dark:text-neutral-100">
+                                @svc.Title
+                            </h3>
+                            <p class="text-base leading-relaxed text-slate-500 dark:text-neutral-400">
+                                @svc.Description
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-1">
+                                @foreach (var tag in svc.Tags)
+                                {
+                                    <span class="rounded-full px-3 py-1 text-xs font-medium
+                                                 bg-slate-100 text-slate-600
+                                                 dark:bg-neutral-800 dark:text-neutral-300">
+                                        @tag
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA ────────────────────────────────────────────────────────────── -->
+    <section class="py-24 px-6 relative overflow-hidden bg-white dark:bg-neutral-950 transition-colors duration-300">
+        <div class="hero-glow opacity-20" aria-hidden="true"></div>
+        <div class="relative z-10 max-w-2xl mx-auto text-center space-y-6">
+            <p class="text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">
+                Ready to automate?
+            </p>
+            <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-balance text-slate-900 dark:text-white">
+                Stop doing manually what
+                <span class="text-indigo-400 dark:text-orange-400"> a machine can do better.</span>
+            </h2>
+            <p class="text-base text-slate-500 dark:text-neutral-400">
+                Tell us what's slowing your team down and we'll scope a solution.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                <a href="/contact"
+                   class="rounded-xl bg-indigo-400 dark:bg-orange-400 px-7 py-3 text-sm font-semibold
+                          text-white shadow-lg hover:opacity-90 transition-all">
+                    Book a discovery call
+                </a>
+                <a href="/websites"
+                   class="text-sm font-medium text-slate-500 dark:text-neutral-400
+                          hover:text-indigo-400 dark:hover:text-orange-400 transition-colors">
+                    Also need a website? →
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+@code {
+    private static readonly (string icon, string label, bool isLast)[] _pipelineSteps =
+    [
+        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>""", "Trigger event", false),
+        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>""", "Pull from source", false),
+        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>""", "AI decision layer", false),
+        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>""", "Schedule or route", false),
+        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>""", "Report and archive", true),
+    ];
+
+    private record AutoTier(string Title, string Description, string[] Tags, string[] Features);
+
+    private static readonly AutoTier[] _tiers =
+    [
+        new(
+            Title: "Small Business Automation",
+            Description: "Cut out the manual work slowing your team down. We identify your highest-impact repetitive tasks and replace them with reliable, low-maintenance automation.",
+            Tags: ["Workflow Automation", "AI Tools", "Integrations"],
+            Features: ["Automated invoicing & scheduling", "Email & notification workflows", "CRM and spreadsheet integrations", "Quick turnaround, fixed-scope delivery"]
+        ),
+        new(
+            Title: "Mid-Market Automation",
+            Description: "For growing organisations juggling multiple systems and teams. We connect your tools, automate your data flows, and build scalable processes that grow with you.",
+            Tags: ["Process Automation", "API Integration", "Reporting"],
+            Features: ["Cross-system API integrations", "Automated reporting & dashboards", "Multi-team workflow coordination", "Custom business logic & rules engines"]
+        ),
+        new(
+            Title: "Enterprise Automation",
+            Description: "Complex operations demand robust, secure, and auditable automation. We design and deliver enterprise-grade solutions built for scale, compliance, and long-term performance.",
+            Tags: ["Enterprise", "AI-Powered", "Scalable"],
+            Features: ["AI-powered process automation", "Legacy system integration & modernisation", "Audit trails, compliance & security", "Dedicated support & SLA agreements"]
+        ),
+    ];
+
+    private record AutoService(string Number, string Title, string Description, string[] Tags, string Visual);
+
+    private static readonly AutoService[] _autoServices =
+    [
+        new(
+            Number: "01",
+            Title: "Workflow Automation",
+            Description: "Map, streamline, and automate your repetitive internal processes — from approvals and notifications to task handoffs and status updates.",
+            Tags: ["Approvals", "Notifications", "Task routing"],
+            Visual: """
+                <div class="flex items-center gap-6">
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
+                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <div class="h-2.5 w-24 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                        <div class="h-2.5 w-16 rounded-full bg-indigo-400/25 dark:bg-orange-400/25"></div>
+                        <div class="h-2.5 w-20 rounded-full bg-indigo-400/15 dark:bg-orange-400/15"></div>
+                    </div>
+                </div>
+            """
+        ),
+        new(
+            Number: "02",
+            Title: "API & Systems Integration",
+            Description: "Break down data silos by connecting your existing tools — CRMs, ERPs, databases, and third-party platforms — into a single, unified workflow.",
+            Tags: ["CRM", "Business systems", "Third-party APIs"],
+            Visual: """
+                <div class="flex flex-col gap-3 w-2/3">
+                    <div class="h-3 w-full rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                    <div class="h-3 w-3/4 rounded-full bg-indigo-400/25 dark:bg-orange-400/25"></div>
+                    <div class="h-3 w-1/2 rounded-full bg-indigo-400/15 dark:bg-orange-400/15"></div>
+                </div>
+            """
+        ),
+        new(
+            Number: "03",
+            Title: "AI-Powered Automation",
+            Description: "Go beyond rules-based logic. We embed AI into your workflows to handle unstructured data, intelligent decisions, and dynamic task routing.",
+            Tags: ["Intelligent routing", "Unstructured data", "Decision engines"],
+            Visual: """
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
+                    <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                    <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
+                    <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
+                    <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
+                    <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
+                </div>
+            """
+        ),
+        new(
+            Number: "04",
+            Title: "Data & Reporting Automation",
+            Description: "Eliminate manual reporting. Automatically collect, transform, and deliver accurate data insights to the right people at the right time.",
+            Tags: ["Dashboards", "Scheduled reports", "Data pipelines"],
+            Visual: """
+                <div class="flex items-end gap-2 h-24 w-full px-4">
+                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:38px"></div>
+                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:58px"></div>
+                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:43px"></div>
+                    <div class="flex-1 rounded-t-md bg-indigo-400 dark:bg-orange-400" style="height:77px"></div>
+                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:62px"></div>
+                </div>
+            """
+        ),
+        new(
+            Number: "05",
+            Title: "Scheduled & Event-Driven Automation",
+            Description: "Run automations on a schedule or trigger them from real-world events — form submissions, payments, status changes, or inbound data from any source.",
+            Tags: ["Cron jobs", "Event triggers", "Real-time processing"],
+            Visual: """
+                <div class="flex flex-col items-center gap-3">
+                    <div class="flex size-14 items-center justify-center rounded-full ring-1 ring-indigo-400/30 dark:ring-orange-400/30 bg-indigo-400/5 dark:bg-orange-400/5">
+                        <svg class="size-6 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col gap-1.5 w-32">
+                        <div class="h-1.5 rounded-full bg-indigo-400/60 dark:bg-orange-400/60 w-full"></div>
+                        <div class="h-1.5 rounded-full bg-indigo-400/40 dark:bg-orange-400/40 w-3/4"></div>
+                        <div class="h-1.5 rounded-full bg-indigo-400/20 dark:bg-orange-400/20 w-1/2"></div>
+                    </div>
+                </div>
+            """
+        ),
+        new(
+            Number: "06",
+            Title: "Legacy System Modernisation",
+            Description: "Bring ageing infrastructure into the modern era. We integrate, extend, or replace legacy systems without disrupting your day-to-day operations.",
+            Tags: ["Migrations", "Integration", "Modernisation"],
+            Visual: """
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col gap-2">
+                        <div class="h-8 w-20 rounded-lg bg-slate-200 dark:bg-neutral-700 flex items-center justify-center">
+                            <span class="text-xs text-slate-400 dark:text-neutral-500 font-mono">Legacy</span>
+                        </div>
+                        <div class="h-1 w-full bg-indigo-400/20 dark:bg-orange-400/20 rounded"></div>
+                    </div>
+                    <svg class="size-5 text-indigo-400 dark:text-orange-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+                    </svg>
+                    <div class="flex flex-col gap-2">
+                        <div class="h-8 w-20 rounded-lg bg-indigo-400 dark:bg-orange-400 flex items-center justify-center">
+                            <span class="text-xs text-white font-mono font-semibold">Modern</span>
+                        </div>
+                        <div class="h-1 w-full bg-indigo-400 dark:bg-orange-400 rounded"></div>
+                    </div>
+                </div>
+            """
+        ),
+    ];
+}

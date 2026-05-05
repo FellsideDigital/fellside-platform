@@ -77,6 +77,37 @@ public class InvitationService(
             .OrderByDescending(i => i.CreatedAt)
             .ToListAsync();
 
+    public Task<List<ClientInvitation>> GetValidInvitationsAsync() =>
+    db.ClientInvitations
+        .Include(i => i.CreatedBy)
+        .OrderByDescending(i => i.CreatedAt)
+        .Where(i => i.Status != InvitationStatus.Revoked)
+        .ToListAsync();
+
+    public async Task<string?> ResendInvitationAsync(Guid id)
+    {
+        var invitation = await db.ClientInvitations.FindAsync(id);
+        if (invitation is null || invitation.Status != InvitationStatus.Pending)
+            return "Only pending invitations can be resent.";
+
+        invitation.ExpiresAt = DateTime.UtcNow.AddDays(ExpiryDays);
+        await db.SaveChangesAsync();
+
+        var registrationUrl = navigationManager.ToAbsoluteUri(
+            $"/Account/Register?token={Uri.EscapeDataString(invitation.Token)}").ToString();
+
+        try
+        {
+            await emailService.SendInvitationAsync(invitation, registrationUrl);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to resend invitation email for {Email}", invitation.Email);
+            return ex.Message;
+        }
+    }
+
     public async Task RevokeInvitationAsync(Guid id)
     {
         var invitation = await db.ClientInvitations.FindAsync(id);

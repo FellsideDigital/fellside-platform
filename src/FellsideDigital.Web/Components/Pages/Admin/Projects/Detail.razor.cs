@@ -19,6 +19,7 @@ public partial class Detail : ComponentBase
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private ClientProject? _project;
+    private Dictionary<Guid, string> _downloadUrls = [];
     private string _updateMessage = "";
     private string _newStatus = "";
     private bool _postingUpdate;
@@ -41,6 +42,16 @@ public partial class Detail : ComponentBase
     private async Task LoadAsync()
     {
         _project = await ProjectService.GetByIdAsync(Id);
+        _downloadUrls = [];
+
+        if (_project?.Invoices is not null)
+        {
+            foreach (var inv in _project.Invoices.Where(i => i.FilePath is not null))
+            {
+                try { _downloadUrls[inv.Id] = await InvoiceService.GetDownloadUrlAsync(inv.Id) ?? ""; }
+                catch { /* non-fatal — download button simply won't appear */ }
+            }
+        }
     }
 
     private async Task PostUpdateAsync()

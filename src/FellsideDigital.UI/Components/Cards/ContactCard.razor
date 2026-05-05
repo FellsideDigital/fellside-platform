@@ -1,0 +1,40 @@
+<div class="group rounded-2xl p-6 space-y-4
+            bg-white ring-1 ring-slate-200
+            dark:bg-neutral-900 dark:ring-white/5
+            hover:ring-indigo-400/40 dark:hover:ring-orange-400/40 hover:shadow-md
+            transition-all duration-200">
+
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center
+                bg-indigo-400/10 dark:bg-orange-400/10 text-indigo-400 dark:text-orange-400
+                group-hover:bg-indigo-400/20 dark:group-hover:bg-orange-400/20 transition-colors">
+        @Icon
+    </div>
+
+    <div>
+        <h3 class="font-semibold text-slate-900 dark:text-neutral-100">@Title</h3>
+        <p class="mt-1 text-sm leading-relaxed text-slate-500 dark:text-neutral-400">@Description</p>
+    </div>
+
+    <a href="@Href"
+       target="@Target"
+       rel="@(Target == "_blank" ? "noopener noreferrer" : null)"
+       class="inline-flex items-center gap-1.5 text-sm font-medium
+              text-indigo-400 dark:text-orange-400
+              hover:underline underline-offset-4 transition">
+        @LinkText
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+    </a>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? Icon { get; set; }
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Description { get; set; } = "";
+    [Parameter] public string Href { get; set; } = "#";
+    [Parameter] public string LinkText { get; set; } = "";
+    [Parameter] public string Target { get; set; } = "_self";
+}

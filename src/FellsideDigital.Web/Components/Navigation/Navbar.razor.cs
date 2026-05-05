@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 
-namespace FellsideDigital.Web.Components.Layout;
+namespace FellsideDigital.Web.Components.Navigation;
 
 public partial class Navbar : ComponentBase, IDisposable
 {
@@ -22,6 +22,20 @@ public partial class Navbar : ComponentBase, IDisposable
     private static readonly (string Label, string Href)[] _navLinks =
     {
         ("Home", "/"),
+        ("Contact", "/contact")
+    };
+
+    private static readonly (string Label, string Href)[] _servicesLinks =
+    {
+        ("Websites", "/websites"),
+        ("Automation", "/automation"),
+    };
+
+    private static readonly (string Label, string Href)[] _mobileNavLinks =
+    {
+        ("Home", "/"),
+        ("Websites", "/websites"),
+        ("Automation", "/automation"),
         ("Contact", "/contact")
     };
 

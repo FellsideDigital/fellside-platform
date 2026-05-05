@@ -25,7 +25,7 @@ namespace FellsideDigital.Web.Components.Account
             {
                 uri = navigationManager.ToBaseRelativePath(uri);
             }
-
+            // Todo: Stop this from erroring when login.
             // During static rendering, NavigateTo throws a NavigationException which is handled by the framework as a redirect.
             // So as long as this is called from a statically rendered Identity component, the InvalidOperationException is never thrown.
             navigationManager.NavigateTo(uri);

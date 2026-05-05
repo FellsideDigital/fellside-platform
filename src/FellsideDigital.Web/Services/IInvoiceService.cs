@@ -12,4 +12,7 @@ public interface IInvoiceService
     Task<Invoice?> GetByIdAsync(Guid id);
     Task UpdateStatusAsync(Guid id, InvoiceStatus status);
     Task DeleteAsync(Guid id);
+
+    /// <summary>Returns a time-limited presigned download URL for the invoice file, or null if no file is attached.</summary>
+    Task<string?> GetDownloadUrlAsync(Guid id);
 }

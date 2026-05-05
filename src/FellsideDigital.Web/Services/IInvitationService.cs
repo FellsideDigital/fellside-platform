@@ -8,5 +8,7 @@ public interface IInvitationService
     Task<ClientInvitation?> GetInvitationByTokenAsync(string token);
     Task AcceptInvitationAsync(Guid invitationId, string newUserId);
     Task<List<ClientInvitation>> GetAllInvitationsAsync();
+    Task<List<ClientInvitation>> GetValidInvitationsAsync();
+    Task<string?> ResendInvitationAsync(Guid id);
     Task RevokeInvitationAsync(Guid id);
 }

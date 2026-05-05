@@ -10,6 +10,7 @@ namespace FellsideDigital.Web.Data
         public DbSet<ClientProject> ClientProjects => Set<ClientProject>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<ProjectStatusUpdate> ProjectStatusUpdates => Set<ProjectStatusUpdate>();
+        public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -1,10 +1,26 @@
 using System.ComponentModel.DataAnnotations;
+using FellsideDigital.Domain.Enums;
+using FellsideDigital.Domain.Extensions;
+using FellsideDigital.Web.Data;
+using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Configuration;
 
 namespace FellsideDigital.Web.Components.Pages;
 
 public partial class Contact : ComponentBase
 {
+    [Inject] private FellsideDigitalDbContext Db { get; set; } = default!;
+    [Inject] private EmailService EmailService { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+
+    private string _bookingsUrl = "";
+
+    protected override void OnInitialized()
+    {
+        _bookingsUrl = Configuration["BookingsUrl"] ?? "";
+    }
+
     private readonly string[] _steps = ["Your details", "About you", "Your message"];
     private int _currentStep;
 
@@ -20,7 +36,28 @@ public partial class Contact : ComponentBase
     {
         _sending = true;
         StateHasChanged();
-        await Task.Delay(1200); // TODO: replace with real email service call
+
+        var enquiry = new ContactEnquiry
+        {
+            Id = Guid.NewGuid(),
+            Name = _model.Name,
+            Email = _model.Email,
+            Phone = _model.Phone,
+            Company = _model.Company,
+            ServiceType = _model.ServiceType!.Value.DisplayName(),
+            Budget = _model.Budget?.DisplayName(),
+            Message = _model.Message,
+            HowHeard = _model.HowHeard?.DisplayName(),
+            SubmittedAt = DateTimeOffset.UtcNow
+        };
+
+
+        Db.ContactEnquiries.Add(enquiry);
+        await Db.SaveChangesAsync();
+
+        try { await EmailService.SendContactEnquiryAsync(enquiry); }
+        catch { /* saved to DB regardless — email failure is non-fatal */ }
+
         _sending = false;
         _submitted = true;
     }
@@ -45,14 +82,16 @@ public partial class Contact : ComponentBase
 
         public string? Phone { get; set; }
         public string? Company { get; set; }
-        public string? Budget { get; set; }
-        public string? HowHeard { get; set; }
 
         [Required(ErrorMessage = "Please select a service.")]
-        public string ServiceType { get; set; } = string.Empty;
+        public ContactServiceType? ServiceType { get; set; }
+
+        public ContactBudget? Budget { get; set; }
 
         [Required(ErrorMessage = "Please tell us about your project.")]
         [MinLength(10, ErrorMessage = "Please give us a bit more detail (min 10 characters).")]
         public string Message { get; set; } = string.Empty;
+
+        public ContactHowHeard? HowHeard { get; set; }
     }
 }

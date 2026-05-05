@@ -1,5 +1,8 @@
-@using FellsideDigital.Web.Components.Shared.Navbar
+@using FellsideDigital.UI.Components.Buttons
+@using FellsideDigital.UI.Layout
+@using FellsideDigital.Web.Components.Account.Pages.Manage
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 
 <nav id="site-nav"
      class="fixed inset-x-0 top-0 z-50
@@ -31,11 +34,20 @@
                     </span>
                 </NavLink>
 
-                <NavLinks Links="_navLinks"
-                          BaseClass="hidden sm:ml-6 sm:flex sm:space-x-8"
-                          LinkClass="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-white/20 hover:text-gray-700 dark:hover:text-gray-200 transition-all duration-150"
-                          ActiveClass="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 dark:border-orange-400 text-sm font-medium text-gray-900 dark:text-white transition-all duration-150"
-                          Match="NavLinkMatch.All" />
+                <div class="hidden sm:ml-6 sm:flex sm:items-stretch sm:space-x-8">
+                    <NavLinks Links="_navLinks"
+                              BaseClass="flex space-x-8"
+                              LinkClass="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-white/20 hover:text-gray-700 dark:hover:text-gray-200 transition-all duration-150"
+                              ActiveClass="inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 dark:border-orange-400 text-sm font-medium text-gray-900 dark:text-white transition-all duration-150"
+                              Match="NavLinkMatch.All" />
+
+                    <NavDropdown Label="Services"
+                                 Items="_servicesLinks"
+                                 TriggerClass="px-1 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-150"
+                                 ActiveTriggerClass="px-1 text-sm font-medium text-gray-900 dark:text-white transition-colors duration-150"
+                                 ItemClass="font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white transition-colors duration-100"
+                                 ActiveItemClass="font-semibold text-indigo-600 dark:text-orange-400 bg-indigo-50 dark:bg-orange-400/10" />
+                </div>
             </div>
 
             <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -70,7 +82,7 @@
         </div>
     </div>
 
-    <MobileMenu Links="_navLinks"
+    <MobileMenu Links="_mobileNavLinks"
                 IsOpen="_mobileMenuOpen"
                 Close="CloseMobileMenu"
                 CurrentUrl="currentUrl" />

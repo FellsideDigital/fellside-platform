@@ -77,6 +77,13 @@ public static class ServiceConfigurationExtensions
         return services;
     }
 
+    public static IServiceCollection ConfigureStorageService(this IServiceCollection services, IConfiguration config)
+    {
+        services.Configure<StorageSettings>(config.GetSection("Storage"));
+        services.AddSingleton<IStorageService, S3StorageService>();
+        return services;
+    }
+
     public static IServiceCollection ConfigurePortalServices(this IServiceCollection services)
     {
         services.AddScoped<IProjectService, ProjectService>();

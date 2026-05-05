@@ -226,6 +226,13 @@ else
                                             <option value="@options.Value">@options.Display</option>
                                         }
                                     </select>
+                                    @if (_downloadUrls.TryGetValue(inv.Id, out var downloadUrl) && !string.IsNullOrEmpty(downloadUrl))
+                                    {
+                                        <a href="@downloadUrl" target="_blank" rel="noopener noreferrer"
+                                           class="text-xs font-medium text-indigo-500 dark:text-orange-400 hover:underline transition-colors">
+                                            Download
+                                        </a>
+                                    }
                                     <button @onclick="() => DeleteInvoiceAsync(inv.Id)"
                                             class="text-xs font-medium text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors">
                                         Delete
