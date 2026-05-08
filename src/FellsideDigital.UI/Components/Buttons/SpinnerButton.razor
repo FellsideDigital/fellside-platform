@@ -1,3 +1,5 @@
+@using FellsideDigital.UI.Enums
+
 <button type="@Type"
         @onclick="OnClick"
         disabled="@(IsLoading || Disabled)"
@@ -25,9 +27,8 @@
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public bool FullWidth { get; set; }
     [Parameter] public string? Class { get; set; }
+    [Parameter] public ButtonColor Color { get; set; } = ButtonColor.Accent;
+    [Parameter] public ButtonStyle Style { get; set; } = ButtonStyle.Solid;
 
-    private string _classes =>
-        $"{(FullWidth ? "w-full justify-center " : "")}inline-flex items-center gap-2 rounded-xl " +
-        $"bg-indigo-400 dark:bg-orange-400 px-4 py-2.5 text-sm font-semibold text-white shadow-sm " +
-        $"hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all {Class}".TrimEnd();
+    private string _classes => ButtonStyles.Get(Color, Style, FullWidth, Class);
 }

@@ -8,15 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <Compile Remove="Components\Forms\**" />
+    <Content Remove="Components\Forms\**" />
+    <EmbeddedResource Remove="Components\Forms\**" />
+    <None Remove="Components\Forms\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Buttons\" />
-    <Folder Include="Components\Forms\Editors\" />
-    <Folder Include="Components\Forms\Selects\" />
-    <Folder Include="wwwroot\" />
-    <Folder Include="Theme\" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>

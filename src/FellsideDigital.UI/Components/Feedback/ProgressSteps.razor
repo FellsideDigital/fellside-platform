@@ -64,7 +64,7 @@
         "success" => "text-emerald-500 dark:text-emerald-400",
         "blocked" => "text-rose-500   dark:text-rose-400",
         "paused"  => "text-amber-500  dark:text-amber-400",
-        _         => "text-indigo-500 dark:text-orange-400",
+        _         => "text-accent-hover0",
     };
 
     private string BlockClass(bool filled, bool active)
@@ -76,7 +76,7 @@
             ("success", _)     => "bg-emerald-400 dark:bg-emerald-500",
             ("blocked", true)  => "bg-rose-400    dark:bg-rose-500",
             ("paused",  true)  => "bg-amber-400   dark:bg-amber-500",
-            (_,         true)  => "bg-indigo-400  dark:bg-orange-400",
+            (_,         true)  => "bg-accent ",
             _                  => "bg-gray-200    dark:bg-white/10",
         };
 

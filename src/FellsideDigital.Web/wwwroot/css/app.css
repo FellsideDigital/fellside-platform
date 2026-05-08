@@ -1,3 +1,13 @@
+/* ── Geist variable font ──────────────────────────────────────────────────── */
+@font-face {
+    font-family: "Geist";
+    src: url("../fonts/Geist-VariableFont_wght.ttf") format("truetype-variations"),
+         url("../fonts/Geist-VariableFont_wght.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -75,7 +85,9 @@ html {
 }
 
 html, body {
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: "Geist", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 /* Animated utility */
@@ -97,7 +109,7 @@ html, body {
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(99, 102, 241, 0.15);
     }
 
-    /* Cursor glow */
+    /* Cursor glow — indigo in light, orange in dark */
     .card::after {
         content: "";
         position: absolute;
@@ -111,6 +123,14 @@ html, body {
     .card:hover::after {
         opacity: 1;
     }
+
+.dark .card:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(251, 146, 60, 0.15);
+}
+
+.dark .card::after {
+    background: radial-gradient( 800px circle at var(--x, 50%) var(--y, 50%), rgba(251, 146, 60, 0.18), transparent 45% );
+}
 
 /* Scroll reveal start state */
 .scroll-card {
@@ -159,4 +179,32 @@ h1 span,
 h2 span {
     padding-bottom: 0.17em;
     margin-bottom: -0.17em;
+}
+
+/* ── Process rail — connected timeline ──────────────────────────────────── */
+.process-rail {
+    position: relative;
+}
+
+.process-rail-line {
+    position: absolute;
+    left: 36px;
+    right: 36px;
+    top: 20px;
+    height: 2px;
+    background-image: linear-gradient(to right, var(--process-line-color, #e2e8f0) 50%, transparent 50%);
+    background-size: 10px 2px;
+    background-repeat: repeat-x;
+    pointer-events: none;
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .process-rail-line {
+        display: block;
+    }
+}
+
+.dark .process-rail-line {
+    --process-line-color: rgba(255,255,255,0.10);
 }

@@ -11,7 +11,15 @@
       "Bash(docker container *)",
       "Bash(mkdir -p \"C:/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui\")",
       "Bash(mv \"C:/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/SKILL.md\" \"C:/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui/SKILL.md\")",
-      "Read(//c/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui/**)"
+      "Read(//c/Users/Home/.claude/plugins/marketplaces/local-desktop-app-uploads/fellside-digital-ui/skills/fellside-digital-ui/**)",
+      "Bash(xargs grep *)",
+      "Bash(xargs basename *)",
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(python -c ' *)",
+      "Bash(findstr /n \"_navLinks\\\\|_servicesLinks\\\\|_mobileNavLinks\\\\|ContainerClass\\\\|_hasNotifications\\\\|currentUrl\" \"D:\\\\Projects\\\\fellside-digital-site\\\\src\\\\FellsideDigital.Web\\\\Components\\\\Navigation\\\\Navbar.razor.cs\")",
+      "Bash(findstr /n \"_navLinks\\\\|_servicesLinks\" \"D:\\\\Projects\\\\fellside-digital-site\\\\src\\\\FellsideDigital.Web\\\\Components\\\\Navigation\\\\Navbar.razor\")",
+      "Bash(copy \"C:\\\\Users\\\\Home\\\\.claude\\\\projects\\\\D--Projects-fellside-digital-site\\\\8d7efbe1-4ec7-4613-9198-173b0fd51c96\\\\tool-results\\\\design_extracted\\\\fellside-digital-design-system\\\\project\\\\fonts\\\\Geist-VariableFont_wght.ttf\" \"D:\\\\Projects\\\\fellside-digital-site\\\\src\\\\FellsideDigital.Web\\\\wwwroot\\\\fonts\\\\Geist-VariableFont_wght.ttf\")",
+      "Bash(mkdir -p \"D:/Projects/fellside-digital-site/src/FellsideDigital.Web/wwwroot/fonts\" && cp \"C:/Users/Home/.claude/projects/D--Projects-fellside-digital-site/8d7efbe1-4ec7-4613-9198-173b0fd51c96/tool-results/design_extracted/fellside-digital-design-system/project/fonts/Geist-VariableFont_wght.ttf\" \"D:/Projects/fellside-digital-site/src/FellsideDigital.Web/wwwroot/fonts/Geist-VariableFont_wght.ttf\" && echo \"done\")"
     ]
   }
 }

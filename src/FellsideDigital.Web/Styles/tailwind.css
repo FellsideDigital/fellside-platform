@@ -1,10 +1,43 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
+@source "../../FellsideDigital.Web";
 @source "../../FellsideDigital.UI";
 
-/*@theme {
-    --color-accent-light: #6366f1;
-    --color-accent-dark: #f59e0b;*/
-    /*--color-accent: #F07A3A;*/
-/*}*/
-
 @variant dark (&:where(.dark, .dark *));
+
+/*
+  Design tokens — full color values, runtime-switchable via the .dark class.
+
+  @theme inline tells Tailwind to emit var(--color-accent) in generated CSS
+  rather than inlining a static value. This lets the tokens change at runtime
+  AND supports opacity modifiers: bg-accent/40, text-accent/60, ring-accent/20
+*/
+
+:root {
+    --accent: #818cf8; /* indigo-400  */
+    --accent-hover: #a5b4fc; /* indigo-300 */
+    --bg-base: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-elevated: #f8fafc; /* slate-50 */
+    --border: #e2e8f0; /* slate-200 */
+    --muted: #62748e; /* slate-500 */
+}
+
+.dark {
+    --accent: #fb923c; /* orange-400  */
+    --accent-hover: #fdba74; /* orange-300 */
+    --bg-base: #0a0a0a; /* neutral-950 */
+    --bg-surface: #171717; /* neutral-900 */
+    --bg-elevated: #262626; /* neutral-800 */
+    --border: #ffffff;
+    --muted: #a3a3a3; /* neutral-400 */
+}
+
+@theme inline {
+    --color-accent: var(--accent);
+    --color-accent-hover: var(--accent-hover);
+    --color-surface: var(--bg-surface);
+    --color-elevated: var(--bg-elevated);
+    --color-base: var(--bg-base);
+    --color-border: var(--border);
+    --color-muted: var(--muted);
+}

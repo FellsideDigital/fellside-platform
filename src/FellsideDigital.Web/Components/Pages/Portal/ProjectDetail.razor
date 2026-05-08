@@ -42,7 +42,7 @@ else if (_notFound)
             </div>
             <h3 class="text-base font-semibold text-gray-900 dark:text-white">Project not found</h3>
             <p class="mt-2 text-sm text-gray-500 dark:text-neutral-400">This project doesn't exist or you don't have access to it.</p>
-            <NavLink href="/Portal" class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-500 dark:text-orange-400 hover:underline">
+            <NavLink href="/Portal" class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent-hover0 hover:underline">
                 ← Back to overview
             </NavLink>
         </div>
@@ -74,7 +74,7 @@ else if (_project is not null)
                         <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@_project.Name</h1>
                         <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(_project.Status)"
                                      Label="@_project.Status.DisplayName()" />
-                        <StatusBadge CssClasses="@(isAutomation ? "bg-indigo-50 text-indigo-600 dark:bg-orange-400/10 dark:text-orange-400" : "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400")"
+                        <StatusBadge CssClasses="@(isAutomation ? "bg-accent-hover text-accent" : "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400")"
                                      Label="@_project.Type.DisplayName()" />
                     </div>
                     <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">
@@ -85,7 +85,7 @@ else if (_project is not null)
                 {
                     <a href="@_project.ProjectUrl" target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5
-                              bg-indigo-500 dark:bg-orange-400 text-white text-sm font-semibold
+                              bg-accent-hover0 text-white text-sm font-semibold
                               shadow-sm hover:opacity-90 active:scale-95 transition-all shrink-0">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -115,7 +115,7 @@ else if (_project is not null)
                             </div>
                             <span class="text-xs text-gray-400 dark:text-neutral-500 truncate max-w-[180px] sm:max-w-xs font-mono">@_project.PreviewUrl</span>
                             <a href="@_project.PreviewUrl" target="_blank" rel="noopener"
-                               class="inline-flex items-center gap-1 text-xs font-medium text-indigo-500 dark:text-orange-400 hover:underline shrink-0">
+                               class="inline-flex items-center gap-1 text-xs font-medium text-accent-hover0 hover:underline shrink-0">
                                 Open
                                 <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -134,12 +134,12 @@ else if (_project is not null)
                 <!-- Automation: live tool card -->
                 @if (isAutomation && !string.IsNullOrEmpty(_project.ProjectUrl))
                 {
-                    <div class="rounded-2xl border border-indigo-200 dark:border-orange-400/20
-                                bg-gradient-to-br from-indigo-50 to-white dark:from-orange-400/10 dark:to-transparent
+                    <div class="rounded-2xl border border-indigo-200
+                                bg-gradient-to-br from-accent-hover to-white dark:to-transparent
                                 p-5 flex items-center justify-between gap-4">
                         <div class="flex items-center gap-4 min-w-0">
                             <div class="flex size-12 shrink-0 items-center justify-center rounded-xl
-                                        bg-indigo-100 dark:bg-orange-400/20 text-indigo-600 dark:text-orange-400">
+                                        bg-indigo-100 text-accent">
                                 <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
                                 </svg>
@@ -152,12 +152,12 @@ else if (_project is not null)
                                         Live
                                     </span>
                                 </div>
-                                <p class="text-xs text-indigo-600/70 dark:text-orange-400/60 truncate">@_project.ProjectUrl</p>
+                                <p class="text-xs text-accent/70 truncate">@_project.ProjectUrl</p>
                             </div>
                         </div>
                         <a href="@_project.ProjectUrl" target="_blank" rel="noopener noreferrer"
                            class="shrink-0 inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5
-                                  bg-indigo-500 dark:bg-orange-400 text-white text-sm font-semibold
+                                  bg-accent-hover0 text-white text-sm font-semibold
                                   hover:opacity-90 transition-opacity shadow-sm">
                             Open tool
                             <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -202,8 +202,8 @@ else if (_project is not null)
                                         {
                                             <a href="@url" target="_blank" rel="noopener noreferrer"
                                                class="inline-flex items-center gap-1 text-xs font-medium
-                                                      text-indigo-500 dark:text-orange-400
-                                                      hover:text-indigo-600 dark:hover:text-orange-300 transition-colors">
+                                                      text-accent-hover0
+                                                      hover:text-accent dark:hover:text-orange-300 transition-colors">
                                                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                                 </svg>
@@ -305,10 +305,10 @@ else if (_project is not null)
                                     <div class="relative flex size-7 flex-none items-center justify-center mt-0.5">
                                         @if (update.NewStatus.HasValue)
                                         {
-                                            <div class="size-7 rounded-full bg-indigo-50 dark:bg-orange-400/10
+                                            <div class="size-7 rounded-full bg-accent-hover
                                                         flex items-center justify-center
-                                                        ring-2 ring-indigo-100 dark:ring-orange-400/20">
-                                                <div class="size-2.5 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                                                        ring-2 ring-indigo-100">
+                                                <div class="size-2.5 rounded-full bg-accent"></div>
                                             </div>
                                         }
                                         else

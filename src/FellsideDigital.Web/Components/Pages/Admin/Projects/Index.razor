@@ -15,12 +15,12 @@
 
 <PageHeader Eyebrow="Admin" Title="Client Projects" Description="Create and manage projects for your clients.">
     <Actions>
-        <SecondaryButton Href="/Admin/Invitations">
+        <PrimaryButton Color="ButtonColor.Muted" Style="ButtonStyle.Outline" Href="/Admin/Invitations">
             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
             </svg>
             Invitations
-        </SecondaryButton>
+        </PrimaryButton>
         <PrimaryButton Href="/Admin/Projects/Create">
             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -53,7 +53,7 @@ else if (_projects.Count == 0)
         </Icon>
         <Actions>
             <a href="/Admin/Projects/Create"
-               class="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-500 dark:text-orange-400 hover:underline">
+               class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-hover0 hover:underline">
                 Create a project →
             </a>
         </Actions>
@@ -129,7 +129,7 @@ else
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-3">
                                 <a href="@($"/Admin/Projects/{project.Id}")"
-                                   class="text-xs font-semibold text-indigo-500 dark:text-orange-400 hover:text-indigo-600 dark:hover:text-orange-300 transition-colors">
+                                   class="text-xs font-semibold text-accent-hover0 hover:text-accent dark:hover:text-orange-300 transition-colors">
                                     Manage
                                 </a>
                                 <span class="text-gray-200 dark:text-white/10">|</span>

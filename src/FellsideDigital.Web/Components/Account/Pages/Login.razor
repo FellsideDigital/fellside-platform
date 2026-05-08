@@ -28,7 +28,7 @@
                 <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-slate-900 dark:text-white">Sign in to your account</h2>
                 <p class="mt-2 text-sm/6 text-slate-500 dark:text-neutral-400">
                     Not a customer?
-                    <NavLink href="/contact" class="font-semibold text-indigo-400 hover:text-indigo-400/80 dark:text-orange-400 dark:hover:text-orange-400/80">
+                    <NavLink href="/contact" class="font-semibold text-accent hover:text-accent/80">
                         Register your interest
                     </NavLink>
                 </p>
@@ -54,7 +54,7 @@
                                     autocomplete="username"
                                     aria-required="true"
                                     placeholder="you@example.com"
-                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-accent sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500" />
                                 <ValidationMessage For="() => Input.Email" class="mt-1 text-xs text-red-600 dark:text-red-400" />
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                     autocomplete="current-password"
                                     aria-required="true"
                                     placeholder="••••••••"
-                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-400 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-orange-400" />
+                                    class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-accent sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500" />
                                 <ValidationMessage For="() => Input.Password" class="mt-1 text-xs text-red-600 dark:text-red-400" />
                             </div>
                         </div>
@@ -77,7 +77,7 @@
                             <div class="flex gap-3">
                                 <div class="flex h-6 shrink-0 items-center">
                                     <div class="group grid size-4 grid-cols-1">
-                                        <input id="remember-me" type="checkbox" name="remember-me" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-400 checked:bg-indigo-400 indeterminate:border-indigo-400 indeterminate:bg-orange-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:checked:border-orange-400 dark:checked:bg-orange-400 dark:indeterminate:border-orange-400 dark:indeterminate:bg-orange-400 dark:focus-visible:outline-orange-400 dark:disabled:border-white/5 dark:disabled:bg-white/10 dark:disabled:checked:bg-white/10 forced-colors:appearance-auto" />
+                                        <input id="remember-me" type="checkbox" name="remember-me" class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-accent checked:bg-accent indeterminate:border-accent indeterminate:bg-orange-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:disabled:border-white/5 dark:disabled:bg-white/10 dark:disabled:checked:bg-white/10 forced-colors:appearance-auto" />
 
                                         <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
                                             <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
@@ -89,14 +89,14 @@
                             </div>
 
                             <div class="text-sm/6">
-                                <NavLink href="/Account/ForgotPassword" class="font-semibold text-indigo-400 hover:text-indigo-400/80 dark:text-orange-400 dark:hover:text-orange-400/80">
+                                <NavLink href="/Account/ForgotPassword" class="font-semibold text-accent hover:text-accent/80">
                                     Forgot password?
                                 </NavLink>
                             </div>
                         </div>
 
                         <div>
-                            <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-400 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-400/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400 dark:bg-orange-400 dark:shadow-none dark:hover:bg-orange-400/80 dark:focus-visible:outline-orange-400">Sign in</button>
+                            <button type="submit" class="flex w-full justify-center rounded-md bg-accent px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-accent/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:shadow-none">Sign in</button>
                         </div>
                     </EditForm>
                 </div>
@@ -167,7 +167,7 @@
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
-            RedirectManager.RedirectTo(ReturnUrl);
+            RedirectManager.RedirectTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl);
         }
         else if (result.RequiresTwoFactor)
         {

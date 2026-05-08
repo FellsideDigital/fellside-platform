@@ -139,9 +139,9 @@
                             @onclick="() => TryGoToStep(stepIndex)"
                             disabled="@(stepIndex > _currentStep)"
                             class="@($"flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors " +
-                                                                 $"{(isActive ? "text-indigo-400 dark:text-orange-400" : isDone ? "text-slate-900 dark:text-neutral-100 hover:text-indigo-400 dark:hover:text-orange-400" : "text-slate-400 dark:text-neutral-600 cursor-not-allowed")}")">
+                                                                 $"{(isActive ? "text-accent" : isDone ? "text-slate-900 dark:text-neutral-100 hover:text-accent" : "text-slate-400 dark:text-neutral-600 cursor-not-allowed")}")">
                     <span class="@($"w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-colors " +
-                                                                 $"{(isActive ? "bg-indigo-400 dark:bg-orange-400 text-white" : isDone ? "bg-indigo-400/20 dark:bg-orange-400/20 text-indigo-400 dark:text-orange-400" : "bg-slate-200 dark:bg-neutral-800 text-slate-400 dark:text-neutral-600")}")">
+                                                                 $"{(isActive ? "bg-accent text-white" : isDone ? "bg-accent/20 text-accent" : "bg-slate-200 dark:bg-neutral-800 text-slate-400 dark:text-neutral-600")}")">
                         @if (isDone)
                             {
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24"
@@ -312,8 +312,8 @@
                     @if (_submitted)
                     {
                         <div class="flex items-center gap-2 rounded-xl px-5 py-2.5
-                                             bg-indigo-400/10 dark:bg-orange-400/10
-                                             text-indigo-400 dark:text-orange-400 text-sm font-medium">
+                                             bg-accent/10
+                                             text-accent text-sm font-medium">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2"
                                  stroke-linecap="round" stroke-linejoin="round">
@@ -327,7 +327,7 @@
                         <button type="button" @onclick="NextStep"
                                 class="inline-flex items-center gap-2 rounded-xl px-6 py-2.5
                                                text-sm font-semibold
-                                               bg-indigo-400 dark:bg-orange-400 text-white
+                                               bg-accent text-white
                                                hover:opacity-90 active:scale-95 transition-all shadow-sm">
                             Next
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24"
@@ -342,7 +342,7 @@
                         <button type="submit" disabled="@_sending"
                                 class="inline-flex items-center gap-2 rounded-xl px-6 py-2.5
                                                text-sm font-semibold
-                                               bg-indigo-400 dark:bg-orange-400 text-white
+                                               bg-accent text-white
                                                hover:opacity-90 active:scale-95
                                                disabled:opacity-50 disabled:cursor-not-allowed
                                                transition-all shadow-sm">

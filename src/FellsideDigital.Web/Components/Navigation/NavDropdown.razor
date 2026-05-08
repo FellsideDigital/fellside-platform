@@ -3,7 +3,7 @@
 <div class="group relative hidden sm:flex items-stretch self-stretch">
 
     <span class="absolute inset-x-0 bottom-0 h-0.5 transition-colors duration-150
-                 @(IsAnyChildActive() ? "bg-indigo-400 dark:bg-orange-400" : "bg-transparent group-hover:bg-gray-300 dark:group-hover:bg-white/20")"></span>
+                 @(IsAnyChildActive() ? "bg-accent" : "bg-transparent group-hover:bg-gray-300 dark:group-hover:bg-white/20")"></span>
 
     <button type="button"
             class="@(IsAnyChildActive() ? ActiveTriggerClass : TriggerClass)

@@ -26,13 +26,13 @@
                         </svg>
                         Back to home
                     </a>
-                    <p class="text-xs font-semibold uppercase tracking-widest text-indigo-400 dark:text-orange-400 mb-3">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-accent mb-3">
                         Intelligent Automation
                     </p>
                     <h1 class="text-5xl sm:text-6xl font-semibold tracking-tight text-balance
                                text-slate-900 dark:text-white mb-6">
                         Automation that works while
-                        <span class="text-indigo-400 dark:text-orange-400"> you sleep</span>
+                        <span class="text-accent"> you sleep</span>
                     </h1>
                     <p class="text-lg text-slate-500 dark:text-neutral-400 leading-relaxed mb-8">
                         From eliminating manual processes to embedding AI into your workflows,
@@ -41,7 +41,7 @@
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <a href="/contact"
-                           class="rounded-xl bg-indigo-400 dark:bg-orange-400 px-6 py-3 text-sm font-semibold
+                           class="rounded-xl bg-accent px-6 py-3 text-sm font-semibold
                                   text-white shadow-sm hover:opacity-90 transition-all text-center">
                             Start automating
                         </a>
@@ -69,7 +69,7 @@
                                 </div>
                                 @if (!isLast)
                                 {
-                                    <div class="bg-indigo-400/30 dark:bg-orange-400/30 w-px h-5 ml-[19px]"></div>
+                                    <div class="bg-accent/30 w-px h-5 ml-[19px]"></div>
                                 }
                             }
                         </div>
@@ -91,7 +91,7 @@
                 {
                     <div class="group rounded-2xl bg-white dark:bg-neutral-900
                                 ring-1 ring-slate-200 dark:ring-white/5
-                                hover:ring-indigo-400/40 dark:hover:ring-orange-400/40
+                                hover:ring-accent/40
                                 hover:shadow-lg transition-all duration-200 flex flex-col">
                         <!-- Tags -->
                         <div class="flex flex-wrap gap-2 px-6 pt-6">
@@ -104,7 +104,7 @@
                         </div>
                         <div class="px-6 pt-4 pb-2 flex-1">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-neutral-100
-                                       group-hover:text-indigo-400 dark:group-hover:text-orange-400 transition-colors mb-1">
+                                       group-hover:text-accent transition-colors mb-1">
                                 @tier.Title
                             </h3>
                             <p class="text-sm leading-relaxed text-slate-500 dark:text-neutral-400 mb-4">
@@ -114,7 +114,7 @@
                                 @foreach (var feature in tier.Features)
                                 {
                                     <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
-                                        <span class="mt-0.5 font-bold text-indigo-400 dark:text-orange-400">✓</span>
+                                        <span class="mt-0.5 font-bold text-accent">✓</span>
                                         @feature
                                     </li>
                                 }
@@ -123,7 +123,7 @@
                         <div class="px-6 pb-6 mt-6">
                             <a href="/contact"
                                class="inline-flex items-center gap-1 text-sm font-semibold
-                                      text-indigo-400 dark:text-orange-400
+                                      text-accent
                                       group-hover:gap-2 transition-all duration-200">
                                 Get started →
                             </a>
@@ -150,32 +150,32 @@
                     <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center p-8" style="min-height:300px;">
                         <div class="flex items-center gap-6">
                             <div class="grid grid-cols-4 gap-2">
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent"></div>
                                 <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
-                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
-                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent"></div>
                                 <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
                                 <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent opacity-60"></div>
                                 <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent opacity-60"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent opacity-40"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent opacity-40"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent opacity-20"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent opacity-20"></div>
                                 <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
                             </div>
                             <div class="flex flex-col gap-2">
-                                <div class="h-2.5 w-24 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                                <div class="h-2.5 w-16 rounded-full bg-indigo-400/25 dark:bg-orange-400/25"></div>
-                                <div class="h-2.5 w-20 rounded-full bg-indigo-400/15 dark:bg-orange-400/15"></div>
+                                <div class="h-2.5 w-24 rounded-full bg-accent/40"></div>
+                                <div class="h-2.5 w-16 rounded-full bg-accent/25"></div>
+                                <div class="h-2.5 w-20 rounded-full bg-accent/15"></div>
                             </div>
                         </div>
                     </div>
                     <div class="p-8">
-                        <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">What we build</p>
+                        <p class="text-xs font-medium uppercase tracking-widest text-accent">What we build</p>
                         <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">Intelligent workflows</p>
                         <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-neutral-400">Automation that connects your tools and handles decisions automatically.</p>
                     </div>
@@ -188,17 +188,17 @@
                     <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 rounded-[18px] overflow-hidden flex flex-col flex-1">
                         <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center" style="min-height:160px;">
                             <div class="flex items-center gap-2 py-6 px-8">
-                                <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                                <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent/20"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent/40"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent/60"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent/60"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent/40"></div>
+                                <div class="w-3 h-3 rounded-full bg-accent/20"></div>
                             </div>
                         </div>
                         <div class="px-8 py-6">
-                            <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">AI-powered</p>
+                            <p class="text-xs font-medium uppercase tracking-widest text-accent">AI-powered</p>
                             <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">Smarter than rules-based logic</p>
                         </div>
                     </div>
@@ -207,15 +207,15 @@
                     <div class="bg-white dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 rounded-[18px] overflow-hidden flex flex-col flex-1">
                         <div class="bg-slate-50 dark:bg-neutral-800 flex items-center justify-center" style="min-height:160px;">
                             <div class="flex items-end gap-2 h-24 w-full px-12 py-6">
-                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:38px"></div>
-                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:58px"></div>
-                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:43px"></div>
-                                <div class="flex-1 rounded-t-md bg-indigo-400 dark:bg-orange-400" style="height:77px"></div>
-                                <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:62px"></div>
+                                <div class="flex-1 rounded-t-md bg-accent/40" style="height:38px"></div>
+                                <div class="flex-1 rounded-t-md bg-accent/40" style="height:58px"></div>
+                                <div class="flex-1 rounded-t-md bg-accent/40" style="height:43px"></div>
+                                <div class="flex-1 rounded-t-md bg-accent" style="height:77px"></div>
+                                <div class="flex-1 rounded-t-md bg-accent/40" style="height:62px"></div>
                             </div>
                         </div>
                         <div class="px-8 py-6">
-                            <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">Data-driven</p>
+                            <p class="text-xs font-medium uppercase tracking-widest text-accent">Data-driven</p>
                             <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">Measurable impact from day one</p>
                         </div>
                     </div>
@@ -243,7 +243,7 @@
                         </div>
                     </div>
                     <div class="p-8">
-                        <p class="text-xs font-medium uppercase tracking-widest text-indigo-400 dark:text-orange-400">How it works</p>
+                        <p class="text-xs font-medium uppercase tracking-widest text-accent">How it works</p>
                         <p class="mt-2 text-lg font-semibold text-slate-900 dark:text-neutral-100">End-to-end pipelines</p>
                         <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-neutral-400">From trigger to outcome, we design and build every step.</p>
                     </div>
@@ -310,20 +310,20 @@
             </p>
             <h2 class="text-4xl md:text-5xl font-semibold tracking-tight text-balance text-slate-900 dark:text-white">
                 Stop doing manually what
-                <span class="text-indigo-400 dark:text-orange-400"> a machine can do better.</span>
+                <span class="text-accent"> a machine can do better.</span>
             </h2>
             <p class="text-base text-slate-500 dark:text-neutral-400">
                 Tell us what's slowing your team down and we'll scope a solution.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
                 <a href="/contact"
-                   class="rounded-xl bg-indigo-400 dark:bg-orange-400 px-7 py-3 text-sm font-semibold
+                   class="rounded-xl bg-accent px-7 py-3 text-sm font-semibold
                           text-white shadow-lg hover:opacity-90 transition-all">
                     Book a discovery call
                 </a>
                 <a href="/websites"
                    class="text-sm font-medium text-slate-500 dark:text-neutral-400
-                          hover:text-indigo-400 dark:hover:text-orange-400 transition-colors">
+                          hover:text-accent transition-colors">
                     Also need a website? →
                 </a>
             </div>
@@ -335,11 +335,11 @@
 @code {
     private static readonly (string icon, string label, bool isLast)[] _pipelineSteps =
     [
-        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>""", "Trigger event", false),
-        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>""", "Pull from source", false),
-        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>""", "AI decision layer", false),
-        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>""", "Schedule or route", false),
-        ("""<svg class="w-4 h-4 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>""", "Report and archive", true),
+        ("""<svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>""", "Trigger event", false),
+        ("""<svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>""", "Pull from source", false),
+        ("""<svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>""", "AI decision layer", false),
+        ("""<svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>""", "Schedule or route", false),
+        ("""<svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>""", "Report and archive", true),
     ];
 
     private record AutoTier(string Title, string Description, string[] Tags, string[] Features);
@@ -378,27 +378,27 @@
             Visual: """
                 <div class="flex items-center gap-6">
                     <div class="grid grid-cols-4 gap-2">
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent"></div>
                         <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
-                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
-                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-60"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent"></div>
                         <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
                         <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-40"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent opacity-60"></div>
                         <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
-                        <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400 opacity-20"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent opacity-60"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent opacity-40"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent opacity-40"></div>
+                        <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent opacity-20"></div>
+                        <div class="w-3 h-3 rounded-full bg-accent opacity-20"></div>
                         <div class="w-3 h-3 rounded-full bg-slate-200 dark:bg-neutral-700"></div>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <div class="h-2.5 w-24 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                        <div class="h-2.5 w-16 rounded-full bg-indigo-400/25 dark:bg-orange-400/25"></div>
-                        <div class="h-2.5 w-20 rounded-full bg-indigo-400/15 dark:bg-orange-400/15"></div>
+                        <div class="h-2.5 w-24 rounded-full bg-accent/40"></div>
+                        <div class="h-2.5 w-16 rounded-full bg-accent/25"></div>
+                        <div class="h-2.5 w-20 rounded-full bg-accent/15"></div>
                     </div>
                 </div>
             """
@@ -410,9 +410,9 @@
             Tags: ["CRM", "Business systems", "Third-party APIs"],
             Visual: """
                 <div class="flex flex-col gap-3 w-2/3">
-                    <div class="h-3 w-full rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                    <div class="h-3 w-3/4 rounded-full bg-indigo-400/25 dark:bg-orange-400/25"></div>
-                    <div class="h-3 w-1/2 rounded-full bg-indigo-400/15 dark:bg-orange-400/15"></div>
+                    <div class="h-3 w-full rounded-full bg-accent/40"></div>
+                    <div class="h-3 w-3/4 rounded-full bg-accent/25"></div>
+                    <div class="h-3 w-1/2 rounded-full bg-accent/15"></div>
                 </div>
             """
         ),
@@ -423,13 +423,13 @@
             Tags: ["Intelligent routing", "Unstructured data", "Decision engines"],
             Visual: """
                 <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
-                    <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                    <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
-                    <div class="w-3 h-3 rounded-full bg-indigo-400 dark:bg-orange-400"></div>
-                    <div class="w-3 h-3 rounded-full bg-indigo-400/60 dark:bg-orange-400/60"></div>
-                    <div class="w-3 h-3 rounded-full bg-indigo-400/40 dark:bg-orange-400/40"></div>
-                    <div class="w-3 h-3 rounded-full bg-indigo-400/20 dark:bg-orange-400/20"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent/20"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent/40"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent/60"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent/60"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent/40"></div>
+                    <div class="w-3 h-3 rounded-full bg-accent/20"></div>
                 </div>
             """
         ),
@@ -440,11 +440,11 @@
             Tags: ["Dashboards", "Scheduled reports", "Data pipelines"],
             Visual: """
                 <div class="flex items-end gap-2 h-24 w-full px-4">
-                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:38px"></div>
-                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:58px"></div>
-                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:43px"></div>
-                    <div class="flex-1 rounded-t-md bg-indigo-400 dark:bg-orange-400" style="height:77px"></div>
-                    <div class="flex-1 rounded-t-md bg-indigo-400/40 dark:bg-orange-400/40" style="height:62px"></div>
+                    <div class="flex-1 rounded-t-md bg-accent/40" style="height:38px"></div>
+                    <div class="flex-1 rounded-t-md bg-accent/40" style="height:58px"></div>
+                    <div class="flex-1 rounded-t-md bg-accent/40" style="height:43px"></div>
+                    <div class="flex-1 rounded-t-md bg-accent" style="height:77px"></div>
+                    <div class="flex-1 rounded-t-md bg-accent/40" style="height:62px"></div>
                 </div>
             """
         ),
@@ -455,15 +455,15 @@
             Tags: ["Cron jobs", "Event triggers", "Real-time processing"],
             Visual: """
                 <div class="flex flex-col items-center gap-3">
-                    <div class="flex size-14 items-center justify-center rounded-full ring-1 ring-indigo-400/30 dark:ring-orange-400/30 bg-indigo-400/5 dark:bg-orange-400/5">
-                        <svg class="size-6 text-indigo-400 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <div class="flex size-14 items-center justify-center rounded-full ring-1 ring-accent/30 bg-accent/5">
+                        <svg class="size-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
                     <div class="flex flex-col gap-1.5 w-32">
-                        <div class="h-1.5 rounded-full bg-indigo-400/60 dark:bg-orange-400/60 w-full"></div>
-                        <div class="h-1.5 rounded-full bg-indigo-400/40 dark:bg-orange-400/40 w-3/4"></div>
-                        <div class="h-1.5 rounded-full bg-indigo-400/20 dark:bg-orange-400/20 w-1/2"></div>
+                        <div class="h-1.5 rounded-full bg-accent/60 w-full"></div>
+                        <div class="h-1.5 rounded-full bg-accent/40 w-3/4"></div>
+                        <div class="h-1.5 rounded-full bg-accent/20 w-1/2"></div>
                     </div>
                 </div>
             """
@@ -479,16 +479,16 @@
                         <div class="h-8 w-20 rounded-lg bg-slate-200 dark:bg-neutral-700 flex items-center justify-center">
                             <span class="text-xs text-slate-400 dark:text-neutral-500 font-mono">Legacy</span>
                         </div>
-                        <div class="h-1 w-full bg-indigo-400/20 dark:bg-orange-400/20 rounded"></div>
+                        <div class="h-1 w-full bg-accent/20 rounded"></div>
                     </div>
-                    <svg class="size-5 text-indigo-400 dark:text-orange-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <svg class="size-5 text-accent flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                     </svg>
                     <div class="flex flex-col gap-2">
-                        <div class="h-8 w-20 rounded-lg bg-indigo-400 dark:bg-orange-400 flex items-center justify-center">
+                        <div class="h-8 w-20 rounded-lg bg-accent flex items-center justify-center">
                             <span class="text-xs text-white font-mono font-semibold">Modern</span>
                         </div>
-                        <div class="h-1 w-full bg-indigo-400 dark:bg-orange-400 rounded"></div>
+                        <div class="h-1 w-full bg-accent rounded"></div>
                     </div>
                 </div>
             """
