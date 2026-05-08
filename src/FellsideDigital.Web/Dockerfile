@@ -18,16 +18,16 @@ WORKDIR /src
 
 # Copy .csproj files first so the restore layer is cached independently of source changes.
 # Domain must be included because Web references it.
-COPY FellsideDigital.Domain/FellsideDigital.Domain.csproj FellsideDigital.Domain/
-COPY FellsideDigital.UI/FellsideDigital.UI.csproj FellsideDigital.UI/
-COPY FellsideDigital.Web/FellsideDigital.Web.csproj FellsideDigital.Web/
+COPY src/FellsideDigital.Domain/FellsideDigital.Domain.csproj FellsideDigital.Domain/
+COPY src/FellsideDigital.UI/FellsideDigital.UI.csproj FellsideDigital.UI/
+COPY src/FellsideDigital.Web/FellsideDigital.Web.csproj FellsideDigital.Web/
 
 RUN dotnet restore FellsideDigital.Web/FellsideDigital.Web.csproj
 
 # Copy remaining source (obj/ and bin/ are excluded via .dockerignore)
-COPY FellsideDigital.Domain/ FellsideDigital.Domain/
-COPY FellsideDigital.UI/ FellsideDigital.UI/
-COPY FellsideDigital.Web/ FellsideDigital.Web/
+COPY src/FellsideDigital.Domain/ FellsideDigital.Domain/
+COPY src/FellsideDigital.UI/ FellsideDigital.UI/
+COPY src/FellsideDigital.Web/ FellsideDigital.Web/
 
 WORKDIR /src/FellsideDigital.Web
 
