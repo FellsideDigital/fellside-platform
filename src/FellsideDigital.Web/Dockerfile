@@ -33,6 +33,7 @@ WORKDIR /src/FellsideDigital.Web
 
 # Install npm dependencies (needed for Tailwind)
 RUN npm install
+RUN npm run tailwind:build
 
 # Publish — --no-restore is safe because .dockerignore keeps obj/ clean
 RUN dotnet publish FellsideDigital.Web.csproj -c Release -o /app/publish --no-restore
