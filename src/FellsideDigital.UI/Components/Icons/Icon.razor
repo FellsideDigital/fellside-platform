@@ -1,0 +1,75 @@
+﻿@using Blazor.Heroicons
+@using FellsideDigital.UI.Enums
+
+<Heroicon Name="@ResolvedIcon"
+          Type="@ResolvedVariant"
+          class="@ResolvedClass" />
+
+@code {
+    [Parameter, EditorRequired]
+    public IconName Name { get; set; }
+
+    [Parameter]
+    public IconVariant Variant { get; set; } = IconVariant.Outline;
+
+    [Parameter]
+    public IconSize Size { get; set; } = IconSize.Normal;
+
+    private string ResolvedClass =>
+        $"shrink-0 {ResolvedSizeClass} {Class}".Trim();
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string ResolvedSizeClass =>
+        Size switch
+        {
+            IconSize.ExtraSmall => "size-1",
+            IconSize.Small => "size-3",
+            IconSize.Normal => "size-4",
+            IconSize.Medium => "size-6",
+            IconSize.Large => "size-8",
+            IconSize.ExtraLarge => "size-10",
+            _ => "size-5"
+        };
+
+    private HeroiconType ResolvedVariant =>
+        Variant switch
+        {
+            IconVariant.Outline => HeroiconType.Outline,
+            IconVariant.Solid => HeroiconType.Solid,
+            IconVariant.Mini => HeroiconType.Mini,
+            _ => HeroiconType.Outline
+        };
+
+    private string ResolvedIcon =>
+        Name switch
+        {
+            IconName.Home => HeroiconName.Home,
+            IconName.User => HeroiconName.User,
+            IconName.Settings => HeroiconName.Cog6Tooth,
+            IconName.Dashboard => HeroiconName.Squares2x2,
+            IconName.Bars3 => HeroiconName.Bars3,
+            IconName.XMark => HeroiconName.XMark,
+            IconName.ChevronDown => HeroiconName.ChevronDown,
+            IconName.ChevronUp => HeroiconName.ChevronUp,
+            IconName.ChevronLeft => HeroiconName.ChevronLeft,
+            IconName.ChevronRight => HeroiconName.ChevronRight,
+            IconName.Plus => HeroiconName.Plus,
+            IconName.Minus => HeroiconName.Minus,
+            IconName.Search => HeroiconName.MagnifyingGlass,
+            IconName.Bell => HeroiconName.Bell,
+            IconName.UserCircle => HeroiconName.UserCircle,
+            IconName.ArrowRight => HeroiconName.ArrowRight,
+            IconName.ArrowLeft => HeroiconName.ArrowLeft,
+            IconName.Check => HeroiconName.Check,
+            IconName.ExclamationTriangle => HeroiconName.ExclamationTriangle,
+            IconName.InformationCircle => HeroiconName.InformationCircle,
+            IconName.Projects => HeroiconName.Squares2x2,
+            IconName.Invoice => HeroiconName.ClipboardDocumentList,
+            IconName.Files => HeroiconName.FolderOpen,
+            IconName.Message => HeroiconName.ChatBubbleLeft,
+
+            _ => HeroiconName.QuestionMarkCircle
+        };
+}

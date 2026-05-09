@@ -66,7 +66,10 @@ public static class ServiceConfigurationExtensions
 
     public static IServiceCollection ConfigureEmailService(this IServiceCollection services, IConfiguration config)
     {
-        services.Configure<EmailSettings>(config.GetSection("Email"));
+        services.AddOptions<EmailSettings>()
+            .Bind(config.GetSection("Email"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddSingleton<EmailService>();
         return services;
     }

@@ -61,6 +61,16 @@ public class EmailService : IEmailSender<ApplicationUser>
 
     private async Task SendAsync(string to, string subject, string htmlBody)
     {
+        if (string.IsNullOrWhiteSpace(_settings.TenantId) ||
+            string.IsNullOrWhiteSpace(_settings.ClientId) ||
+            string.IsNullOrWhiteSpace(_settings.ClientSecret) ||
+            string.IsNullOrWhiteSpace(_settings.FromAddress))
+        {
+            throw new InvalidOperationException(
+                "Email is not configured. Ensure Email:TenantId, Email:ClientId, Email:ClientSecret, " +
+                "and Email:FromAddress are set in environment variables (e.g. Email__FromAddress on Railway).");
+        }
+
         try
         {
             var credential = new ClientSecretCredential(

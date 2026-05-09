@@ -102,7 +102,6 @@ window.fellsideScroll = (() => {
 
     function init() {
         initCards();
-        initGlowCards();
 
         window.addEventListener("scroll", animateOnScroll);
         window.addEventListener("load", animateOnScroll);
@@ -116,7 +115,8 @@ window.fellsideScroll = (() => {
     return {
         init,
         toOfferings,
-        animateOnScroll
+        animateOnScroll,
+        initGlowCards
     };
 
 })();
@@ -167,3 +167,6 @@ window.fellsideTheme = {
 };
 
 window.fellsideTheme.init();
+
+/* Glow cards — global listener, works on all pages */
+fellsideScroll.initGlowCards();
