@@ -28,4 +28,5 @@ public class ClientProject
 
     public ICollection<Invoice> Invoices { get; set; } = [];
     public ICollection<ProjectStatusUpdate> StatusUpdates { get; set; } = [];
+    public ICollection<ProjectPlanPhase> PlanPhases { get; set; } = [];
 }
