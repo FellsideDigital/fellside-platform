@@ -31,8 +31,14 @@
                         <p class="text-xs truncate">@context.User.FindFirst("email")?.Value</p>
                     </div>
 
-                    <NavLink Href="/account/manage" Label="Your profile" />
-                    <NavLink Href="/portal/settings" Label="Settings" />
+                    <a href="/account/manage"
+                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">
+                        Your profile
+                    </a>
+                    <a href="/portal/settings"
+                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">
+                        Settings
+                    </a>
 
                     <LogoutForm ReturnUrl="@CurrentUrl" />
                 </div>
