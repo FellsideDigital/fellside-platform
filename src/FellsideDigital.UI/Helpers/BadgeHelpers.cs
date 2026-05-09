@@ -48,4 +48,32 @@ public static class BadgeHelpers
         ProjectStatus.Pending    => "bg-slate-400 dark:bg-neutral-500",
         _                        => "bg-slate-400"
     };
+
+    public static string PhaseStatusBadge(PhaseStatus s) => s switch
+    {
+        PhaseStatus.InProgress  => "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20 dark:bg-blue-400/10 dark:text-blue-400",
+        PhaseStatus.Completed   => "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-400",
+        PhaseStatus.Blocked     => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        PhaseStatus.OnHold      => "bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-400",
+        PhaseStatus.NotStarted  => "bg-slate-100 text-slate-600 ring-1 ring-slate-500/20 dark:bg-white/5 dark:text-neutral-400",
+        _                       => ""
+    };
+
+    public static string PhaseStatusDotColor(PhaseStatus s) => s switch
+    {
+        PhaseStatus.InProgress  => "bg-blue-400",
+        PhaseStatus.Completed   => "bg-emerald-400",
+        PhaseStatus.Blocked     => "bg-red-400",
+        PhaseStatus.OnHold      => "bg-amber-400",
+        PhaseStatus.NotStarted  => "bg-slate-400 dark:bg-neutral-500",
+        _                       => "bg-slate-400"
+    };
+
+    public static string PhaseStatusLabel(PhaseStatus s) => s switch
+    {
+        PhaseStatus.NotStarted  => "Not Started",
+        PhaseStatus.InProgress  => "In Progress",
+        PhaseStatus.OnHold      => "On Hold",
+        _                       => s.ToString()
+    };
 }
