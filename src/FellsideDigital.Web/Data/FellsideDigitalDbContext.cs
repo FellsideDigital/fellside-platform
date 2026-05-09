@@ -10,6 +10,7 @@ namespace FellsideDigital.Web.Data
         public DbSet<ClientProject> ClientProjects => Set<ClientProject>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<ProjectStatusUpdate> ProjectStatusUpdates => Set<ProjectStatusUpdate>();
+        public DbSet<ProjectPlanPhase> ProjectPlanPhases => Set<ProjectPlanPhase>();
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -74,6 +75,14 @@ namespace FellsideDigital.Web.Data
                     .WithMany()
                     .HasForeignKey(u => u.CreatedByAdminId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<ProjectPlanPhase>(e =>
+            {
+                e.HasOne(ph => ph.Project)
+                    .WithMany(p => p.PlanPhases)
+                    .HasForeignKey(ph => ph.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }
