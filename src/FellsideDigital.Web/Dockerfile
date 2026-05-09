@@ -1,11 +1,14 @@
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-RUN mkdir -p /app/keys && chown $APP_UID /app/keys
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Build stage — needs Node.js for Tailwind CSS compilation
+
+# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 # Install Node.js (LTS)
@@ -14,31 +17,28 @@ RUN apt-get update && apt-get install -y curl && \
     apt-get install -y nodejs && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-
-# Copy .csproj files first so the restore layer is cached independently of source changes.
-# Domain must be included because Web references it.
-COPY src/FellsideDigital.Domain/FellsideDigital.Domain.csproj FellsideDigital.Domain/
-COPY src/FellsideDigital.UI/FellsideDigital.UI.csproj FellsideDigital.UI/
-COPY src/FellsideDigital.Web/FellsideDigital.Web.csproj FellsideDigital.Web/
-
-RUN dotnet restore FellsideDigital.Web/FellsideDigital.Web.csproj
-
-# Copy remaining source (obj/ and bin/ are excluded via .dockerignore)
-COPY src/FellsideDigital.Domain/ FellsideDigital.Domain/
-COPY src/FellsideDigital.UI/ FellsideDigital.UI/
-COPY src/FellsideDigital.Web/ FellsideDigital.Web/
-
-WORKDIR /src/FellsideDigital.Web
+COPY ["src/FellsideDigital.Web/FellsideDigital.Web.csproj", "src/FellsideDigital.Web/"]
+COPY ["src/FellsideDigital.Domain/FellsideDigital.Domain.csproj", "src/FellsideDigital.Domain/"]
+COPY ["src/FellsideDigital.UI/FellsideDigital.UI.csproj", "src/FellsideDigital.UI/"]
+RUN dotnet restore "./src/FellsideDigital.Web/FellsideDigital.Web.csproj"
+COPY . .
+WORKDIR "/src/src/FellsideDigital.Web"
 
 # Install npm dependencies (needed for Tailwind)
 RUN npm install
 RUN npm run tailwind:build
 
-# Publish — --no-restore is safe because .dockerignore keeps obj/ clean
-RUN dotnet publish FellsideDigital.Web.csproj -c Release -o /app/publish --no-restore
+RUN dotnet build "./FellsideDigital.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./FellsideDigital.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "FellsideDigital.Web.dll"]

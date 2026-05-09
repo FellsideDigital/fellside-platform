@@ -6,6 +6,7 @@
 		<UserSecretsId>aspnet-FellsideDigital-0a5bd6ee-ce54-4c5d-87df-9eafd130a922</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+		<DockerfileContext>..\..</DockerfileContext>
 	</PropertyGroup>
 
 	<ItemGroup>
