@@ -2,6 +2,7 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+RUN mkdir -p /app/keys && chown $APP_UID /app/keys
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
@@ -19,12 +20,12 @@ RUN apt-get update && apt-get install -y curl && \
 
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/FellsideDigital.Web/FellsideDigital.Web.csproj", "src/FellsideDigital.Web/"]
-COPY ["src/FellsideDigital.Domain/FellsideDigital.Domain.csproj", "src/FellsideDigital.Domain/"]
-COPY ["src/FellsideDigital.UI/FellsideDigital.UI.csproj", "src/FellsideDigital.UI/"]
-RUN dotnet restore "./src/FellsideDigital.Web/FellsideDigital.Web.csproj"
+COPY ["FellsideDigital.Web/FellsideDigital.Web.csproj", "FellsideDigital.Web/"]
+COPY ["FellsideDigital.Domain/FellsideDigital.Domain.csproj", "FellsideDigital.Domain/"]
+COPY ["FellsideDigital.UI/FellsideDigital.UI.csproj", "FellsideDigital.UI/"]
+RUN dotnet restore "./FellsideDigital.Web/FellsideDigital.Web.csproj"
 COPY . .
-WORKDIR "/src/src/FellsideDigital.Web"
+WORKDIR "/src/FellsideDigital.Web"
 
 # Install npm dependencies (needed for Tailwind)
 RUN npm install
