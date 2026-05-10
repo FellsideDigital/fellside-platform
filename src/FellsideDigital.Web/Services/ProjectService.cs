@@ -6,9 +6,20 @@ namespace FellsideDigital.Web.Services;
 
 public class ProjectService(FellsideDigitalDbContext db) : IProjectService
 {
+    private static DateTime? NormalizeToUtc(DateTime? value)
+        => value switch
+        {
+            null => null,
+            { Kind: DateTimeKind.Utc } dt => dt,
+            { Kind: DateTimeKind.Local } dt => dt.ToUniversalTime(),
+            { Kind: DateTimeKind.Unspecified } dt => DateTime.SpecifyKind(dt, DateTimeKind.Utc),
+            var dt => dt
+        };
+
     public async Task<ClientProject> CreateAsync(ClientProject project, string adminId)
     {
         project.CreatedByAdminId = adminId;
+        project.TargetLaunchDate = NormalizeToUtc(project.TargetLaunchDate);
         project.CreatedAt = DateTime.UtcNow;
         project.UpdatedAt = DateTime.UtcNow;
         db.ClientProjects.Add(project);
@@ -35,6 +46,7 @@ public class ProjectService(FellsideDigitalDbContext db) : IProjectService
     public async Task<List<ClientProject>> GetForClientAsync(string clientId)
         => await db.ClientProjects
             .Include(p => p.Invoices)
+            .Include(p => p.PlanPhases)
             .Include(p => p.StatusUpdates.OrderByDescending(u => u.CreatedAt))
                 .ThenInclude(u => u.CreatedByAdmin)
             .Where(p => p.ClientId == clientId)
@@ -43,6 +55,7 @@ public class ProjectService(FellsideDigitalDbContext db) : IProjectService
 
     public async Task UpdateAsync(ClientProject project)
     {
+        project.TargetLaunchDate = NormalizeToUtc(project.TargetLaunchDate);
         project.UpdatedAt = DateTime.UtcNow;
         db.ClientProjects.Update(project);
         await db.SaveChangesAsync();
@@ -103,6 +116,7 @@ public class ProjectService(FellsideDigitalDbContext db) : IProjectService
             phases[i].Id = Guid.NewGuid();
             phases[i].ProjectId = projectId;
             phases[i].Order = i + 1;
+            phases[i].TargetCompletionDate = NormalizeToUtc(phases[i].TargetCompletionDate);
             phases[i].CreatedAt = DateTime.UtcNow;
             phases[i].UpdatedAt = DateTime.UtcNow;
         }

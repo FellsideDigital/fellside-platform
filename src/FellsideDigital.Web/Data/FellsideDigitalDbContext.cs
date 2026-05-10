@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FellsideDigital.Web.Data
 {
@@ -13,9 +14,71 @@ namespace FellsideDigital.Web.Data
         public DbSet<ProjectPlanPhase> ProjectPlanPhases => Set<ProjectPlanPhase>();
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
 
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            NormalizeDateTimesToUtc();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            NormalizeDateTimesToUtc();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+        private void NormalizeDateTimesToUtc()
+        {
+            foreach (var entry in ChangeTracker.Entries().Where(e => e.State is EntityState.Added or EntityState.Modified))
+            {
+                foreach (var property in entry.Properties)
+                {
+                    if (property.Metadata.ClrType == typeof(DateTime) && property.CurrentValue is DateTime dateTime)
+                    {
+                        property.CurrentValue = NormalizeToUtc(dateTime);
+                    }
+                    else if (property.Metadata.ClrType == typeof(DateTime?) && property.CurrentValue is DateTime nullableDateTime)
+                    {
+                        property.CurrentValue = NormalizeToUtc(nullableDateTime);
+                    }
+                }
+            }
+        }
+
+        private static DateTime NormalizeToUtc(DateTime value)
+            => value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                DateTimeKind.Unspecified => DateTime.SpecifyKind(value, DateTimeKind.Utc),
+                _ => value
+            };
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            var utcDateTimeConverter = new ValueConverter<DateTime, DateTime>(
+                v => NormalizeToUtc(v),
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+            var utcNullableDateTimeConverter = new ValueConverter<DateTime?, DateTime?>(
+                v => v.HasValue ? NormalizeToUtc(v.Value) : v,
+                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                foreach (var property in entityType.GetProperties())
+                {
+                    if (property.ClrType == typeof(DateTime))
+                    {
+                        property.SetValueConverter(utcDateTimeConverter);
+                    }
+                    else if (property.ClrType == typeof(DateTime?))
+                    {
+                        property.SetValueConverter(utcNullableDateTimeConverter);
+                    }
+                }
+            }
 
             builder.Entity<ClientInvitation>(e =>
             {

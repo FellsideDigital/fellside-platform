@@ -56,6 +56,16 @@ public partial class Edit : ComponentBase
         }
     }
 
+    private static DateTime? NormalizeToUtc(DateTime? value)
+        => value switch
+        {
+            null => null,
+            { Kind: DateTimeKind.Utc } dt => dt,
+            { Kind: DateTimeKind.Local } dt => dt.ToUniversalTime(),
+            { Kind: DateTimeKind.Unspecified } dt => DateTime.SpecifyKind(dt, DateTimeKind.Utc),
+            var dt => dt
+        };
+
     private void AddPhase()
     {
         if (_phases.Count >= 5) return;
@@ -90,7 +100,7 @@ public partial class Edit : ComponentBase
     {
         _phases[index].TargetCompletionDate = string.IsNullOrEmpty(value)
             ? null
-            : DateTime.TryParse(value, out var d) ? (DateTime?)d : null;
+            : DateTime.TryParse(value, out var d) ? NormalizeToUtc(d) : null;
     }
 
     private async Task SaveAsync()
@@ -104,7 +114,7 @@ public partial class Edit : ComponentBase
             _project.Description = Input.Description;
             _project.Type = Input.Type;
             _project.Status = Input.Status;
-            _project.TargetLaunchDate = Input.TargetLaunchDate;
+            _project.TargetLaunchDate = NormalizeToUtc(Input.TargetLaunchDate);
             _project.PreviewUrl = string.IsNullOrWhiteSpace(Input.PreviewUrl) ? null : Input.PreviewUrl.Trim();
             _project.ProjectUrl = string.IsNullOrWhiteSpace(Input.ProjectUrl) ? null : Input.ProjectUrl.Trim();
             _project.DeploymentNotes = string.IsNullOrWhiteSpace(Input.DeploymentNotes) ? null : Input.DeploymentNotes.Trim();
@@ -114,16 +124,16 @@ public partial class Edit : ComponentBase
             var phases = _phases
                 .Where(p => !string.IsNullOrWhiteSpace(p.Title) && !string.IsNullOrWhiteSpace(p.ShortLabel))
                 .Select(p => new ProjectPlanPhase
-            {
-                Title = p.Title.Trim(),
-                ShortLabel = p.ShortLabel.Trim(),
-                Status = p.Status,
-                TargetCompletionDate = p.TargetCompletionDate,
-                Notes = string.IsNullOrWhiteSpace(p.Notes) ? null : p.Notes.Trim(),
-                ImportantInformation = string.IsNullOrWhiteSpace(p.ImportantInformation) ? null : p.ImportantInformation.Trim(),
-                Dependencies = string.IsNullOrWhiteSpace(p.Dependencies) ? null : p.Dependencies.Trim(),
-                InternalNotes = string.IsNullOrWhiteSpace(p.InternalNotes) ? null : p.InternalNotes.Trim()
-            }).ToList();
+                {
+                    Title = p.Title.Trim(),
+                    ShortLabel = p.ShortLabel.Trim(),
+                    Status = p.Status,
+                    TargetCompletionDate = NormalizeToUtc(p.TargetCompletionDate),
+                    Notes = string.IsNullOrWhiteSpace(p.Notes) ? null : p.Notes.Trim(),
+                    ImportantInformation = string.IsNullOrWhiteSpace(p.ImportantInformation) ? null : p.ImportantInformation.Trim(),
+                    Dependencies = string.IsNullOrWhiteSpace(p.Dependencies) ? null : p.Dependencies.Trim(),
+                    InternalNotes = string.IsNullOrWhiteSpace(p.InternalNotes) ? null : p.InternalNotes.Trim()
+                }).ToList();
 
             await ProjectService.SavePhasesAsync(_project.Id, phases);
 
