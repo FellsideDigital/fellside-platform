@@ -13,6 +13,8 @@ namespace FellsideDigital.Web.Data
         public DbSet<ProjectStatusUpdate> ProjectStatusUpdates => Set<ProjectStatusUpdate>();
         public DbSet<ProjectPlanPhase> ProjectPlanPhases => Set<ProjectPlanPhase>();
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
+        public DbSet<QrScan> QrScans => Set<QrScan>();
+        public DbSet<QrLead> QrLeads => Set<QrLead>();
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
@@ -146,6 +148,15 @@ namespace FellsideDigital.Web.Data
                     .WithMany(p => p.PlanPhases)
                     .HasForeignKey(ph => ph.ProjectId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<QrLead>(e =>
+            {
+                e.HasOne(l => l.QrScan)
+                    .WithMany(s => s.Leads)
+                    .HasForeignKey(l => l.QrScanId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }
