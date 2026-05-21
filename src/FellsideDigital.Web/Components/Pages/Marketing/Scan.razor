@@ -1,0 +1,189 @@
+@page "/scan"
+
+<PageTitle>Exclusive Offer — Fellside Digital</PageTitle>
+
+<div class="min-h-screen bg-gray-950 text-white flex flex-col">
+
+    <!-- Hero -->
+    <section class="flex flex-col items-center justify-center text-center px-6 pt-24 pb-16">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mb-6">
+            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+            </svg>
+            @SourceLabel
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight max-w-2xl">
+            Nice to meet you.
+        </h1>
+        <p class="mt-4 text-lg text-neutral-400 max-w-xl">
+            As a thank you for scanning, here's an exclusive offer — fill in your details below to claim it.
+        </p>
+    </section>
+
+    <!-- Offer cards -->
+    <section class="flex justify-center px-6 pb-16">
+        <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col sm:flex-row gap-8">
+            <div class="flex-1 border-b sm:border-b-0 sm:border-r border-white/10 pb-6 sm:pb-0 sm:pr-8">
+                <p class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">What you get</p>
+                <p class="text-2xl font-bold text-white">15% off</p>
+                <p class="text-neutral-400 mt-1 text-sm">your first project — applied directly to your quote</p>
+            </div>
+            <div class="flex-1">
+                <p class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Plus</p>
+                <p class="text-2xl font-bold text-white">Free discovery call</p>
+                <p class="text-neutral-400 mt-1 text-sm">30 minutes, no obligation, no sales pitch</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Form / success -->
+    <section class="flex justify-center px-6 pb-24">
+        <div class="w-full max-w-xl">
+
+            @if (!_submitted)
+            {
+                <div class="rounded-2xl border border-white/10 bg-white/5 p-8">
+                    <h2 class="text-lg font-semibold text-white mb-6">Claim your offer</h2>
+
+                    <div class="space-y-5">
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Name *</label>
+                                <input @bind="_name" type="text" placeholder="Your name"
+                                       class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent/50" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Email *</label>
+                                <input @bind="_email" type="email" placeholder="your@email.com"
+                                       class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent/50" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Phone</label>
+                                <input @bind="_phone" type="tel" placeholder="Optional"
+                                       class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent/50" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Company</label>
+                                <input @bind="_company" type="text" placeholder="Optional"
+                                       class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent/50" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">I'm interested in *</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach (var option in _interestOptions)
+                                {
+                                    <button type="button"
+                                            @onclick="() => _interest = option"
+                                            class="@(_interest == option
+                                                ? "bg-accent/20 border-accent text-white"
+                                                : "bg-white/5 border-white/10 text-neutral-400 hover:border-white/20")
+                                                   rounded-xl border px-4 py-2.5 text-sm text-left transition-colors">
+                                        @option
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Rough budget</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach (var option in _budgetOptions)
+                                {
+                                    <button type="button"
+                                            @onclick="() => ToggleBudget(option)"
+                                            class="@(_budget == option
+                                                ? "bg-accent/20 border-accent text-white"
+                                                : "bg-white/5 border-white/10 text-neutral-400 hover:border-white/20")
+                                                   rounded-xl border px-4 py-2.5 text-sm text-left transition-colors">
+                                        @option
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Timeline</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                @foreach (var option in _timelineOptions)
+                                {
+                                    <button type="button"
+                                            @onclick="() => ToggleTimeline(option)"
+                                            class="@(_timeline == option
+                                                ? "bg-accent/20 border-accent text-white"
+                                                : "bg-white/5 border-white/10 text-neutral-400 hover:border-white/20")
+                                                   rounded-xl border px-4 py-2.5 text-sm text-left transition-colors">
+                                        @option
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1.5">Anything else?</label>
+                            <textarea @bind="_message" rows="3"
+                                      placeholder="Tell me a bit about what you're looking for..."
+                                      class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:ring-2 focus:ring-accent/50 resize-none"></textarea>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(_error))
+                        {
+                            <p class="text-sm text-red-400">@_error</p>
+                        }
+
+                        <button type="button" @onclick="SubmitAsync" disabled="@_saving"
+                                class="w-full rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white
+                                       hover:opacity-90 transition-opacity disabled:opacity-50">
+                            @(_saving ? "Saving..." : "Claim my offer →")
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="rounded-2xl border border-green-500/20 bg-green-500/5 p-8 text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="size-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                            <svg class="size-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <h2 class="text-xl font-bold text-white mb-2">You're all set!</h2>
+                    <p class="text-neutral-400 text-sm mb-8">Use this code when you get in touch — it'll be applied to your first quote.</p>
+
+                    <div class="rounded-xl border border-white/10 bg-white/5 px-8 py-5 mb-8 inline-block">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1">Your discount code</p>
+                        <p class="text-3xl font-bold tracking-widest text-accent">LAUNCH26</p>
+                        <p class="text-xs text-neutral-500 mt-1">Valid for 60 days</p>
+                    </div>
+
+                    <div class="text-left space-y-3">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-1">What happens next</p>
+                        <div class="flex items-start gap-3">
+                            <span class="size-5 shrink-0 rounded-full bg-accent/10 text-accent text-xs flex items-center justify-center font-bold mt-0.5">1</span>
+                            <p class="text-sm text-neutral-300">I'll be in touch within 24 hours to say hello.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="size-5 shrink-0 rounded-full bg-accent/10 text-accent text-xs flex items-center justify-center font-bold mt-0.5">2</span>
+                            <p class="text-sm text-neutral-300">We'll book a free 30-minute discovery call at a time that suits you.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="size-5 shrink-0 rounded-full bg-accent/10 text-accent text-xs flex items-center justify-center font-bold mt-0.5">3</span>
+                            <p class="text-sm text-neutral-300">When we put together your quote, the 15% discount is applied automatically.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </section>
+
+</div>
