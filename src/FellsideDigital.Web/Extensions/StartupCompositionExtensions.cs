@@ -1,6 +1,7 @@
 using FellsideDigital.Web.Components;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Data.Seeding;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
@@ -68,6 +69,8 @@ public static class StartupCompositionExtensions
 
         app.UseAntiforgery();
 
+        app.MapQrRedirects();
+
         app.MapStaticAssets();
 
         app.MapRazorComponents<App>()
@@ -76,5 +79,27 @@ public static class StartupCompositionExtensions
         app.MapAdditionalIdentityEndpoints();
 
         return app;
+    }
+
+    private static void MapQrRedirects(this WebApplication app)
+    {
+        var validSources = new HashSet<string> { "shirt", "card" };
+
+        app.MapGet("/q/{source}", async (string source, FellsideDigitalDbContext db, HttpContext ctx) =>
+        {
+            var normalized = validSources.Contains(source.ToLower()) ? source.ToLower() : "unknown";
+
+            var scan = new QrScan
+            {
+                Source    = normalized,
+                IpAddress = ctx.Connection.RemoteIpAddress?.ToString(),
+                UserAgent = ctx.Request.Headers.UserAgent.ToString(),
+            };
+
+            db.QrScans.Add(scan);
+            await db.SaveChangesAsync();
+
+            return Results.Redirect($"/scan?from={normalized}&ref={scan.Id}");
+        });
     }
 }

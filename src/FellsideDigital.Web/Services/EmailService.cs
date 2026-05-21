@@ -57,6 +57,12 @@ public class EmailService : IEmailSender<ApplicationUser>
             $"New enquiry from {enquiry.Name} — {enquiry.ServiceType}",
             ContactEnquiryTemplate(enquiry));
 
+    public Task SendQrLeadDiscountAsync(QrLead lead) =>
+        SendAsync(
+            lead.Email,
+            "Your exclusive Fellside Digital offer — LAUNCH26",
+            QrLeadDiscountTemplate(lead));
+
     // ── Core send ──────────────────────────────────────────────────────────────
 
     private async Task SendAsync(string to, string subject, string htmlBody)
@@ -217,6 +223,62 @@ private static string InvitationTemplate(ClientInvitation inv, string url) => $"
 
             <a href="mailto:{e.Email}" style="display:inline-block;background:#6366f1;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:700;font-size:14px;letter-spacing:.2px;">
                 Reply to {e.Name} →
+            </a>
+        """)}
+        """;
+
+    private static string QrLeadDiscountTemplate(QrLead lead) => $"""
+        {BaseLayout($"""
+            <h2 style="margin:0 0 8px;font-size:24px;line-height:1.25;color:#0f172a;">
+                Nice to meet you, {lead.Name}!
+            </h2>
+            <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.6;">
+                Thanks for scanning — here's your exclusive discount code, saved in your inbox so you never lose it.
+            </p>
+
+            <!-- Discount code box -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                   style="margin:0 0 28px;background:#fff7ed;border:2px solid #fb923c;border-radius:12px;overflow:hidden;">
+                <tr>
+                    <td style="padding:24px;text-align:center;">
+                        <p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9a3412;">Your discount code</p>
+                        <p style="margin:0 0 4px;font-size:36px;font-weight:800;letter-spacing:4px;color:#fb923c;font-family:monospace;"">LAUNCH26</p>
+                        <p style="margin:0;font-size:12px;color:#c2410c;">Valid for 60 days · 15% off your first project</p>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- What's included -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                   style="margin:0 0 28px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;">
+                <tr><td style="padding:12px 16px;border-bottom:1px solid #e2e8f0;">
+                    <span style="font-size:14px;color:#0f172a;">✓ &nbsp;<strong>15% off</strong> your first project — applied at quote time</span>
+                </td></tr>
+                <tr><td style="padding:12px 16px;">
+                    <span style="font-size:14px;color:#0f172a;">✓ &nbsp;<strong>Free 30-minute discovery call</strong> — no obligation, no sales pitch</span>
+                </td></tr>
+            </table>
+
+            <!-- What happens next -->
+            <p style="margin:0 0 10px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;">What happens next</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+                <tr><td style="padding:6px 0;font-size:14px;color:#475569;line-height:1.6;">
+                    <span style="display:inline-block;width:22px;height:22px;background:#fff7ed;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:700;color:#fb923c;margin-right:10px;vertical-align:middle;">1</span>
+                    I'll be in touch within 24 hours to say hello.
+                </td></tr>
+                <tr><td style="padding:6px 0;font-size:14px;color:#475569;line-height:1.6;">
+                    <span style="display:inline-block;width:22px;height:22px;background:#fff7ed;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:700;color:#fb923c;margin-right:10px;vertical-align:middle;">2</span>
+                    We'll book your free discovery call at a time that suits you.
+                </td></tr>
+                <tr><td style="padding:6px 0;font-size:14px;color:#475569;line-height:1.6;">
+                    <span style="display:inline-block;width:22px;height:22px;background:#fff7ed;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:700;color:#fb923c;margin-right:10px;vertical-align:middle;">3</span>
+                    When we put together your quote, LAUNCH26 gets applied automatically.
+                </td></tr>
+            </table>
+
+            <a href="mailto:hello@fellsidedigital.co.uk"
+               style="display:inline-block;background:#fb923c;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:700;font-size:14px;letter-spacing:.2px;">
+                Get in touch →
             </a>
         """)}
         """;

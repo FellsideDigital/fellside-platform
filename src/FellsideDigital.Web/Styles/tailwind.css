@@ -13,8 +13,9 @@
 */
 
 :root {
-    --accent: #818cf8; /* indigo-400  */
-    --accent-hover: #a5b4fc; /* indigo-300 */
+    /*--accent: #818cf8;*/ /* indigo-400  */
+    --accent: #51a2ff; /* blue-400  */
+    --accent-hover: #8ec5ff; /* blue-300 */
     --bg-base: #ffffff;
     --bg-surface: #ffffff;
     --bg-elevated: #f8fafc; /* slate-50 */
@@ -36,13 +37,14 @@
   force-light / force-dark — pin a subtree to one accent regardless of page theme.
   CSS custom props: nearest ancestor definition wins, so these override html.dark.
 */
+
 .force-light {
-    --accent: #818cf8;   /* indigo-400 — always indigo */
-    --accent-hover: #a5b4fc;
+    --accent: #51a2ff; /* blue-400 */
+    --accent-hover: #8ec5ff; /* blue-300 */
 }
 
 .force-dark {
-    --accent: #fb923c;   /* orange-400 — always orange */
+    --accent: #fb923c;   /* orange-400 */
     --accent-hover: #fdba74;
 }
 

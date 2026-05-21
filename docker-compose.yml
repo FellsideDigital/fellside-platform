@@ -23,14 +23,14 @@ services:
       - "8080:8080"
       - "8081:8081"
     depends_on:
-      postgres:
+      fellsidedigital-postgres:
         condition: service_healthy
     volumes:
       - keys_volume:/app/keys
 
-  postgres:
+  fellsidedigital-postgres:
     image: postgres:15
-    container_name: postgres
+    container_name: fellsidedigital_postgres
     restart: unless-stopped
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
