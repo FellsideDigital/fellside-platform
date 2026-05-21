@@ -28,6 +28,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Components\Pages\Portal\Website\" />
 	  <Folder Include="Data\Migrations\" />
 	</ItemGroup>
 

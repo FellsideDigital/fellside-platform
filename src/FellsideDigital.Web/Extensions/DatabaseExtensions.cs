@@ -27,8 +27,7 @@ public static class DatabaseExtensions
         services.AddDbContext<FellsideDigitalDbContext>(options =>
             options.UseNpgsql(connectionString, npgsql => npgsql.EnableRetryOnFailure()));
 
-        services.AddDatabaseDeveloperPageExceptionFilter();
-
+        //services.AddDatabaseDeveloperPageExceptionFilter();
         return services;
     }
 }
