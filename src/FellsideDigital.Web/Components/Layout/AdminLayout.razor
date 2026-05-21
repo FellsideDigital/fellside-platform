@@ -1,4 +1,5 @@
 @using System.Security.Claims
+@using FellsideDigital.UI.Components.Icons
 @using FellsideDigital.UI.Enums
 @using FellsideDigital.Web.Components.Account.Pages.Manage
 @using Microsoft.AspNetCore.Identity
@@ -49,9 +50,7 @@
 
         <!-- Logo -->
         <NavLink href="/" class="flex items-center gap-2 shrink-0">
-            <img src="/favicon.ico" class="h-7 w-auto dark:hidden" alt="Fellside Digital" />
-            <img src="/favicon-dark.ico" class="h-7 w-auto not-dark:hidden" alt="Fellside Digital" />
-            <span class="hidden sm:block text-sm font-semibold text-slate-900 dark:text-white">Fellside Digital</span>
+            <FellsideLogo />
         </NavLink>
 
         <!-- Search pill -->
@@ -86,14 +85,14 @@
 <div class="flex">
     <!-- Desktop sidebar: sticky below topbar -->
     <aside class="hidden lg:flex lg:flex-col lg:w-[260px] lg:shrink-0
-        lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto
-        bg-white dark:bg-neutral-900
-        border-r border-slate-200 dark:border-white/10">
+                lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto
+                bg-white dark:bg-neutral-900
+                border-r border-slate-200 dark:border-white/10 mx-4">
             <AdminSidebarContent UserName="@_displayName" UserInitials="@_initials" />
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 min-w-0 min-h-[calc(100vh-3.5rem)]">
+    <main class="flex-1 min-w-0 min-h-[calc(100vh-3.5rem)] bg-white dark:bg-neutral-950">
         <div class="px-4 pt-5 pb-12 sm:px-6 lg:px-8 lg:pt-6">
             @Body
         </div>

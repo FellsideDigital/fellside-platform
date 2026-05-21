@@ -83,10 +83,9 @@ else
 
         @foreach (var lead in _leads)
         {
-            <div class="@(lead.IsRead ? "" : "bg-accent-hover/40")
-                        grid grid-cols-[auto_1fr_1fr_auto_auto_auto] gap-4 items-center
+            <div class="grid grid-cols-[auto_1fr_1fr_auto_auto_auto] gap-4 items-center
                         px-5 py-4 border-b border-gray-100 dark:border-white/5 last:border-0
-                        hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                        hover:bg-accent/10 transition-colors">
 
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                              @(lead.Source == "shirt"
