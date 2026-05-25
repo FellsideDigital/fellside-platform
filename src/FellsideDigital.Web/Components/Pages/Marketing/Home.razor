@@ -1,6 +1,88 @@
 @page "/"
 
-<PageTitle>Fellside Digital — Bespoke Websites & Intelligent Automation</PageTitle>
+<PageTitle>Web Developer Cumbria &amp; Lake District | Fellside Digital</PageTitle>
+
+<SeoHead Title="Web Developer Cumbria &amp; Lake District | Fellside Digital"
+         Description="Bespoke web developer based in Keswick, Cumbria. Premium websites and intelligent automation for businesses across the Lake District and UK. Fixed prices, founder-led."
+         CanonicalUrl="https://fellsidedigital.co.uk/" />
+
+<HeadContent>
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "WebSite",
+      "@@id": "https://fellsidedigital.co.uk/#website",
+      "name": "Fellside Digital",
+      "url": "https://fellsidedigital.co.uk",
+      "description": "Bespoke web development and intelligent automation, based in Keswick, Cumbria. Serving businesses across the Lake District and UK-wide.",
+      "publisher": { "@@id": "https://fellsidedigital.co.uk/#business" }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "ProfessionalService",
+      "@@id": "https://fellsidedigital.co.uk/#business",
+      "name": "Fellside Digital",
+      "description": "Bespoke web development and intelligent business automation, based in Keswick, Cumbria. Serving businesses across the Lake District and UK-wide.",
+      "url": "https://fellsidedigital.co.uk",
+      "telephone": "+447484323505",
+      "email": "hello@fellsidedigital.co.uk",
+      "address": {
+        "@@type": "PostalAddress",
+        "addressLocality": "Keswick",
+        "addressRegion": "Cumbria",
+        "addressCountry": "GB"
+      },
+      "areaServed": [
+        { "@@type": "Place", "name": "Cumbria" },
+        { "@@type": "Place", "name": "Lake District" },
+        { "@@type": "Place", "name": "United Kingdom" }
+      ],
+      "knowsAbout": ["Web Development", "Website Design", "Business Automation", "API Integration", "AI Automation", "Blazor", ".NET"],
+      "priceRange": "££",
+      "openingHoursSpecification": {
+        "@@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "17:30"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@@type": "Question",
+          "name": "Why choose Fellside Digital?",
+          "acceptedAnswer": { "@@type": "Answer", "text": "You deal directly with the developers doing the work, no account managers, no hand-offs. We keep overhead low, which means better value and a more personal service throughout." }
+        },
+        {
+          "@@type": "Question",
+          "name": "What kind of projects do you take on?",
+          "acceptedAnswer": { "@@type": "Answer", "text": "We build premium websites, custom web applications, e-commerce platforms, client portals, internal dashboards, and intelligent automation systems. We work with SMEs, agencies, and non-profits across the UK." }
+        },
+        {
+          "@@type": "Question",
+          "name": "How much does a project cost?",
+          "acceptedAnswer": { "@@type": "Answer", "text": "A foundational website starts from around £450. Software-driven sites and bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins." }
+        },
+        {
+          "@@type": "Question",
+          "name": "How long does a project take?",
+          "acceptedAnswer": { "@@type": "Answer", "text": "Simpler sites can be delivered in 2–4 weeks. Complex software systems typically take 2–4 months. We agree a timeline upfront and keep you updated via your dedicated project portal." }
+        },
+        {
+          "@@type": "Question",
+          "name": "Do you offer ongoing support after launch?",
+          "acceptedAnswer": { "@@type": "Answer", "text": "Absolutely. We offer retainer-based maintenance packages covering hosting, updates, backups, monitoring, and priority support. We build software to last." }
+        }
+      ]
+    }
+    </script>
+</HeadContent>
 
 <div class="flex flex-col w-full max-w-full overflow-x-hidden
             bg-white dark:bg-neutral-950 text-slate-900 dark:text-white
@@ -25,8 +107,8 @@
             </h1>
 
             <p class="mt-6 text-lg sm:text-xl text-slate-500 dark:text-neutral-400 max-w-2xl mx-auto text-balance">
-                Fellside Digital crafts premium, well-designed websites and builds intelligent
-                automation that scales with your business. Bespoke work, from a team that genuinely cares.
+                Fellside Digital crafts premium websites and intelligent automation for businesses
+                across the Lake District and UK. Bespoke work, fixed prices, from a founder who genuinely cares.
             </p>
 
             <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -187,7 +269,7 @@
     </section>
 
     <!-- ── TESTIMONIALS ───────────────────────────────────────────────────── -->
-    <section class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
+    <section id="testimonials" class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
         <div class="max-w-7xl mx-auto">
             <SectionHeader Label="Client stories"
                            Heading="Trusted by Cumbria and beyond."
@@ -203,7 +285,7 @@
     </section>
 
     <!-- ── FAQ ────────────────────────────────────────────────────────────── -->
-    <section class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
+    <section id="faq" class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
         <div class="max-w-3xl mx-auto">
             <SectionHeader Label="FAQs"
                            Heading="Common questions."

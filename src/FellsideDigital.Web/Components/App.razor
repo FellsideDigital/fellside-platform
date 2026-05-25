@@ -1,14 +1,24 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preload" href="@Assets["fonts/Geist-VariableFont_wght.ttf"]" as="font" type="font/ttf" crossorigin="anonymous" />
+
     <link rel="stylesheet" href="@Assets["css/app.css"]" />
     <link rel="stylesheet" href="@Assets["css/tailwind.css"]" />
     <link rel="stylesheet" href="@Assets["FellsideDigital.Web.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/png" href="@Assets["favicon.png"]" />
+    <meta name="author" content="Fellside Digital" />
+    <meta name="geo.region" content="GB-CMA" />
+    <meta name="geo.placename" content="Keswick, Cumbria" />
+    @* Replace with your Google Search Console verification token once the site is live: *@
+    @* <meta name="google-site-verification" content="YOUR_TOKEN_HERE" /> *@
 
     <script src="https://cdn.jsdelivr.net/npm/@@tailwindplus/elements@@1" type="module"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>

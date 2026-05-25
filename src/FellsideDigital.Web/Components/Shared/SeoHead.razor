@@ -1,0 +1,31 @@
+<HeadContent>
+    <meta name="description" content="@Description" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="@CanonicalUrl" />
+
+    <meta property="og:title" content="@(OgTitle ?? Title)" />
+    <meta property="og:description" content="@Description" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="@CanonicalUrl" />
+    <meta property="og:site_name" content="Fellside Digital" />
+    @if (!string.IsNullOrEmpty(OgImage))
+    {
+        <meta property="og:image" content="@OgImage" />
+    }
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@(OgTitle ?? Title)" />
+    <meta name="twitter:description" content="@Description" />
+    @if (!string.IsNullOrEmpty(OgImage))
+    {
+        <meta name="twitter:image" content="@OgImage" />
+    }
+</HeadContent>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public string Description { get; set; } = "";
+    [Parameter, EditorRequired] public string CanonicalUrl { get; set; } = "";
+    [Parameter] public string? OgTitle { get; set; }
+    [Parameter] public string? OgImage { get; set; }
+}
