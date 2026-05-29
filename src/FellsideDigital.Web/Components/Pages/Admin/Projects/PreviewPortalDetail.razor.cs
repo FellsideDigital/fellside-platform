@@ -27,7 +27,7 @@ public partial class PreviewPortalDetail : ComponentBase
         foreach (var inv in _project.Invoices.Where(i => i.FilePath is not null))
         {
             try { _downloadUrls[inv.Id] = await InvoiceService.GetDownloadUrlAsync(inv.Id) ?? ""; }
-            catch { }
+            catch { /* non-fatal — download button simply won't appear */ }
         }
     }
 }
