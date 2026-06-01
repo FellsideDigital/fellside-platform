@@ -1,0 +1,19 @@
+@page "/Admin/Projects/{Id:guid}/PortalPreview"
+@attribute [Authorize(Roles = "SiteAdmin")]
+
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Services
+
+<PageTitle>Opening portal preview…</PageTitle>
+
+@* Launcher only: enters preview-as-client state for this project's client and
+   redirects to the real client portal once the interactive circuit is live. *@
+<div class="flex min-h-[60vh] items-center justify-center">
+    <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-neutral-400">
+        <svg class="size-5 animate-spin text-accent" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
+        Opening portal preview…
+    </div>
+</div>

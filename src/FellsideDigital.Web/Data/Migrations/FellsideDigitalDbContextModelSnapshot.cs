@@ -202,6 +202,18 @@ namespace FellsideDigital.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("HeroDisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("HeroShowcaseUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("HeroTagline")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsHeroProject")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -213,6 +225,9 @@ namespace FellsideDigital.Web.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("ProjectUrl")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ScreenshotPath")
                         .HasColumnType("text");
 
                     b.Property<int>("Status")
@@ -330,6 +345,94 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectIntegration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectIntegrations");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectMetric", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Style")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectMetrics");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectPipelineStep", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("StepType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectPipelineSteps");
                 });
 
             modelBuilder.Entity("FellsideDigital.Web.Data.ProjectPlanPhase", b =>
@@ -682,6 +785,39 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectIntegration", b =>
+                {
+                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
+                        .WithMany("Integrations")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectMetric", b =>
+                {
+                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
+                        .WithMany("Metrics")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectPipelineStep", b =>
+                {
+                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
+                        .WithMany("PipelineSteps")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("FellsideDigital.Web.Data.ProjectPlanPhase", b =>
                 {
                     b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
@@ -775,7 +911,13 @@ namespace FellsideDigital.Web.Data.Migrations
 
             modelBuilder.Entity("FellsideDigital.Web.Data.ClientProject", b =>
                 {
+                    b.Navigation("Integrations");
+
                     b.Navigation("Invoices");
+
+                    b.Navigation("Metrics");
+
+                    b.Navigation("PipelineSteps");
 
                     b.Navigation("PlanPhases");
 

@@ -41,6 +41,26 @@
     </div>
 }
 
+@if (PreviewState.IsActive)
+{
+    <!-- Admin preview banner -->
+    <div class="relative z-40 flex items-center justify-center gap-x-3 gap-y-1 flex-wrap
+                px-4 py-2 text-sm font-medium text-white bg-accent">
+        <span class="inline-flex items-center gap-1.5">
+            <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+            Previewing as <span class="font-semibold">@PreviewState.PreviewClientName</span>
+        </span>
+        <button type="button" @onclick="ExitPreview"
+                class="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold
+                       hover:bg-white/30 transition-colors">
+            Exit preview
+        </button>
+    </div>
+}
+
 <!-- Topbar: sticky glass bar, always visible -->
 <header class="sticky top-0 z-30 h-14 flex items-center justify-between gap-4 px-4 sm:px-6
                bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl
@@ -63,7 +83,6 @@
         <!-- Logo -->
         <NavLink href="/" class="flex items-center gap-2 shrink-0">
             <FellsideLogo />
-            <span class="hidden sm:block text-sm font-semibold text-slate-900 dark:text-white">Fellside Digital</span>
         </NavLink>
 
         <!-- Search pill -->
@@ -106,7 +125,7 @@
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 min-w-0 min-h-[calc(100vh-3.5rem)]">
+    <main class=" bg-white dark:bg-neutral-900 flex-1 min-w-0 min-h-[calc(100vh-3.5rem)]">
         <div class="px-4 pt-5 pb-12 sm:px-6 lg:px-8 lg:pt-6">
             @Body
         </div>

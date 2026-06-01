@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -7,6 +8,8 @@ namespace FellsideDigital.Web.Components.Layout;
 public partial class PortalLayout : LayoutComponentBase
 {
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
+    [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private bool _sidebarOpen;
     private string _displayName = "";
@@ -31,4 +34,12 @@ public partial class PortalLayout : LayoutComponentBase
 
     private void OpenSidebar() => _sidebarOpen = true;
     private void CloseSidebar() => _sidebarOpen = false;
+
+    private void ExitPreview()
+    {
+        var sourceProjectId = PreviewState.SourceProjectId;
+        PreviewState.Exit();
+        NavigationManager.NavigateTo(
+            sourceProjectId is { } id ? $"/Admin/Projects/{id}" : "/Admin/Projects");
+    }
 }

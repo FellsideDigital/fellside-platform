@@ -15,6 +15,7 @@ public partial class ProjectDetail : ComponentBase
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
 
     private ClientProject? _project;
     private bool _notFound;
@@ -26,8 +27,10 @@ public partial class ProjectDetail : ComponentBase
         var user = await UserManager.GetUserAsync(authState.User);
         if (user is null) { _notFound = true; return; }
 
+        var clientId = PreviewState.ResolveClientId(user.Id, authState.User.IsInRole("SiteAdmin"));
+
         _project = await ProjectService.GetByIdAsync(Id);
-        if (_project is null || _project.ClientId != user.Id)
+        if (_project is null || _project.ClientId != clientId)
         {
             _notFound = true;
             _project = null;

@@ -11,6 +11,7 @@ public partial class Projects : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
+    [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
 
     private List<ClientProject>? _projects;
 
@@ -19,6 +20,7 @@ public partial class Projects : ComponentBase
         var authState = await AuthState.GetAuthenticationStateAsync();
         var user = await UserManager.GetUserAsync(authState.User);
         if (user is null) return;
-        _projects = await ProjectService.GetForClientAsync(user.Id);
+        var clientId = PreviewState.ResolveClientId(user.Id, authState.User.IsInRole("SiteAdmin"));
+        _projects = await ProjectService.GetForClientAsync(clientId);
     }
 }

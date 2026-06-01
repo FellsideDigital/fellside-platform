@@ -12,78 +12,24 @@ html {
     scroll-behavior: smooth;
 }
 
-/* ── Hero aura ────────────────────────────────────────────────────────────── */
-.hero-aura {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100%;
-    overflow: hidden;
-    clip-path: inset(0); /*This forces hard clipping that catches filter bleed: pointer-events: none;*/
-    z-index: 0;
+/* ── Hero split panel ─────────────────────────────────────────────────────── */
+.hero-split-right {
+    /* Theme-aware "screen" backdrop for the project carousel. Light mode gets a
+       soft slate wash with a faint accent glow; dark mode keeps the deep slate. */
+    background:
+        radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--color-accent) 10%, transparent), transparent 60%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
+}
+.dark .hero-split-right {
+    background:
+        radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--color-accent) 16%, transparent), transparent 60%),
+        linear-gradient(180deg, #0f172a 0%, #0b1120 100%);
 }
 
-.hero-aura::before,
-.hero-aura::after,
-.hero-aura-blob {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(80px);
-    opacity: 0;
-    transition: opacity 0.6s ease;
-}
-
-.hero-aura::before {
-    content: '';
-    width: 520px; height: 520px;
-    background: radial-gradient(circle, #f97316 0%, #fb923c 40%, transparent 70%);
-    top: -10%; left: -5%;
-    animation: aura-drift-1 18s ease-in-out infinite alternate;
-}
-
-.hero-aura::after {
-    content: '';
-    width: 480px; height: 480px;
-    background: radial-gradient(circle, #6366f1 0%, #818cf8 40%, transparent 70%);
-    bottom: -15%; left: 10%;
-    animation: aura-drift-2 22s ease-in-out infinite alternate;
-}
-
-.hero-aura-blob {
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, #f43f5e 0%, #fb7185 40%, transparent 70%);
-    top: 25%; left: 35%;
-    animation: aura-drift-3 26s ease-in-out infinite alternate;
-}
-
-.dark .hero-aura::before { opacity: 0.35; }
-.dark .hero-aura::after  { opacity: 0.30; }
-.dark .hero-aura-blob    { opacity: 0.25; }
-
-:root:not(.dark) .hero-aura::before { opacity: 0.18; }
-:root:not(.dark) .hero-aura::after  { opacity: 0.14; }
-:root:not(.dark) .hero-aura-blob    { opacity: 0.12; }
-
-@keyframes aura-drift-1 {
-    0%   { transform: translate(0px, 0px) scale(1); }
-    33%  { transform: translate(60px, 40px) scale(1.08); }
-    66%  { transform: translate(20px, 80px) scale(0.95); }
-    100% { transform: translate(80px, -30px) scale(1.05); }
-}
-
-@keyframes aura-drift-2 {
-    0%   { transform: translate(0px, 0px) scale(1); }
-    33%  { transform: translate(-40px, -60px) scale(1.10); }
-    66%  { transform: translate(50px, 30px) scale(0.92); }
-    100% { transform: translate(-60px, 50px) scale(1.06); }
-}
-
-@keyframes aura-drift-3 {
-    0%   { transform: translate(0px, 0px) scale(1); }
-    33%  { transform: translate(30px, 60px) scale(1.12); }
-    66%  { transform: translate(-50px, -20px) scale(0.97); }
-    100% { transform: translate(40px, -60px) scale(1.04); }
+/* Ensure the live-dot pulse animation works on the automation card */
+@keyframes live-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 2px rgba(74,222,128,0.2); }
+    50%       { opacity: 0.5; box-shadow: 0 0 0 4px rgba(74,222,128,0.1); }
 }
 
 html, body {

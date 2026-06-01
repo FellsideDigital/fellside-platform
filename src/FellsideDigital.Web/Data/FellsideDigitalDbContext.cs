@@ -15,6 +15,9 @@ namespace FellsideDigital.Web.Data
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
         public DbSet<QrScan> QrScans => Set<QrScan>();
         public DbSet<QrLead> QrLeads => Set<QrLead>();
+        public DbSet<ProjectMetric> ProjectMetrics => Set<ProjectMetric>();
+        public DbSet<ProjectPipelineStep> ProjectPipelineSteps => Set<ProjectPipelineStep>();
+        public DbSet<ProjectIntegration> ProjectIntegrations => Set<ProjectIntegration>();
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
@@ -157,6 +160,30 @@ namespace FellsideDigital.Web.Data
                     .HasForeignKey(l => l.QrScanId)
                     .IsRequired(false)
                     .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<ProjectMetric>(e =>
+            {
+                e.HasOne(m => m.Project)
+                    .WithMany(p => p.Metrics)
+                    .HasForeignKey(m => m.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ProjectPipelineStep>(e =>
+            {
+                e.HasOne(s => s.Project)
+                    .WithMany(p => p.PipelineSteps)
+                    .HasForeignKey(s => s.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ProjectIntegration>(e =>
+            {
+                e.HasOne(i => i.Project)
+                    .WithMany(p => p.Integrations)
+                    .HasForeignKey(i => i.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

@@ -11,6 +11,7 @@ public partial class Invoices : ComponentBase
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
+    [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
 
     private List<Invoice>? _invoices;
 
@@ -19,6 +20,7 @@ public partial class Invoices : ComponentBase
         var authState = await AuthState.GetAuthenticationStateAsync();
         var user = await UserManager.GetUserAsync(authState.User);
         if (user is null) return;
-        _invoices = await InvoiceService.GetForClientAsync(user.Id);
+        var clientId = PreviewState.ResolveClientId(user.Id, authState.User.IsInRole("SiteAdmin"));
+        _invoices = await InvoiceService.GetForClientAsync(clientId);
     }
 }

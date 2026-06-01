@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FellsideDigital.Web.Services;
 
-public class ProjectService(FellsideDigitalDbContext db) : IProjectService
+public class ProjectService(FellsideDigitalDbContext db, IStorageService storage) : IProjectService
 {
     private static DateTime? NormalizeToUtc(DateTime? value)
         => value switch
@@ -63,12 +63,29 @@ public class ProjectService(FellsideDigitalDbContext db) : IProjectService
 
     public async Task DeleteAsync(Guid id)
     {
-        var project = await db.ClientProjects.FindAsync(id);
-        if (project is not null)
+        var project = await db.ClientProjects
+            .Include(p => p.Invoices)
+            .FirstOrDefaultAsync(p => p.Id == id);
+        if (project is null) return;
+
+        // Remove associated blobs before the DB cascade drops the rows that point
+        // at them, otherwise the invoice files / screenshot are orphaned in storage.
+        // Best-effort: a missing or unreachable object must not block deletion.
+        foreach (var invoice in project.Invoices)
         {
-            db.ClientProjects.Remove(project);
-            await db.SaveChangesAsync();
+            if (string.IsNullOrWhiteSpace(invoice.FilePath)) continue;
+            try { await storage.DeleteAsync(invoice.FilePath); }
+            catch { /* non-fatal — proceed with deletion */ }
         }
+
+        if (!string.IsNullOrWhiteSpace(project.ScreenshotPath))
+        {
+            try { await storage.DeleteAsync(project.ScreenshotPath); }
+            catch { /* non-fatal */ }
+        }
+
+        db.ClientProjects.Remove(project);
+        await db.SaveChangesAsync();
     }
 
     public async Task AddStatusUpdateAsync(Guid projectId, string message, ProjectStatus? newStatus, string adminId)

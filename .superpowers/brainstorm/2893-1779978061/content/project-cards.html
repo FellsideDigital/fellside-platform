@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Card Variants</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    padding: 32px 24px 56px;
+  }
+
+  .page-header { text-align: center; margin-bottom: 44px; }
+  .page-header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
+  .page-header p  { font-size: 14px; color: #555; margin-top: 6px; line-height: 1.6; }
+
+  .section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #444; margin-bottom: 16px;
+  }
+
+  .section-block { margin-bottom: 52px; }
+
+  /* ── Full hero preview ─────────────────────────── */
+  .full-hero {
+    border-radius: 14px; overflow: hidden;
+    border: 1px solid #1e1e1e;
+    display: grid; grid-template-columns: 1fr 1.1fr;
+    min-height: 480px;
+  }
+
+  /* Left panel */
+  .left-panel {
+    background: #fff;
+    padding: 52px 40px 40px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    border-right: 1px solid #f1f5f9;
+    position: relative;
+  }
+
+  .nav-row {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 15px 40px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .logo { font-size: 13px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; }
+  .nav-links { display: flex; gap: 18px; font-size: 10px; color: #94a3b8; font-weight: 500; }
+
+  .left-content { margin-top: 60px; display: flex; flex-direction: column; gap: 14px; }
+
+  .eyebrow { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.14em; }
+
+  h1 { font-size: 36px; font-weight: 900; color: #0f172a; line-height: 1.05; letter-spacing: -0.04em; }
+  h1 span { color: #2563eb; }
+
+  .sub { font-size: 12px; color: #64748b; line-height: 1.75; max-width: 320px; }
+
+  .cta-row { display: flex; gap: 12px; align-items: center; }
+  .btn-primary {
+    background: #0f172a; color: #fff;
+    font-size: 11px; font-weight: 700; padding: 10px 18px; border-radius: 7px;
+  }
+  .btn-ghost { font-size: 11px; color: #64748b; font-weight: 600; }
+
+  .strip { display: flex; gap: 24px; padding-top: 18px; border-top: 1px solid #f1f5f9; }
+  .strip-num { font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; }
+  .strip-label { font-size: 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+
+  /* Right panel */
+  .right-panel {
+    background: #0f172a;
+    padding: 20px 22px 22px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+
+  .panel-label { font-size: 9px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.14em; }
+
+  /* ── Project type toggle ───────────────────────── */
+  .type-toggle {
+    display: flex; gap: 6px;
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .toggle-btn {
+    flex: 1; font-size: 9px; font-weight: 600; text-align: center;
+    padding: 5px 8px; border-radius: 6px; cursor: pointer;
+    color: #475569; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .toggle-btn.active { background: #fff; color: #0f172a; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+
+  /* ── Card variants ─────────────────────────────── */
+  .project-card {
+    background: #1e293b;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    flex: 1;
+    display: flex; flex-direction: column;
+    position: relative;
+  }
+
+  /* Website card — browser chrome */
+  .browser-chrome {
+    background: #0f172a;
+    padding: 7px 10px;
+    display: flex; align-items: center; gap: 4px;
+    border-bottom: 1px solid #334155;
+  }
+  .bdot { width: 6px; height: 6px; border-radius: 50%; }
+  .bdot-r { background: #ff5f57; } .bdot-y { background: #febc2e; } .bdot-g { background: #28c840; }
+  .burl {
+    flex: 1; margin-left: 5px; font-size: 8px; color: #475569;
+    background: #1e293b; border-radius: 3px; padding: 2px 7px; font-family: monospace;
+  }
+
+  .site-preview {
+    height: 120px; background: #0f2744;
+    display: flex; flex-direction: column;
+    padding: 8px;
+    gap: 5px;
+  }
+  .sp-nav { height: 16px; background: #1d4ed8; border-radius: 3px; display: flex; align-items: center; padding: 0 6px; gap: 4px; }
+  .sp-nav-logo { width: 28px; height: 5px; background: rgba(255,255,255,0.7); border-radius: 2px; }
+  .sp-nav-links { display: flex; gap: 4px; margin-left: auto; }
+  .sp-nav-link { width: 14px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 1px; }
+  .sp-hero { height: 44px; background: linear-gradient(135deg, #1e3a5f, #0f2744); border-radius: 3px; display: flex; align-items: center; padding: 0 8px; gap: 6px; }
+  .sp-hero-text { display: flex; flex-direction: column; gap: 3px; }
+  .sp-h1 { width: 55px; height: 6px; background: rgba(255,255,255,0.7); border-radius: 2px; }
+  .sp-sub { width: 40px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; }
+  .sp-btn { margin-left: auto; width: 28px; height: 14px; background: #60a5fa; border-radius: 3px; }
+  .sp-cards { display: flex; gap: 4px; }
+  .sp-card { flex: 1; height: 30px; background: rgba(255,255,255,0.05); border-radius: 3px; border: 1px solid rgba(255,255,255,0.06); }
+
+  /* Automation card — flow diagram */
+  .flow-preview {
+    height: 120px; background: #0a1628;
+    padding: 12px 14px;
+    display: flex; flex-direction: column; justify-content: center; gap: 0;
+    position: relative;
+  }
+
+  .flow-row { display: flex; align-items: center; gap: 0; justify-content: center; }
+  .flow-node {
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 8px; font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    border: 1px solid;
+    position: relative;
+    min-width: 44px;
+  }
+  .flow-node.source { background: rgba(251,146,60,0.12); border-color: rgba(251,146,60,0.3); color: #fb923c; }
+  .flow-node.process { background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.25); color: #60a5fa; }
+  .flow-node.output { background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.25); color: #4ade80; }
+  .flow-node.decision {
+    background: rgba(167,139,250,0.1); border-color: rgba(167,139,250,0.25); color: #a78bfa;
+    transform: rotate(5deg) scale(0.95);
+  }
+
+  .flow-arrow { color: #334155; font-size: 10px; padding: 0 4px; flex-shrink: 0; line-height: 1; }
+
+  .flow-row-2 { display: flex; align-items: flex-start; justify-content: center; gap: 0; margin-top: 6px; }
+  .flow-branch { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .flow-branch-arrow { color: #334155; font-size: 9px; text-align: center; }
+  .flow-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 7px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+  }
+  .flow-badge.ok { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+  .flow-badge.alert { background: rgba(251,146,60,0.1); color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+
+  .flow-live-dot {
+    position: absolute; top: 8px; right: 8px;
+    display: flex; align-items: center; gap: 4px;
+    font-size: 7px; font-weight: 600; color: #4ade80;
+  }
+  .live-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #4ade80; box-shadow: 0 0 5px #4ade80;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Shared card body */
+  .card-body {
+    padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+
+  .card-meta { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+  .card-name { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; }
+
+  .type-badge {
+    font-size: 8px; font-weight: 600; padding: 2px 7px; border-radius: 100px;
+    white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+  }
+  .type-badge.web { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+  .type-badge.auto { background: rgba(251,146,60,0.1); color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+
+  .metrics-row { display: flex; gap: 7px; flex-wrap: wrap; }
+  .metric {
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.04); border: 1px solid #1e293b;
+    border-radius: 7px; padding: 5px 9px;
+    flex: 1; min-width: 0;
+  }
+  .m-icon { font-size: 11px; flex-shrink: 0; }
+  .m-val { font-size: 11px; font-weight: 700; color: #fff; line-height: 1; white-space: nowrap; }
+  .m-key { font-size: 8px; color: #475569; font-weight: 500; }
+  .metric.up .m-val { color: #4ade80; }
+  .metric.fast .m-val { color: #60a5fa; }
+  .metric.warm .m-val { color: #fb923c; }
+
+  /* Carousel nav */
+  .carousel-nav { display: flex; justify-content: space-between; align-items: center; }
+  .cdots { display: flex; gap: 5px; align-items: center; }
+  .cdot { width: 6px; height: 6px; border-radius: 50%; background: #334155; cursor: pointer; transition: all 0.2s; }
+  .cdot.a { background: #60a5fa; width: 16px; border-radius: 3px; }
+  .carrs { display: flex; gap: 5px; }
+  .carr {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: #1e293b; border: 1px solid #334155;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #64748b; cursor: pointer;
+  }
+
+  /* ── Standalone card comparison (bottom section) ── */
+  .cards-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card-wrap { border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; }
+  .card-wrap-label { padding: 10px 14px; background: #111; border-bottom: 1px solid #1e293b; }
+  .card-wrap-label strong { font-size: 11px; font-weight: 700; color: #fff; display: block; }
+  .card-wrap-label p { font-size: 10px; color: #555; margin-top: 2px; }
+
+  .standalone-card {
+    background: #1e293b;
+    display: flex; flex-direction: column;
+  }
+</style>
+
+<div class="page-header">
+  <h1>Project card variants</h1>
+  <p>Two card types for the right-hand panel — website projects and automation projects.<br>Each shows the work in a way that makes sense for that type.</p>
+</div>
+
+<!-- ── Full hero in context ── -->
+<div class="section-block">
+  <div class="section-label">Direction D — full hero with website card active</div>
+
+  <div class="full-hero">
+    <div class="left-panel">
+      <div class="nav-row">
+        <div class="logo">Fellside Digital</div>
+        <div class="nav-links"><span>Websites</span><span>Automation</span><span>Work</span><span>Contact</span></div>
+      </div>
+      <div class="left-content">
+        <div class="eyebrow">Web Studio · Keswick, Cumbria</div>
+        <h1>Built by one person.<br><span>Backed by results.</span></h1>
+        <div class="sub">Bespoke websites and automation for businesses that want quality work and a real relationship with who's building it. No templates, no hand-offs.</div>
+        <div class="cta-row">
+          <div class="btn-primary">Start a project</div>
+          <div class="btn-ghost">View all work →</div>
+        </div>
+        <div class="strip">
+          <div><div class="strip-num">40+</div><div class="strip-label">Projects</div></div>
+          <div><div class="strip-num">5★</div><div class="strip-label">Reviews</div></div>
+          <div><div class="strip-num">0</div><div class="strip-label">Middlemen</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="panel-label">Recent work</div>
+        <div class="type-toggle" style="width:160px">
+          <div class="toggle-btn active">🌐 Website</div>
+          <div class="toggle-btn">⚙️ Automation</div>
+        </div>
+      </div>
+
+      <!-- Website card -->
+      <div class="project-card">
+        <div class="browser-chrome">
+          <div class="bdot bdot-r"></div><div class="bdot bdot-y"></div><div class="bdot bdot-g"></div>
+          <div class="burl">windermere-sailing.co.uk</div>
+        </div>
+        <div class="site-preview">
+          <div class="sp-nav">
+            <div class="sp-nav-logo"></div>
+            <div class="sp-nav-links"><div class="sp-nav-link"></div><div class="sp-nav-link"></div><div class="sp-nav-link"></div></div>
+          </div>
+          <div class="sp-hero">
+            <div class="sp-hero-text"><div class="sp-h1"></div><div class="sp-sub"></div></div>
+            <div class="sp-btn"></div>
+          </div>
+          <div class="sp-cards">
+            <div class="sp-card"></div><div class="sp-card"></div><div class="sp-card"></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <div class="card-name">Windermere Sailing Club</div>
+            <div class="type-badge web">Website + Booking</div>
+          </div>
+          <div class="metrics-row">
+            <div class="metric up"><div class="m-icon">📈</div><div><div class="m-val">+340%</div><div class="m-key">Online bookings</div></div></div>
+            <div class="metric fast"><div class="m-icon">⚡</div><div><div class="m-val">1.8s</div><div class="m-key">Load time</div></div></div>
+            <div class="metric"><div class="m-icon">📅</div><div><div class="m-val">3 wks</div><div class="m-key">Delivered in</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carousel-nav">
+        <div class="cdots">
+          <div class="cdot a"></div><div class="cdot"></div><div class="cdot"></div><div class="cdot"></div>
+        </div>
+        <div class="carrs"><div class="carr">←</div><div class="carr">→</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Card comparison ── -->
+<div class="section-block">
+  <div class="section-label">Card type comparison — website vs automation</div>
+  <div class="cards-compare">
+
+    <!-- Website card -->
+    <div class="card-wrap">
+      <div class="card-wrap-label">
+        <strong>🌐 Website project card</strong>
+        <p>Browser chrome + fake screenshot preview. Metrics: conversions, speed, delivery time.</p>
+      </div>
+      <div class="standalone-card">
+        <div class="browser-chrome">
+          <div class="bdot bdot-r"></div><div class="bdot bdot-y"></div><div class="bdot bdot-g"></div>
+          <div class="burl">lakes-retreat.co.uk</div>
+        </div>
+        <div class="site-preview">
+          <div class="sp-nav">
+            <div class="sp-nav-logo"></div>
+            <div class="sp-nav-links"><div class="sp-nav-link"></div><div class="sp-nav-link"></div><div class="sp-nav-link"></div></div>
+          </div>
+          <div class="sp-hero" style="background: linear-gradient(135deg,#4c1d95,#2d1b69)">
+            <div class="sp-hero-text"><div class="sp-h1"></div><div class="sp-sub"></div></div>
+            <div class="sp-btn" style="background:#a78bfa"></div>
+          </div>
+          <div class="sp-cards">
+            <div class="sp-card"></div><div class="sp-card"></div><div class="sp-card"></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <div class="card-name">Lakes Retreat B&amp;B</div>
+            <div class="type-badge web">Website</div>
+          </div>
+          <div class="metrics-row">
+            <div class="metric up"><div class="m-icon">🏨</div><div><div class="m-val">+220%</div><div class="m-key">Direct bookings</div></div></div>
+            <div class="metric fast"><div class="m-icon">⚡</div><div><div class="m-val">2.1s</div><div class="m-key">Load time</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automation card -->
+    <div class="card-wrap">
+      <div class="card-wrap-label">
+        <strong>⚙️ Automation project card</strong>
+        <p>Live flow diagram showing the pipeline. Metrics: time saved, runs completed, error rate.</p>
+      </div>
+      <div class="standalone-card">
+        <div class="flow-preview">
+          <div class="flow-live-dot">
+            <div class="live-dot"></div>
+            Live
+          </div>
+          <div class="flow-row">
+            <div class="flow-node source">New enquiry<br>form submit</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node process">Qualify<br>lead</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node process">Create<br>CRM record</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node output">Send<br>proposal</div>
+          </div>
+          <div class="flow-row-2" style="margin-top:10px; gap:20px">
+            <div class="flow-badge ok">✓ 1,240 runs this month</div>
+            <div class="flow-badge alert">⚡ 4 min avg. saved per lead</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-meta">
+            <div class="card-name">Cumbria Joinery Co.</div>
+            <div class="type-badge auto">Automation</div>
+          </div>
+          <div class="metrics-row">
+            <div class="metric warm"><div class="m-icon">⏱️</div><div><div class="m-val">14 hrs/wk</div><div class="m-key">Time saved</div></div></div>
+            <div class="metric up"><div class="m-icon">✅</div><div><div class="m-val">1,240</div><div class="m-key">Runs / month</div></div></div>
+            <div class="metric fast"><div class="m-icon">🎯</div><div><div class="m-val">99.2%</div><div class="m-key">Success rate</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function toggleSelect(el) {
+    const wasSelected = el.classList.contains('selected');
+    document.querySelectorAll('.hero-wrap').forEach(c => c.classList.remove('selected'));
+    if (!wasSelected) el.classList.add('selected');
+  }
+</script>

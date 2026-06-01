@@ -1,6 +1,7 @@
 using FellsideDigital.Web.Components;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Data.Seeding;
+using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -45,6 +46,12 @@ public static class StartupCompositionExtensions
         {
             await AdminUserSeeder.SeedAdminAsync(app.Services);
         }
+
+        // Demo clients/projects for the marketing hero carousel — development only, idempotent.
+        if (app.Environment.IsDevelopment())
+        {
+            await DemoDataSeeder.SeedDemoProjectsAsync(app.Services);
+        }
     }
 
     public static WebApplication UseFellsideDigitalPlatform(this WebApplication app)
@@ -70,6 +77,7 @@ public static class StartupCompositionExtensions
         app.UseAntiforgery();
 
         app.MapQrRedirects();
+        app.MapScreenshotMedia();
 
         app.MapStaticAssets();
 
@@ -79,6 +87,25 @@ public static class StartupCompositionExtensions
         app.MapAdditionalIdentityEndpoints();
 
         return app;
+    }
+
+    private static void MapScreenshotMedia(this WebApplication app)
+    {
+        // Streams public project screenshots through the app's own origin (HTTPS), so they
+        // aren't blocked as mixed content when storage is an HTTP endpoint (e.g. dev MinIO),
+        // and so the storage bucket isn't exposed directly. Restricted to the "screenshots/"
+        // prefix — private objects (e.g. invoices) are never reachable here.
+        app.MapGet("/media/{**key}", async (string key, HttpContext ctx, IStorageService storage, CancellationToken ct) =>
+        {
+            if (!key.StartsWith("screenshots/", StringComparison.Ordinal))
+                return Results.NotFound();
+
+            var obj = await storage.GetObjectAsync(key, ct);
+            if (obj is null) return Results.NotFound();
+
+            ctx.Response.Headers.CacheControl = "public, max-age=3600";
+            return Results.Stream(obj.Content, obj.ContentType);
+        });
     }
 
     private static void MapQrRedirects(this WebApplication app)

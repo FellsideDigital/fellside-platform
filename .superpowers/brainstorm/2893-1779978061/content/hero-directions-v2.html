@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hero Directions v2</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0f0f0f;
+    color: #fff;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.03em;
+  }
+
+  .page-header p {
+    font-size: 14px;
+    color: #888;
+    margin-top: 6px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    border: 2px solid transparent;
+  }
+
+  .hero-wrap:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .hero-wrap.selected {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.25), 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .select-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: white;
+    font-size: 14px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    font-weight: 700;
+  }
+
+  .hero-wrap.selected .select-badge {
+    display: flex;
+  }
+
+  .dir-tag {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 100px;
+    z-index: 100;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .dir-info {
+    padding: 16px 20px;
+    background: #1a1a1a;
+    border-top: 1px solid #2a2a2a;
+  }
+
+  .dir-info strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .dir-info p {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  /* ══════════════════════════════════════════
+     DIRECTION A — Editorial / Bold Type
+  ══════════════════════════════════════════ */
+  .hero-a {
+    background: #fff;
+    padding: 52px 48px 48px;
+    position: relative;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .hero-a .nav-strip {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .hero-a .logo {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-a .nav-links {
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+    color: #888;
+    font-weight: 500;
+  }
+
+  .hero-a .main-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    margin-top: 60px;
+  }
+
+  .hero-a .left {
+    flex: 1;
+  }
+
+  .hero-a .eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c2410c;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-a .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 2px;
+    background: #c2410c;
+    flex-shrink: 0;
+  }
+
+  .hero-a h1 {
+    font-size: 54px;
+    font-weight: 900;
+    color: #111;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .hero-a h1 em {
+    font-style: italic;
+    color: #c2410c;
+  }
+
+  .hero-a .body-copy {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+    margin-top: 20px;
+    max-width: 340px;
+  }
+
+  .hero-a .cta-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 28px;
+  }
+
+  .hero-a .btn-primary {
+    background: #111;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 12px 22px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-a .btn-ghost {
+    font-size: 12px;
+    color: #111;
+    font-weight: 600;
+    border-bottom: 1.5px solid #111;
+    padding-bottom: 1px;
+  }
+
+  .hero-a .right {
+    width: 160px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    padding-bottom: 4px;
+  }
+
+  .hero-a .stat-block {
+    text-align: right;
+  }
+
+  .hero-a .stat-num {
+    font-size: 32px;
+    font-weight: 900;
+    color: #111;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-a .stat-label {
+    font-size: 9px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .hero-a .divider-h {
+    width: 100%;
+    height: 1px;
+    background: #eee;
+  }
+
+  .hero-a .location-text {
+    font-size: 10px;
+    color: #999;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  /* ══════════════════════════════════════════
+     DIRECTION B — Dark Confident
+  ══════════════════════════════════════════ */
+  .hero-b {
+    background: #0c0c0c;
+    padding: 52px 48px 48px;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  .hero-b .nav-strip {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hero-b .logo {
+    font-size: 13px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-b .nav-links {
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+    color: #555;
+    font-weight: 500;
+  }
+
+  .hero-b .main-content {
+    margin-top: 72px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .hero-b .location-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #888;
+    border: 1px solid #2a2a2a;
+    padding: 5px 12px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .hero-b .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px #22c55e;
+  }
+
+  .hero-b h1 {
+    font-size: 52px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-b h1 span {
+    color: #fb923c;
+  }
+
+  .hero-b .body-copy {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    max-width: 400px;
+  }
+
+  .hero-b .cta-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .hero-b .btn-primary {
+    background: #fb923c;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 12px 22px;
+    border-radius: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .hero-b .btn-ghost {
+    font-size: 12px;
+    color: #555;
+    font-weight: 500;
+  }
+
+  .hero-b .strip {
+    display: flex;
+    gap: 32px;
+    padding-top: 28px;
+    border-top: 1px solid #1e1e1e;
+    margin-top: 8px;
+  }
+
+  .hero-b .strip-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .hero-b .strip-num {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-b .strip-label {
+    font-size: 9px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  /* ══════════════════════════════════════════
+     DIRECTION C — Warm / Handcrafted Feel
+  ══════════════════════════════════════════ */
+  .hero-c {
+    background: #fdf8f0;
+    padding: 52px 48px 44px;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .hero-c .nav-strip {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 18px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ede5d0;
+  }
+
+  .hero-c .logo {
+    font-size: 13px;
+    font-weight: 800;
+    color: #1c1917;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-c .nav-links {
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+    color: #a8a29e;
+    font-weight: 500;
+  }
+
+  .hero-c .main-content {
+    margin-top: 68px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .hero-c h1 {
+    font-size: 46px;
+    font-weight: 900;
+    color: #1c1917;
+    line-height: 1.0;
+    letter-spacing: -0.04em;
+    font-family: Georgia, serif;
+  }
+
+  .hero-c h1 .underline-word {
+    position: relative;
+    display: inline-block;
+    color: #92400e;
+  }
+
+  .hero-c h1 .underline-word::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #f59e0b;
+    border-radius: 2px;
+  }
+
+  .hero-c .sub {
+    font-size: 13px;
+    color: #78716c;
+    line-height: 1.7;
+    margin-top: 18px;
+    max-width: 360px;
+  }
+
+  .hero-c .cta-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .hero-c .btn-primary {
+    background: #1c1917;
+    color: #fdf8f0;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 12px 20px;
+    border-radius: 8px;
+  }
+
+  .hero-c .btn-ghost {
+    font-size: 12px;
+    color: #78716c;
+    font-weight: 600;
+  }
+
+  .hero-c .right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 8px;
+    min-width: 140px;
+  }
+
+  .hero-c .testimonial-card {
+    background: #fff;
+    border: 1px solid #ede5d0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+
+  .hero-c .t-stars {
+    font-size: 10px;
+    color: #f59e0b;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+
+  .hero-c .t-quote {
+    font-size: 10px;
+    color: #57534e;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .hero-c .t-name {
+    font-size: 9px;
+    color: #a8a29e;
+    font-weight: 600;
+    margin-top: 5px;
+  }
+
+  .hero-c .location-tag {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    color: #a8a29e;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: #f5ede0;
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+
+  /* ══════════════════════════════════════════
+     DIRECTION D — Split / Magazine
+  ══════════════════════════════════════════ */
+  .hero-d {
+    background: #fff;
+    min-height: 360px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+  }
+
+  .hero-d .left-panel {
+    padding: 52px 36px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid #f0f0f0;
+    background: #fff;
+  }
+
+  .hero-d .right-panel {
+    background: #111;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-d .right-panel-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+  }
+
+  .hero-d .landscape-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, #1a3a2a 0%, #0a1a10 60%, #050d08 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    opacity: 0.6;
+  }
+
+  .hero-d .nav-strip {
+    position: absolute;
+    top: 0; left: 0;
+    right: 50%;
+    padding: 16px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    z-index: 10;
+  }
+
+  .hero-d .logo {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.03em;
+  }
+
+  .hero-d .eyebrow {
+    font-size: 9px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-top: 56px;
+    margin-bottom: 12px;
+  }
+
+  .hero-d h1 {
+    font-size: 38px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-d h1 span {
+    color: #2563eb;
+  }
+
+  .hero-d .sub {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.7;
+    margin-top: 16px;
+  }
+
+  .hero-d .cta-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .hero-d .btn-primary {
+    background: #2563eb;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border-radius: 7px;
+  }
+
+  .hero-d .btn-ghost {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .hero-d .panel-caption {
+    position: relative;
+    z-index: 10;
+  }
+
+  .hero-d .panel-caption .cap-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .hero-d .panel-caption .cap-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .hero-d .panel-caption .cap-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+  }
+
+  /* Selection checkbox */
+  .select-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    background: rgba(255,255,255,0.9);
+    border: 1.5px solid #e2e8f0;
+    padding: 5px 12px;
+    border-radius: 100px;
+    z-index: 100;
+    transition: all 0.15s;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+  }
+
+  .hero-wrap:hover .select-btn {
+    color: #6366f1;
+    border-color: #6366f1;
+  }
+
+  .hero-wrap.selected .select-btn {
+    background: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+  }
+</style>
+
+<div class="page-header">
+  <h1>New Hero Directions</h1>
+  <p>Four completely different approaches — click to select the one you want to develop</p>
+</div>
+
+<div class="hero-grid">
+
+  <!-- A: Editorial / Serif Bold -->
+  <div class="hero-wrap" data-choice="a" onclick="toggleSelect(this)">
+    <div class="dir-tag">A — Editorial</div>
+    <div class="select-badge">✓</div>
+    <div class="hero-a">
+      <div class="nav-strip">
+        <div class="logo">Fellside Digital</div>
+        <div class="nav-links">
+          <span>Websites</span><span>Automation</span><span>Work</span><span>Contact</span>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="left">
+          <div class="eyebrow">Keswick, Cumbria</div>
+          <h1>Proper websites.<br><em>Proper</em> results.</h1>
+          <div class="body-copy">Bespoke websites and automation built by hand. You deal directly with the person doing the work — no account managers, no nonsense.</div>
+          <div class="cta-row">
+            <div class="btn-primary">Start a project</div>
+            <div class="btn-ghost">See our work</div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="stat-block">
+            <div class="stat-num">40+</div>
+            <div class="stat-label">Projects delivered</div>
+          </div>
+          <div class="divider-h"></div>
+          <div class="stat-block">
+            <div class="stat-num">5★</div>
+            <div class="stat-label">Client rating</div>
+          </div>
+          <div class="divider-h"></div>
+          <div class="location-text">Lake District<br>& UK-wide</div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-info">
+      <strong>Serif editorial — bold, no-nonsense</strong>
+      <p>Georgia serif for authority. Red/burnt orange accent. Stats shown as raw numbers in the corner. Clean white, zero gradients. Feels like a respected craft studio.</p>
+    </div>
+  </div>
+
+  <!-- B: Dark & Direct -->
+  <div class="hero-wrap" data-choice="b" onclick="toggleSelect(this)">
+    <div class="dir-tag">B — Dark &amp; Direct</div>
+    <div class="select-badge">✓</div>
+    <div class="hero-b">
+      <div class="nav-strip">
+        <div class="logo">Fellside Digital</div>
+        <div class="nav-links">
+          <span>Websites</span><span>Automation</span><span>Work</span><span>Contact</span>
+        </div>
+      </div>
+      <div class="main-content">
+        <div class="location-pill">
+          <div class="dot"></div>
+          Based in Keswick, Cumbria
+        </div>
+        <h1>Web work done<br><span>the right way.</span></h1>
+        <div class="body-copy">You talk to the developer. You get a fixed price. The work gets done properly. No fluff, no hand-offs, no disappearing acts after launch.</div>
+        <div class="cta-row">
+          <div class="btn-primary">Get in touch</div>
+          <div class="btn-ghost">What we build →</div>
+        </div>
+        <div class="strip">
+          <div class="strip-item">
+            <div class="strip-num">40+</div>
+            <div class="strip-label">Sites built</div>
+          </div>
+          <div class="strip-item">
+            <div class="strip-num">5★</div>
+            <div class="strip-label">Reviews</div>
+          </div>
+          <div class="strip-item">
+            <div class="strip-num">0</div>
+            <div class="strip-label">Middlemen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-info">
+      <strong>Dark, confident, direct</strong>
+      <p>Near-black background, orange accent (existing dark-mode brand colour). Green "active" dot signals availability. Blunt, plain-spoken copy. Keeps the existing dark-mode palette.</p>
+    </div>
+  </div>
+
+  <!-- C: Warm Craft -->
+  <div class="hero-wrap" data-choice="c" onclick="toggleSelect(this)">
+    <div class="dir-tag">C — Warm Craft</div>
+    <div class="select-badge">✓</div>
+    <div class="hero-c">
+      <div class="nav-strip">
+        <div class="logo">Fellside Digital</div>
+        <div class="nav-links">
+          <span>Websites</span><span>Automation</span><span>Work</span><span>Contact</span>
+        </div>
+      </div>
+      <div class="main-content">
+        <div>
+          <h1>Websites worth<br><span class="underline-word">talking about.</span></h1>
+          <div class="sub">Premium websites and intelligent automation, hand-built for businesses across Cumbria and the UK. One studio. One point of contact. Done properly.</div>
+          <div class="cta-row">
+            <div class="btn-primary">Start a project</div>
+            <div class="btn-ghost">Our work →</div>
+          </div>
+        </div>
+        <div class="right-col">
+          <div class="testimonial-card">
+            <div class="t-stars">★★★★★</div>
+            <div class="t-quote">"Felt like working with a friend who happened to be brilliant at this."</div>
+            <div class="t-name">— Sarah M., Cumbria</div>
+          </div>
+          <div class="location-tag">
+            ⛰️ &nbsp;Keswick, Cumbria
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-info">
+      <strong>Warm, cream, handcrafted feel</strong>
+      <p>Cream/ivory background, Georgia serif headline with amber underline accent. A real testimonial card lives in the hero. Feels artisan, not tech-startup.</p>
+    </div>
+  </div>
+
+  <!-- D: Split Panel -->
+  <div class="hero-wrap" data-choice="d" onclick="toggleSelect(this)">
+    <div class="dir-tag">D — Split Panel</div>
+    <div class="select-badge">✓</div>
+    <div class="hero-d">
+      <div class="nav-strip">
+        <div class="logo">Fellside Digital</div>
+      </div>
+      <div class="left-panel">
+        <div>
+          <div class="eyebrow">Web Studio · Keswick, Cumbria</div>
+          <h1>Built by one person.<br><span>Backed by results.</span></h1>
+          <div class="sub">Bespoke websites and automation for businesses that want quality work and a real relationship with who's building it. No templates, no hand-offs.</div>
+          <div class="cta-row">
+            <div class="btn-primary">Talk to us</div>
+            <div class="btn-ghost">View our work →</div>
+          </div>
+        </div>
+      </div>
+      <div class="right-panel">
+        <div class="landscape-bg">🏔️</div>
+        <div class="right-panel-content">
+          <div class="panel-caption">
+            <div class="cap-label">Latest project</div>
+            <div class="cap-title">Windermere Sailing Club</div>
+            <div class="cap-sub">Booking system + member portal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dir-info">
+      <strong>Split panel — text left, real work right</strong>
+      <p>Breaks the centred full-bleed layout. Right half shows a real project photo with a caption. Feels like a portfolio studio. The work sells itself instead of abstract blobs.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleSelect(el) {
+    const wasSelected = el.classList.contains('selected');
+    document.querySelectorAll('.hero-wrap').forEach(c => c.classList.remove('selected'));
+    if (!wasSelected) el.classList.add('selected');
+
+    // fire superpowers event if available
+    if (window.__sp_recordChoice) {
+      const choice = el.dataset.choice;
+      window.__sp_recordChoice(choice, el.querySelector('.dir-info strong')?.textContent || choice);
+    }
+  }
+</script>

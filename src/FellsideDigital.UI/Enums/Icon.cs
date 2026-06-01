@@ -33,7 +33,15 @@ public enum IconName
     Projects,
     Invoice,
     Files,
-    Message
+    Message,
+
+    ArrowTrendingUp,
+    Clock,
+    GlobeAlt,
+    Bolt,
+    CircleStack,
+    DocumentText,
+    CheckCircle
 }
 
 public enum IconVariant

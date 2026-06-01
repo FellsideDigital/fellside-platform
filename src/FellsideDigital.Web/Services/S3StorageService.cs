@@ -1,3 +1,4 @@
+using System.Net;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -8,17 +9,10 @@ namespace FellsideDigital.Web.Services;
 
 public sealed class S3StorageService : IStorageService, IDisposable
 {
-    private readonly AmazonS3Client _client;
+    private readonly AmazonS3Client _client;        // real operations (internal endpoint)
+    private readonly AmazonS3Client _presignClient; // generates browser URLs (public endpoint)
     private readonly StorageSettings _settings;
     private readonly ILogger<S3StorageService> _logger;
-
-    private static readonly Dictionary<string, string> ContentTypes = new()
-    {
-        [".pdf"]  = "application/pdf",
-        [".png"]  = "image/png",
-        [".jpg"]  = "image/jpeg",
-        [".jpeg"] = "image/jpeg",
-    };
 
     public S3StorageService(IOptions<StorageSettings> settings, ILogger<S3StorageService> logger)
     {
@@ -36,6 +30,28 @@ public sealed class S3StorageService : IStorageService, IDisposable
             config.RegionEndpoint = RegionEndpoint.GetBySystemName(_settings.Region);
 
         _client = new AmazonS3Client(_settings.AccessKey, _settings.SecretKey, config);
+
+        // Presigned URLs are signed (SigV4) against the endpoint host, so they must be
+        // signed with the PUBLIC host the browser will actually use — rewriting the host
+        // afterwards breaks the signature. When PublicUrl differs from the internal
+        // ServiceUrl (e.g. minio:9000 vs localhost:9000), use a separate client whose
+        // endpoint is the public host. Signing is a local operation, so this client never
+        // needs to reach that host. On AWS/Railway PublicUrl is empty and the main client
+        // already signs against the correct public endpoint.
+        if (!string.IsNullOrWhiteSpace(_settings.PublicUrl) &&
+            !string.Equals(_settings.PublicUrl, _settings.ServiceUrl, StringComparison.OrdinalIgnoreCase))
+        {
+            var presignConfig = new AmazonS3Config
+            {
+                ForcePathStyle = true,
+                ServiceURL = _settings.PublicUrl,
+            };
+            _presignClient = new AmazonS3Client(_settings.AccessKey, _settings.SecretKey, presignConfig);
+        }
+        else
+        {
+            _presignClient = _client;
+        }
     }
 
     public async Task<string> UploadAsync(string key, Stream content, string contentType, CancellationToken ct = default)
@@ -55,6 +71,22 @@ public sealed class S3StorageService : IStorageService, IDisposable
         return key;
     }
 
+    public async Task<StorageObject?> GetObjectAsync(string key, CancellationToken ct = default)
+    {
+        try
+        {
+            var response = await _client.GetObjectAsync(_settings.BucketName, key, ct);
+            var contentType = string.IsNullOrWhiteSpace(response.Headers.ContentType)
+                ? "application/octet-stream"
+                : response.Headers.ContentType;
+            return new StorageObject(response.ResponseStream, contentType);
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+    }
+
     public async Task DeleteAsync(string key, CancellationToken ct = default)
     {
         await _client.DeleteObjectAsync(_settings.BucketName, key, ct);
@@ -71,21 +103,15 @@ public sealed class S3StorageService : IStorageService, IDisposable
             Verb       = HttpVerb.GET,
         };
 
-        var url = _client.GetPreSignedURL(request);
-
-        // When ServiceUrl is an internal Docker hostname (e.g. http://minio:9000),
-        // rewrite the host so the browser can reach it via the public URL.
-        if (!string.IsNullOrWhiteSpace(_settings.PublicUrl) &&
-            !string.IsNullOrWhiteSpace(_settings.ServiceUrl))
-        {
-            url = url.Replace(
-                _settings.ServiceUrl.TrimEnd('/'),
-                _settings.PublicUrl.TrimEnd('/'),
-                StringComparison.OrdinalIgnoreCase);
-        }
-
+        // Sign against the public endpoint so the URL is valid when the browser uses it.
+        var url = _presignClient.GetPreSignedURL(request);
         return Task.FromResult(url);
     }
 
-    public void Dispose() => _client.Dispose();
+    public void Dispose()
+    {
+        if (!ReferenceEquals(_presignClient, _client))
+            _presignClient.Dispose();
+        _client.Dispose();
+    }
 }

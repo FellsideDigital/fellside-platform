@@ -3,6 +3,7 @@ using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.Projects;
 
@@ -11,6 +12,7 @@ public partial class Edit : ComponentBase
     [Parameter] public Guid Id { get; set; }
 
     [Inject] private IProjectService ProjectService { get; set; } = default!;
+    [Inject] private IHeroProjectService HeroProjectService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private ClientProject? _project;
@@ -18,6 +20,20 @@ public partial class Edit : ComponentBase
     private List<PhaseEditorModel> _phases = [];
     private string? _errorMessage;
     private bool _submitting;
+
+    // Hero showcase state
+    private HeroInputModel _heroInput = new();
+    private List<MetricEditorModel> _heroMetrics = [];
+    private List<PipelineStepEditorModel> _heroPipelineSteps = [];
+    private List<IntegrationEditorModel> _heroIntegrations = [];
+    private bool _savingHero;
+    private string? _heroError;
+    private bool _heroSaved;
+
+    // Screenshot upload state
+    private bool _uploadingScreenshot;
+    private string? _screenshotPreviewUrl;
+    private string? _screenshotError;
 
     private const string InputClass =
         "block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white " +
@@ -53,6 +69,32 @@ public partial class Edit : ComponentBase
                     IsExpanded = false
                 })
                 .ToList();
+
+            _heroInput = new HeroInputModel
+            {
+                IsHeroProject    = _project.IsHeroProject,
+                HeroDisplayOrder = _project.HeroDisplayOrder,
+                HeroTagline      = _project.HeroTagline,
+                HeroShowcaseUrl  = _project.HeroShowcaseUrl,
+                ScreenshotPath   = _project.ScreenshotPath
+            };
+
+            _heroMetrics = _project.Metrics
+                .OrderBy(m => m.DisplayOrder)
+                .Select(m => new MetricEditorModel { Value = m.Value, Label = m.Label, Style = m.Style })
+                .ToList();
+
+            _heroPipelineSteps = _project.PipelineSteps
+                .OrderBy(s => s.DisplayOrder)
+                .Select(s => new PipelineStepEditorModel { Label = s.Label, StepType = s.StepType })
+                .ToList();
+
+            _heroIntegrations = _project.Integrations
+                .OrderBy(i => i.DisplayOrder)
+                .Select(i => new IntegrationEditorModel { Name = i.Name })
+                .ToList();
+
+            _screenshotPreviewUrl = await HeroProjectService.ResolveScreenshotUrlAsync(_project.ScreenshotPath);
         }
     }
 
@@ -149,6 +191,120 @@ public partial class Edit : ComponentBase
         }
     }
 
+    // Hero showcase methods
+    private void AddMetric()
+    {
+        if (_heroMetrics.Count < 3) _heroMetrics.Add(new MetricEditorModel());
+    }
+
+    private void RemoveMetric(int index)
+    {
+        if (index >= 0 && index < _heroMetrics.Count) _heroMetrics.RemoveAt(index);
+    }
+
+    private void AddPipelineStep()
+    {
+        if (_heroPipelineSteps.Count < 5) _heroPipelineSteps.Add(new PipelineStepEditorModel());
+    }
+
+    private void RemovePipelineStep(int index)
+    {
+        if (index >= 0 && index < _heroPipelineSteps.Count) _heroPipelineSteps.RemoveAt(index);
+    }
+
+    private void AddIntegration() => _heroIntegrations.Add(new IntegrationEditorModel());
+
+    private void RemoveIntegration(int index)
+    {
+        if (index >= 0 && index < _heroIntegrations.Count) _heroIntegrations.RemoveAt(index);
+    }
+
+    private async Task OnScreenshotSelectedAsync(InputFileChangeEventArgs e)
+    {
+        if (_project is null) return;
+        _screenshotError = null;
+        _uploadingScreenshot = true;
+        try
+        {
+            var key = await HeroProjectService.UploadScreenshotAsync(_project.Id, e.File);
+            _heroInput.ScreenshotPath = key;
+            _screenshotPreviewUrl = await HeroProjectService.ResolveScreenshotUrlAsync(key);
+        }
+        catch (Exception ex)
+        {
+            _screenshotError = ex.Message;
+        }
+        finally
+        {
+            _uploadingScreenshot = false;
+        }
+    }
+
+    private async Task RemoveScreenshotAsync()
+    {
+        if (_project is null) return;
+        _screenshotError = null;
+        try
+        {
+            await HeroProjectService.RemoveScreenshotAsync(_project.Id);
+            _heroInput.ScreenshotPath = null;
+            _screenshotPreviewUrl = null;
+        }
+        catch (Exception ex)
+        {
+            _screenshotError = ex.Message;
+        }
+    }
+
+    private async Task SaveHeroAsync()
+    {
+        if (_project is null) return;
+        _savingHero = true;
+        _heroError = null;
+        _heroSaved = false;
+        try
+        {
+            await HeroProjectService.SaveHeroSettingsAsync(
+                _project.Id,
+                _heroInput.IsHeroProject,
+                _heroInput.HeroDisplayOrder,
+                _heroInput.HeroTagline,
+                _heroInput.HeroShowcaseUrl,
+                _heroInput.ScreenshotPath);
+
+            await HeroProjectService.SaveMetricsAsync(_project.Id,
+                _heroMetrics.Select(m => new FellsideDigital.Web.Data.ProjectMetric
+                {
+                    Value = m.Value,
+                    Label = m.Label,
+                    Style = m.Style
+                }).ToList());
+
+            await HeroProjectService.SavePipelineStepsAsync(_project.Id,
+                _heroPipelineSteps.Select(s => new FellsideDigital.Web.Data.ProjectPipelineStep
+                {
+                    Label = s.Label,
+                    StepType = s.StepType
+                }).ToList());
+
+            await HeroProjectService.SaveIntegrationsAsync(_project.Id,
+                _heroIntegrations.Select(i => new FellsideDigital.Web.Data.ProjectIntegration
+                {
+                    Name = i.Name
+                }).ToList());
+
+            _heroSaved = true;
+        }
+        catch (Exception ex)
+        {
+            _heroError = $"Failed to save: {ex.Message}";
+        }
+        finally
+        {
+            _savingHero = false;
+        }
+    }
+
     private sealed class InputModel
     {
         [Required] public string Name { get; set; } = "";
@@ -172,5 +328,32 @@ public partial class Edit : ComponentBase
         public string? Dependencies { get; set; }
         public string? InternalNotes { get; set; }
         public bool IsExpanded { get; set; } = true;
+    }
+
+    private sealed class HeroInputModel
+    {
+        public bool IsHeroProject { get; set; }
+        public int HeroDisplayOrder { get; set; }
+        public string? HeroTagline { get; set; }
+        public string? HeroShowcaseUrl { get; set; }
+        public string? ScreenshotPath { get; set; }
+    }
+
+    private sealed class MetricEditorModel
+    {
+        public string Value { get; set; } = "";
+        public string Label { get; set; } = "";
+        public MetricStyle Style { get; set; } = MetricStyle.Neutral;
+    }
+
+    private sealed class PipelineStepEditorModel
+    {
+        public string Label { get; set; } = "";
+        public PipelineStepType StepType { get; set; } = PipelineStepType.Process;
+    }
+
+    private sealed class IntegrationEditorModel
+    {
+        public string Name { get; set; } = "";
     }
 }

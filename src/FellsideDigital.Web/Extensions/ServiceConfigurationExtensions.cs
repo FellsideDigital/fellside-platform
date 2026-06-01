@@ -91,7 +91,9 @@ public static class ServiceConfigurationExtensions
     {
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IHeroProjectService, HeroProjectService>();
         services.AddScoped<LayoutStateService>();
+        services.AddScoped<PortalPreviewState>();
         return services;
     }
 

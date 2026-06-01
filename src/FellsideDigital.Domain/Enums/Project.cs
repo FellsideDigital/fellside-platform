@@ -25,3 +25,18 @@ public enum PhaseStatus
     [Display(Name = "On Hold")] OnHold,
     Completed
 }
+
+public enum MetricStyle
+{
+    Neutral,
+    Up,
+    Speed,
+    Warm
+}
+
+public enum PipelineStepType
+{
+    Trigger,
+    Process,
+    Output
+}

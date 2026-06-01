@@ -13,6 +13,7 @@ public partial class Index : ComponentBase
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
+    [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
 
     private bool _loading = true;
     private string _firstName = "there";
@@ -25,14 +26,19 @@ public partial class Index : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState.GetAuthenticationStateAsync();
-        _userId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrWhiteSpace(_userId)) { _loading = false; return; }
+        var ownUserId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(ownUserId)) { _loading = false; return; }
 
-        var user = await UserManager.GetUserAsync(authState.User);
+        var isSiteAdmin = authState.User.IsInRole("SiteAdmin");
+        _userId = PreviewState.ResolveClientId(ownUserId, isSiteAdmin);
+
+        // Resolve the user whose portal is being shown (the previewed client when
+        // an admin is previewing, otherwise the logged-in user) for the greeting.
+        var user = await UserManager.FindByIdAsync(_userId);
         if (user is not null)
         {
             _firstName = !string.IsNullOrWhiteSpace(user.FirstName) ? user.FirstName
-                : authState.User.FindFirstValue(ClaimTypes.Email) ?? "there";
+                : user.Email ?? "there";
         }
 
         _projects = await ProjectService.GetForClientAsync(_userId);

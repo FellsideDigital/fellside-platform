@@ -5,8 +5,7 @@
          Match="@Match"
          class="@ResolvedClass"
          ActiveClass="@ActiveClass"
-         onclick="@OnClick"
-         onclick:preventDefault="@Disabled">
+         @onclick:preventDefault="@Disabled">
     @if (Icon.HasValue)
     {
         <Icon Name="@Icon.Value" />
@@ -63,14 +62,6 @@
         Disabled
             ? $"{Class} opacity-50 pointer-events-none cursor-not-allowed"
             : Class;
-
-    private void OnClick(MouseEventArgs e)
-    {
-        if (Disabled)
-        {
-            return;
-        }
-    }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

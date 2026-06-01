@@ -69,11 +69,21 @@ extension).
 Replaces both mock pages and reuses the existing entry-point route name so the
 links in `Detail.razor` and `Index.razor` need only minimal change.
 
-- `@attribute [Authorize(Roles = "SiteAdmin")]`, no layout/visible UI.
-- `OnInitializedAsync`: load the project by `Id`; if missing → redirect to
+- `@attribute [Authorize(Roles = "SiteAdmin")]`, shows only a brief "Opening
+  portal preview…" spinner.
+- `OnInitializedAsync` guards on `RendererInfo.IsInteractive` and returns during
+  the prerender pass. This is essential: `PortalPreviewState` is scoped to the
+  Blazor **circuit**, which is a different DI scope than the per-request prerender
+  scope. The app prerenders by default (`InteractiveServer` via
+  `AcceptsInteractiveRouting()` in `App.razor`), and a `NavigateTo` during
+  prerender is an HTTP redirect that would discard circuit state. Running only on
+  the interactive pass means the `NavigateTo("/Portal")` is in-circuit client
+  routing, so the state set by `Enter` survives into the portal pages (same
+  circuit, same scope).
+- On the interactive pass: load the project by `Id`; if missing → redirect to
   `/Admin/Projects`. Resolve the client's display name (from the project's client
-  user — first/last name, falling back to email). Call
-  `PortalPreviewState.Enter(project.ClientId, clientName, project.Id)`. Redirect
+  user — first/last name, falling back to company name, then email). Call
+  `PortalPreviewState.Enter(project.ClientId, clientName, project.Id)`. Navigate
   to `/Portal`.
 
 ### 3. Portal data pages — resolve via the override

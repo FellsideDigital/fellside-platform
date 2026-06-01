@@ -29,4 +29,15 @@ public class ClientProject
     public ICollection<Invoice> Invoices { get; set; } = [];
     public ICollection<ProjectStatusUpdate> StatusUpdates { get; set; } = [];
     public ICollection<ProjectPlanPhase> PlanPhases { get; set; } = [];
+
+    // Hero showcase
+    public bool IsHeroProject { get; set; } = false;
+    public int HeroDisplayOrder { get; set; } = 0;
+    public string? HeroTagline { get; set; }
+    public string? HeroShowcaseUrl { get; set; }
+    public string? ScreenshotPath { get; set; }
+
+    public ICollection<ProjectMetric> Metrics { get; set; } = [];
+    public ICollection<ProjectPipelineStep> PipelineSteps { get; set; } = [];
+    public ICollection<ProjectIntegration> Integrations { get; set; } = [];
 }
