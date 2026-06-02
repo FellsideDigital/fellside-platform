@@ -1,35 +1,37 @@
-@using System.Security.Claims
 @using FellsideDigital.UI.Components.Icons
-@using FellsideDigital.UI.Enums
 @using FellsideDigital.Web.Components.Account.Pages.Manage
-@using Microsoft.AspNetCore.Identity
-@using FellsideDigital.Web.Data
 @inherits LayoutComponentBase
 
 <HeadContent>
     <meta name="robots" content="noindex, nofollow" />
 </HeadContent>
 
+<!-- Mobile sidebar drawer -->
 @if (_sidebarOpen)
 {
     <div class="relative z-50 lg:hidden" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear" @onclick="CloseSidebar"></div>
-
-        <div tabindex="0" class="fixed inset-0 flex focus:outline-none">
-            <div class="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out">
-                <div class="absolute top-0 left-full flex w-16 justify-center pt-5 duration-300 ease-in-out">
-                    <button type="button" class="-m-2.5 p-2.5" @onclick="CloseSidebar">
-                        <span class="sr-only">Close sidebar</span>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="size-6 text-white">
-                            <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="relative flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2 dark:bg-gray-900 dark:before:pointer-events-none dark:before:absolute dark:before:inset-0 dark:before:border-r dark:before:border-white/10 dark:before:bg-black/10">
-                    <AdminSidebarContent UserName="@_displayName" UserInitials="@_initials" />
-                </div>
+        <div class="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm transition-opacity"
+             @onclick="CloseSidebar"></div>
+        <div class="fixed inset-y-0 left-0 flex w-64 flex-col
+                    bg-white dark:bg-neutral-900
+                    border-r border-slate-200 dark:border-white/10
+                    shadow-xl overflow-hidden">
+            <!-- Drawer header -->
+            <div class="flex items-center justify-between h-14 px-4 border-b border-slate-200 dark:border-white/10 shrink-0">
+                <NavLink href="/" class="flex items-center gap-2.5">
+                    <FellsideLogo />
+                </NavLink>
+                <button type="button"
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600
+                               dark:text-neutral-500 dark:hover:text-neutral-300
+                               hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                        @onclick="CloseSidebar">
+                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
+            <AdminSidebarContent UserName="@_displayName" UserInitials="@_initials" />
         </div>
     </div>
 }
@@ -96,7 +98,7 @@
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 min-w-0 min-h-[calc(100vh-3.5rem)] bg-white dark:bg-neutral-950">
+    <main class=" bg-white dark:bg-neutral-900 flex-1 min-w-0 min-h-[calc(100vh-3.5rem)]">
         <div class="px-4 pt-5 pb-12 sm:px-6 lg:px-8 lg:pt-6">
             @Body
         </div>

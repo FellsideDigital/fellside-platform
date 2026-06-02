@@ -1,10 +1,5 @@
-@using System.Security.Claims
 @using FellsideDigital.UI.Components.Icons
-@using FellsideDigital.UI.Components.Navigation
-@using FellsideDigital.UI.Enums
 @using FellsideDigital.Web.Components.Account.Pages.Manage
-@using Microsoft.AspNetCore.Identity
-@using FellsideDigital.Web.Data
 @inherits LayoutComponentBase
 
 <HeadContent>
@@ -36,7 +31,7 @@
                     </svg>
                 </button>
             </div>
-            <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" />
+            <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" Projects="_projects" />
         </div>
     </div>
 }
@@ -121,7 +116,7 @@
                   lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto
                   bg-white dark:bg-neutral-900
                   border-r border-slate-200 dark:border-white/10">
-        <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" />
+        <PortalSidebarContent UserName="@_displayName" UserInitials="@_initials" Projects="_projects" />
     </aside>
 
     <!-- Main content -->

@@ -1,5 +1,7 @@
 @using FellsideDigital.UI.Components.Icons
 @using FellsideDigital.UI.Components.Navigation
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Components.Shared
 @using Microsoft.AspNetCore.Components.Routing
 
 <nav class="flex flex-col flex-1 py-5 px-3 gap-0.5 overflow-y-auto">
@@ -40,6 +42,43 @@
         Your Projects
     </p>
 
+    @if (Projects is null)
+    {
+        <!-- Loading skeleton -->
+        <div class="px-2.5 py-1.5 space-y-2 animate-pulse">
+            @for (var i = 0; i < 2; i++)
+            {
+                <div class="flex items-center gap-2.5">
+                    <div class="size-2 rounded-full bg-slate-200 dark:bg-white/10 shrink-0"></div>
+                    <div class="h-3 flex-1 rounded bg-slate-100 dark:bg-white/5"></div>
+                </div>
+            }
+        </div>
+    }
+    else if (Projects.Count == 0)
+    {
+        <p class="px-2.5 py-1.5 text-xs text-slate-400 dark:text-neutral-500">
+            No projects yet
+        </p>
+    }
+    else
+    {
+        @foreach (var project in Projects)
+        {
+            <NavLink href="@($"/Portal/Projects/{project.Id}")"
+                     Match="NavLinkMatch.All"
+                     class="navigation-button flex items-center gap-2.5 px-2.5 py-[9px] rounded-[10px]
+                            text-sm font-medium text-slate-500 dark:text-neutral-400
+                            hover:bg-slate-100 dark:hover:bg-white/5
+                            hover:text-slate-900 dark:hover:text-white
+                            transition-colors duration-150"
+                     ActiveClass="bg-accent/10 !text-accent dark:!text-accent !font-medium hover:!bg-accent/10 hover:!text-accent dark:hover:!text-accent">
+                <span class="size-2 shrink-0 rounded-full @BadgeHelpers.ProjectStatusDotColor(project.Status)"></span>
+                <span class="truncate">@project.Name</span>
+            </NavLink>
+        }
+    }
+
     <!-- User chip -->
     <div class="mt-auto pt-4 border-t border-slate-200/80 dark:border-white/5">
         <NavLink href="/Portal/Settings"
@@ -69,4 +108,5 @@
     [Parameter] public string UserName { get; set; } = "";
     [Parameter] public string UserInitials { get; set; } = "";
     [Parameter] public string CompanyName { get; set; } = "";
+    [Parameter] public List<ClientProject>? Projects { get; set; }
 }

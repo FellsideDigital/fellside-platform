@@ -1,6 +1,8 @@
+name: fellside-digital
+
 services:
   fellsidedigital:
-    container_name: fellside_digital
+    container_name: fellside_digital_web
     image: ${DOCKER_REGISTRY-}fellsidedigital
     build:
       context: ./src
@@ -15,7 +17,7 @@ services:
       - Email__ClientId=${CLIENT_ID}
       - Email__ClientSecret=${CLIENT_SECRET}
 
-      - Storage__ServiceUrl=http://minio:9000
+      - Storage__ServiceUrl=http://localhost:9000
       - Storage__PublicUrl=http://localhost:9000
       - Storage__AccessKey=minioadmin
       - Storage__SecretKey=minioadmin
@@ -47,10 +49,12 @@ services:
     ports:
       - "5432:5432"
 
-  minio:
+  fellsidedigital-storage:
     image: minio/minio:latest
-    container_name: minio
-    command: server /data --console-address ":9001"
+    container_name: fellsidedigital_storage
+    # Create the bucket on first boot, then hand off to the server. Single-drive MinIO
+    # exposes top-level data dirs as buckets, so this removes the separate init container.
+    entrypoint: ["sh", "-c", "mkdir -p /data/fellside-digital && exec minio server /data --console-address ':9001'"]
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
@@ -60,20 +64,10 @@ services:
     volumes:
       - minio_data:/data
 
-  minio-init:
-    image: minio/mc:latest
-    container_name: minio-init
-    restart: on-failure
-    depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-        mc alias set local http://minio:9000 minioadmin minioadmin &&
-        mc mb --ignore-existing local/fellside-digital &&
-        echo 'MinIO bucket ready.'
-      "
-
 volumes:
   pgdata:
+    name: fellside-digital_pgdata
   keys_volume:
+    name: fellside-digital_keys_volume
   minio_data:
+    name: fellside-digital_minio_data
