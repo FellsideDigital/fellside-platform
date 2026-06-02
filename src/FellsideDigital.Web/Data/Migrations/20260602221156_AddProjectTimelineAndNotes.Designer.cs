@@ -3,6 +3,7 @@ using System;
 using FellsideDigital.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FellsideDigital.Web.Data.Migrations
 {
     [DbContext(typeof(FellsideDigitalDbContext))]
-    partial class FellsideDigitalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260602221156_AddProjectTimelineAndNotes")]
+    partial class AddProjectTimelineAndNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,37 +348,6 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Invoices");
-                });
-
-            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectDocument", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ProjectId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("ProjectDocuments");
                 });
 
             modelBuilder.Entity("FellsideDigital.Web.Data.ProjectIntegration", b =>
@@ -867,17 +839,6 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("FellsideDigital.Web.Data.ProjectDocument", b =>
-                {
-                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
-                        .WithMany("Documents")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
             modelBuilder.Entity("FellsideDigital.Web.Data.ProjectIntegration", b =>
                 {
                     b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
@@ -1028,8 +989,6 @@ namespace FellsideDigital.Web.Data.Migrations
 
             modelBuilder.Entity("FellsideDigital.Web.Data.ClientProject", b =>
                 {
-                    b.Navigation("Documents");
-
                     b.Navigation("Integrations");
 
                     b.Navigation("Invoices");

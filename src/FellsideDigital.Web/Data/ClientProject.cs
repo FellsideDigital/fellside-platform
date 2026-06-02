@@ -27,8 +27,10 @@ public class ClientProject
     public ApplicationUser? CreatedByAdmin { get; set; }
 
     public ICollection<Invoice> Invoices { get; set; } = [];
-    public ICollection<ProjectStatusUpdate> StatusUpdates { get; set; } = [];
+    public ICollection<ProjectNote> Notes { get; set; } = [];
+    public ICollection<ProjectTimelineEvent> TimelineEvents { get; set; } = [];
     public ICollection<ProjectPlanPhase> PlanPhases { get; set; } = [];
+    public ICollection<ProjectDocument> Documents { get; set; } = [];
 
     // Hero showcase
     public bool IsHeroProject { get; set; } = false;

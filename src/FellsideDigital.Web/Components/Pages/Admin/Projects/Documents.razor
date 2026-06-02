@@ -1,0 +1,118 @@
+@page "/Admin/Projects/{Id:guid}/Documents"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using FellsideDigital.Web.Services
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Components.Layout
+@using FellsideDigital.Web.Components.Shared
+
+<PageTitle>Project documents — Fellside Digital Admin</PageTitle>
+
+@if (_project is null)
+{
+    <div class="animate-pulse space-y-4 max-w-3xl">
+        <div class="h-4 w-24 rounded-md bg-gray-200 dark:bg-white/10"></div>
+        <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-56"></div>
+    </div>
+}
+else
+{
+    <div class="max-w-3xl space-y-5">
+
+        <!-- Header -->
+        <div>
+            <a href="@($"/Admin/Projects/{Id}")"
+               class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
+                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+                Back to project
+            </a>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Project documents</h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">@_project.Name · @_project.Client?.CompanyName</p>
+        </div>
+
+        <!-- Upload -->
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Share a document</h2>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-neutral-400">
+                    Upload a proposal or any file you want the client to see. Everything here is visible to the client on their project page. PDF, Word or image, up to 25&nbsp;MB.
+                </p>
+            </div>
+            <div class="p-5 space-y-4">
+                @if (_error is not null)
+                {
+                    <p class="text-sm text-red-500">@_error</p>
+                }
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1.5">Title <span class="text-red-500">*</span></label>
+                    <input @bind="_newTitle" placeholder="e.g. Project proposal" class="@InputClass" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1.5">File <span class="text-red-500">*</span></label>
+                    <InputFile OnChange="OnFileSelected" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                               class="block w-full text-sm text-gray-600 dark:text-neutral-300 file:mr-3 file:rounded-lg file:border-0 file:bg-accent file:px-3.5 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:opacity-90" />
+                    @if (_selectedFile is not null)
+                    {
+                        <p class="mt-1.5 text-xs text-gray-400 dark:text-neutral-500">@_selectedFile.Name</p>
+                    }
+                </div>
+                <div class="flex justify-end">
+                    <SpinnerButton IsLoading="@_saving"
+                                   LoadingText="Uploading…"
+                                   Disabled="@(string.IsNullOrWhiteSpace(_newTitle) || _selectedFile is null)"
+                                   OnClick="UploadAsync">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 7.5 12 3m0 0L7.5 7.5M12 3v13.5" />
+                        </svg>
+                        <span>Upload</span>
+                    </SpinnerButton>
+                </div>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Documents</h2>
+            </div>
+            @if (_documents.Count == 0)
+            {
+                <div class="px-5 py-8 text-center">
+                    <p class="text-sm text-gray-400 dark:text-neutral-500">No documents yet.</p>
+                </div>
+            }
+            else
+            {
+                <ul role="list" class="divide-y divide-gray-100 dark:divide-white/5">
+                    @foreach (var doc in _documents)
+                    {
+                        <li class="flex items-center gap-4 px-5 py-4">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">@doc.Title</p>
+                                <p class="mt-0.5 text-[11px] text-gray-400 dark:text-neutral-500 truncate">
+                                    @doc.FileName · @doc.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                @if (_downloadUrls.TryGetValue(doc.Id, out var url) && !string.IsNullOrEmpty(url))
+                                {
+                                    <a href="@url" target="_blank" rel="noopener noreferrer"
+                                       class="text-xs font-medium text-accent hover:opacity-80 transition-opacity">View ↗</a>
+                                }
+                                <button type="button" @onclick="() => DeleteAsync(doc.Id)"
+                                        class="rounded-lg p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" title="Delete">
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+}

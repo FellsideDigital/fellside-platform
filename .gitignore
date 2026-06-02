@@ -361,3 +361,6 @@ FodyWeavers.xsd
 /FellsideDigital.Web/package-lock.json
 /FellsideDigital.Web/wwwroot/css/tailwind.css
 /src/FellsideDigital.Web/wwwroot/css/tailwind.css
+
+# Brainstorming visual companion
+.superpowers/

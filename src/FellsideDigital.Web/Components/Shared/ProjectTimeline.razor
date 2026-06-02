@@ -1,0 +1,91 @@
+@using FellsideDigital.Domain.Enums
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Services
+@* Reusable, newest-first project timeline. Rendering for each event type is resolved via
+   TimelineEventPresenter (no per-type switch here), so new event types need no change to
+   this component. Audience is a defence-in-depth filter: a Client audience never renders
+   internal-only events even if some are passed in. *@
+
+@{
+    var visible = Events
+        .Where(e => Audience == TimelineAudience.Admin || e.Visibility == TimelineVisibility.ClientVisible)
+        .OrderByDescending(e => e.OccurredAt)
+        .ToList();
+
+    if (Max is { } max)
+        visible = visible.Take(max).ToList();
+}
+
+@if (visible.Count == 0)
+{
+    <div class="px-5 py-8 text-center">
+        <p class="text-sm text-gray-400 dark:text-neutral-500">@EmptyText</p>
+    </div>
+}
+else
+{
+    <ul role="list" class="@($"px-5 py-5 {Class}")">
+        @for (var i = 0; i < visible.Count; i++)
+        {
+            var e = visible[i];
+            var isLast = i == visible.Count - 1;
+            var visual = TimelineEventPresenter.Resolve(e.Type);
+            var isInternal = e.Visibility == TimelineVisibility.Internal;
+
+            <li class="relative flex gap-x-4 @(isLast ? "" : "pb-5")">
+                @if (!isLast)
+                {
+                    <div class="absolute top-8 left-[15px] -bottom-1 w-px bg-gray-200 dark:bg-white/10"></div>
+                }
+                <div class="relative flex size-8 flex-none items-center justify-center rounded-lg @visual.IconWrapClasses mt-0.5">
+                    <svg class="size-4 @visual.IconColorClasses" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="@visual.IconPath" />
+                    </svg>
+                </div>
+                <div class="flex-auto min-w-0">
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white leading-snug">@e.Summary</p>
+                        @if (Audience == TimelineAudience.Admin && isInternal)
+                        {
+                            <span class="inline-flex items-center rounded-full bg-gray-100 dark:bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Internal</span>
+                        }
+                    </div>
+
+                    @if (e.Type == TimelineEventType.NoteAdded && e.Note is not null && !string.IsNullOrWhiteSpace(e.Note.Body))
+                    {
+                        <div class="mt-1.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 px-3.5 py-2.5">
+                            <p class="text-sm text-gray-700 dark:text-neutral-200 leading-relaxed whitespace-pre-line">@e.Note.Body</p>
+                        </div>
+                    }
+
+                    <p class="mt-1 text-[11px] text-gray-400 dark:text-neutral-500">
+                        @if (ShowProjectName && e.Project is not null)
+                        {
+                            <span>@e.Project.Name · </span>
+                        }
+                        @e.OccurredAt.ToLocalTime().ToString(TimeFormat)
+                        @if (!string.IsNullOrWhiteSpace(e.ActorName))
+                        {
+                            <span> · @e.ActorName</span>
+                        }
+                    </p>
+                </div>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ProjectTimelineEvent> Events { get; set; } = [];
+
+    /// <summary>Defence-in-depth visibility filter. Client audience never renders internal events.</summary>
+    [Parameter] public TimelineAudience Audience { get; set; } = TimelineAudience.Client;
+
+    /// <summary>Cap the number of entries shown (e.g. dashboard previews). Null = show all.</summary>
+    [Parameter] public int? Max { get; set; }
+
+    [Parameter] public string EmptyText { get; set; } = "No activity yet.";
+    [Parameter] public string TimeFormat { get; set; } = "d MMM yyyy, HH:mm";
+    [Parameter] public bool ShowProjectName { get; set; }
+    [Parameter] public string Class { get; set; } = "space-y-0";
+}

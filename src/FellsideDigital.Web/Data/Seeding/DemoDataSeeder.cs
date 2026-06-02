@@ -169,10 +169,39 @@ public static class DemoDataSeeder
             },
         };
 
+        var adminName = $"{admin.FirstName} {admin.LastName}".Trim();
+        if (string.IsNullOrWhiteSpace(adminName)) adminName = admin.Email ?? "Fellside Digital";
+
         foreach (var project in projects)
         {
             project.CreatedAt = now;
             project.UpdatedAt = now;
+
+            // Give each demo project a minimal timeline so the feed isn't empty on a fresh seed.
+            project.TimelineEvents.Add(new ProjectTimelineEvent
+            {
+                Id = Guid.NewGuid(),
+                Type = TimelineEventType.ProjectCreated,
+                Summary = "Project created",
+                Visibility = TimelineVisibility.ClientVisible,
+                ActorId = admin.Id,
+                ActorName = adminName,
+                OccurredAt = now.AddDays(-30)
+            });
+
+            if (project.Status == ProjectStatus.Completed)
+            {
+                project.TimelineEvents.Add(new ProjectTimelineEvent
+                {
+                    Id = Guid.NewGuid(),
+                    Type = TimelineEventType.ProjectCompleted,
+                    Summary = "Project completed",
+                    Visibility = TimelineVisibility.ClientVisible,
+                    ActorId = admin.Id,
+                    ActorName = adminName,
+                    OccurredAt = now.AddDays(-1)
+                });
+            }
         }
 
         db.ClientProjects.AddRange(projects);

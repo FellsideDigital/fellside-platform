@@ -1,3 +1,4 @@
+@using FellsideDigital.UI.Components.Icons
 @inherits LayoutComponentBase
 
 <div class="flex flex-col min-h-screen
@@ -22,9 +23,7 @@
                 <!-- Brand -->
                 <div class="lg:col-span-1">
                     <div class="flex items-center gap-2.5 mb-5">
-                        <img src="/imgs/svgs/fellside-tarn-indigo.svg" class="h-7 w-auto dark:hidden" alt="Fellside Digital" />
-                        <img src="/imgs/svgs/fellside-tarn-orange.svg" class="h-7 w-auto hidden dark:block" alt="Fellside Digital" />
-                        <span class="font-semibold text-slate-900 dark:text-white">Fellside Digital</span>
+                        <FellsideLogo IncludeText="true" class="size-6" />
                     </div>
                     <p class="text-sm text-slate-500 dark:text-neutral-400 leading-relaxed max-w-xs">
                         Bespoke websites and intelligent automation, built with intent. <br>Based in Keswick, Cumbria&nbsp;·&nbsp;Working UK-wide.
