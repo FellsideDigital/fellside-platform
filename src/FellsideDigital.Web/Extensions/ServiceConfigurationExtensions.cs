@@ -90,7 +90,10 @@ public static class ServiceConfigurationExtensions
     public static IServiceCollection ConfigurePortalServices(this IServiceCollection services)
     {
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IProjectTimelineService, ProjectTimelineService>();
+        services.AddScoped<IProjectNoteService, ProjectNoteService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
         services.AddScoped<IHeroProjectService, HeroProjectService>();
         services.AddScoped<LayoutStateService>();
         services.AddScoped<PortalPreviewState>();
