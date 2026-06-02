@@ -10,8 +10,10 @@ namespace FellsideDigital.Web.Data
         public DbSet<ClientInvitation> ClientInvitations => Set<ClientInvitation>();
         public DbSet<ClientProject> ClientProjects => Set<ClientProject>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
-        public DbSet<ProjectStatusUpdate> ProjectStatusUpdates => Set<ProjectStatusUpdate>();
+        public DbSet<ProjectNote> ProjectNotes => Set<ProjectNote>();
+        public DbSet<ProjectTimelineEvent> ProjectTimelineEvents => Set<ProjectTimelineEvent>();
         public DbSet<ProjectPlanPhase> ProjectPlanPhases => Set<ProjectPlanPhase>();
+        public DbSet<ProjectDocument> ProjectDocuments => Set<ProjectDocument>();
         public DbSet<ContactEnquiry> ContactEnquiries => Set<ContactEnquiry>();
         public DbSet<QrScan> QrScans => Set<QrScan>();
         public DbSet<QrLead> QrLeads => Set<QrLead>();
@@ -132,17 +134,40 @@ namespace FellsideDigital.Web.Data
                     .HasColumnType("decimal(18,2)");
             });
 
-            builder.Entity<ProjectStatusUpdate>(e =>
+            builder.Entity<ProjectNote>(e =>
             {
-                e.HasOne(u => u.Project)
-                    .WithMany(p => p.StatusUpdates)
-                    .HasForeignKey(u => u.ProjectId)
+                e.HasOne(n => n.Project)
+                    .WithMany(p => p.Notes)
+                    .HasForeignKey(n => n.ProjectId)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                e.HasOne(u => u.CreatedByAdmin)
+                e.HasOne(n => n.Author)
                     .WithMany()
-                    .HasForeignKey(u => u.CreatedByAdminId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .HasForeignKey(n => n.AuthorId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<ProjectTimelineEvent>(e =>
+            {
+                e.HasOne(ev => ev.Project)
+                    .WithMany(p => p.TimelineEvents)
+                    .HasForeignKey(ev => ev.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasOne(ev => ev.Actor)
+                    .WithMany()
+                    .HasForeignKey(ev => ev.ActorId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                e.HasOne(ev => ev.Note)
+                    .WithMany()
+                    .HasForeignKey(ev => ev.NoteId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                e.HasIndex(ev => new { ev.ProjectId, ev.OccurredAt });
             });
 
             builder.Entity<ProjectPlanPhase>(e =>
@@ -150,6 +175,14 @@ namespace FellsideDigital.Web.Data
                 e.HasOne(ph => ph.Project)
                     .WithMany(p => p.PlanPhases)
                     .HasForeignKey(ph => ph.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ProjectDocument>(e =>
+            {
+                e.HasOne(d => d.Project)
+                    .WithMany(p => p.Documents)
+                    .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
