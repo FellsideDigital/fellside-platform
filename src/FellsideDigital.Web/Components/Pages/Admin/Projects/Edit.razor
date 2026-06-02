@@ -12,7 +12,7 @@
 
 <PageTitle>Edit Project — Fellside Digital Admin</PageTitle>
 
-<div class="mb-8">
+<div class="mb-6">
     <a href="@($"/Admin/Projects/{Id}")"
        class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -35,14 +35,35 @@ else
 {
     <AlertBanner Message="@_errorMessage" Variant="error" Class="mb-6" />
 
-    <div class="max-w-4xl space-y-6">
+    <div class="max-w-4xl">
 
-        <!-- ── Core details card ── -->
-        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8">
-            <EditForm Model="Input" OnValidSubmit="SaveAsync" class="space-y-6">
-                <DataAnnotationsValidator />
+        <!-- ── Tab nav ── -->
+        <div role="tablist" class="flex items-center gap-1 border-b border-gray-200 dark:border-white/5 mb-6">
+            <button type="button" role="tab" @onclick="@(() => _activeTab = "details")" class="@TabClass("details")">
+                Details
+            </button>
+            <button type="button" role="tab" @onclick="@(() => _activeTab = "plan")" class="@TabClass("plan")">
+                Plan
+                @if (_phases.Count > 0)
+                {
+                    <span class="ml-1.5 rounded-full bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold text-gray-500 dark:text-neutral-400">@_phases.Count</span>
+                }
+            </button>
+            <button type="button" role="tab" @onclick="@(() => _activeTab = "showcase")" class="@TabClass("showcase")">
+                Showcase
+                @if (_heroInput.IsHeroProject)
+                {
+                    <span class="ml-1.5 inline-block size-1.5 rounded-full bg-accent align-middle"></span>
+                }
+            </button>
+        </div>
 
-                <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider -mb-2">Project details</p>
+        <!-- ── Details + Plan share one form (saved together) ── -->
+        <EditForm Model="Input" OnValidSubmit="SaveAsync" OnInvalidSubmit="OnInvalidEdit">
+            <DataAnnotationsValidator />
+
+            <!-- ── Details tab ── -->
+            <div class="@(_activeTab == "details" ? "rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6 sm:p-8 space-y-6" : "hidden")">
 
                 <div>
                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
@@ -110,8 +131,190 @@ else
                         <InputTextArea @bind-Value="Input.DeploymentNotes" rows="2" class="@($"{InputClass} resize-none")" />
                     </div>
                 </div>
+            </div>
 
-                <div class="flex items-center justify-end gap-4 pt-2 border-t border-gray-100 dark:border-white/5">
+            <!-- ── Plan tab ── -->
+            <div class="@(_activeTab == "plan" ? "rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm" : "hidden")">
+                <div class="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-white/5">
+                    <div>
+                        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Project plan</h2>
+                        <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">Up to 5 phases. Saved together with project details.</p>
+                    </div>
+                    @if (_phases.Count < 5)
+                    {
+                        <button type="button" @onclick="AddPhase"
+                                class="inline-flex items-center gap-1.5 rounded-xl bg-accent/10 hover:bg-accent/20 text-accent px-3.5 py-2 text-xs font-semibold transition-colors">
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Add phase
+                        </button>
+                    }
+                </div>
+
+                <div class="divide-y divide-gray-100 dark:divide-white/5">
+                    @if (_phases.Count == 0)
+                    {
+                        <div class="px-6 sm:px-8 py-10 text-center">
+                            <div class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5">
+                                <svg class="size-5 text-gray-400 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                                </svg>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900 dark:text-white">No phases yet</p>
+                            <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">Add phases to give the client a clear project roadmap.</p>
+                        </div>
+                    }
+
+                    @for (int i = 0; i < _phases.Count; i++)
+                    {
+                        var idx = i;
+                        var phase = _phases[idx];
+
+                        <div class="transition-all">
+                            <div class="flex items-center gap-3 px-6 sm:px-8 py-4">
+                                <span class="flex-none flex size-6 items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-xs font-bold text-gray-500 dark:text-neutral-400">
+                                    @(idx + 1)
+                                </span>
+
+                                <button type="button" @onclick="() => TogglePhase(idx)" class="flex-1 text-left min-w-0">
+                                    <span class="block text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                        @(string.IsNullOrWhiteSpace(phase.Title) ? "Untitled phase" : phase.Title)
+                                    </span>
+                                    @if (!string.IsNullOrWhiteSpace(phase.ShortLabel))
+                                    {
+                                        <span class="block text-xs text-gray-500 dark:text-neutral-400 truncate">@phase.ShortLabel</span>
+                                    }
+                                </button>
+
+                                <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium @BadgeHelpers.PhaseStatusBadge(phase.Status)">
+                                    <span class="size-1.5 rounded-full @BadgeHelpers.PhaseStatusDotColor(phase.Status)"></span>
+                                    @BadgeHelpers.PhaseStatusLabel(phase.Status)
+                                </span>
+
+                                <div class="flex gap-1">
+                                    <button type="button" @onclick="() => MovePhaseUp(idx)" disabled="@(idx == 0)"
+                                            class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                            title="Move up">
+                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                        </svg>
+                                    </button>
+                                    <button type="button" @onclick="() => MovePhaseDown(idx)" disabled="@(idx == _phases.Count - 1)"
+                                            class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                            title="Move down">
+                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <button type="button" @onclick="() => RemovePhase(idx)"
+                                        class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-400/10 transition-colors"
+                                        title="Remove phase">
+                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+
+                                <button type="button" @onclick="() => TogglePhase(idx)"
+                                        class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                                    <svg class="size-3.5 transition-transform @(phase.IsExpanded ? "rotate-180" : "")"
+                                         fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            @if (phase.IsExpanded)
+                            {
+                                <div class="px-6 sm:px-8 pb-6 space-y-5 border-t border-gray-100 dark:border-white/5 pt-5">
+                                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+                                        <div class="sm:col-span-1">
+                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">
+                                                Phase title <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" @bind="_phases[idx].Title"
+                                                   placeholder="e.g. Discovery & Planning"
+                                                   class="@InputClass" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">
+                                                Short label <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" @bind="_phases[idx].ShortLabel"
+                                                   placeholder="e.g. Discovery"
+                                                   class="@InputClass" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Status</label>
+                                            <select @bind="_phases[idx].Status" class="@InputClass">
+                                                @foreach (var opt in EnumExtensions.ToOptions<PhaseStatus>())
+                                                {
+                                                    <option value="@opt.Value">@opt.Display</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <details class="group">
+                                        <summary class="cursor-pointer text-xs font-semibold text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-white transition-colors select-none list-none flex items-center gap-1.5">
+                                            <svg class="size-3.5 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                            </svg>
+                                            Optional fields
+                                        </summary>
+                                        <div class="mt-4 space-y-4">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Target completion date</label>
+                                                <input type="date"
+                                                       value="@(_phases[idx].TargetCompletionDate?.ToString("yyyy-MM-dd"))"
+                                                       @onchange="e => OnPhaseTargetDateChange(idx, e.Value?.ToString())"
+                                                       class="@InputClass" />
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Notes / description</label>
+                                                <textarea @bind="_phases[idx].Notes" rows="2"
+                                                          placeholder="What happens in this phase?"
+                                                          class="@($"{InputClass} resize-none")"></textarea>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Important information</label>
+                                                <textarea @bind="_phases[idx].ImportantInformation" rows="2"
+                                                          placeholder="Key things the client should know…"
+                                                          class="@($"{InputClass} resize-none")"></textarea>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Dependencies / blockers</label>
+                                                <input type="text" @bind="_phases[idx].Dependencies"
+                                                       placeholder="e.g. Awaiting client content, sign-off required"
+                                                       class="@InputClass" />
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Internal admin notes</label>
+                                                <textarea @bind="_phases[idx].InternalNotes" rows="2"
+                                                          placeholder="Not visible to the client…"
+                                                          class="@($"{InputClass} resize-none")"></textarea>
+                                            </div>
+                                        </div>
+                                    </details>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_phases.Count >= 5)
+                    {
+                        <div class="px-6 sm:px-8 py-3 text-center">
+                            <p class="text-xs text-gray-400 dark:text-neutral-500">Maximum of 5 phases reached.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ── Shared save bar (Details + Plan) ── -->
+            <div class="@(_activeTab == "showcase" ? "hidden" : "")">
+                <div class="sticky bottom-4 mt-6 flex items-center justify-end gap-4 rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white/90 dark:bg-neutral-900/90 backdrop-blur px-6 py-4 shadow-sm">
                     <a href="@($"/Admin/Projects/{Id}")"
                        class="text-sm font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                         Cancel
@@ -120,11 +323,11 @@ else
                         Save changes
                     </SpinnerButton>
                 </div>
-            </EditForm>
-        </div>
+            </div>
+        </EditForm>
 
-        <!-- ── Hero Showcase card ── -->
-        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm">
+        <!-- ── Showcase tab (separate save) ── -->
+        <div class="@(_activeTab == "showcase" ? "rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm" : "hidden")">
             <div class="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-white/5">
                 <div>
                     <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Hero showcase</h2>
@@ -392,7 +595,7 @@ else
 
                     <!-- Save hero settings -->
                     <div class="flex items-center justify-end gap-4 pt-2 border-t border-gray-100 dark:border-white/5">
-                        <SpinnerButton IsLoading="@_savingHero" OnClick="SaveHeroAsync" LoadingText="Saving…" Class="px-5">
+                        <SpinnerButton IsLoading="@_savingHero" Type="button" OnClick="SaveHeroAsync" LoadingText="Saving…" Class="px-5">
                             Save showcase settings
                         </SpinnerButton>
                     </div>
@@ -408,185 +611,6 @@ else
 
                 </div>
             }
-        </div>
-
-        <!-- ── Project Plan card ── -->
-        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm">
-            <div class="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-white/5">
-                <div>
-                    <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Project plan</h2>
-                    <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">Up to 5 phases. Saved together with project details above.</p>
-                </div>
-                @if (_phases.Count < 5)
-                {
-                    <button type="button" @onclick="AddPhase"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-accent/10 hover:bg-accent/20 text-accent px-3.5 py-2 text-xs font-semibold transition-colors">
-                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Add phase
-                    </button>
-                }
-            </div>
-
-            <div class="divide-y divide-gray-100 dark:divide-white/5">
-                @if (_phases.Count == 0)
-                {
-                    <div class="px-6 sm:px-8 py-10 text-center">
-                        <div class="mx-auto mb-3 flex size-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-white/5">
-                            <svg class="size-5 text-gray-400 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
-                            </svg>
-                        </div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">No phases yet</p>
-                        <p class="text-xs text-gray-500 dark:text-neutral-400 mt-1">Add phases to give the client a clear project roadmap.</p>
-                    </div>
-                }
-
-                @for (int i = 0; i < _phases.Count; i++)
-                {
-                    var idx = i;
-                    var phase = _phases[idx];
-
-                    <div class="transition-all">
-                        <div class="flex items-center gap-3 px-6 sm:px-8 py-4">
-                            <span class="flex-none flex size-6 items-center justify-center rounded-full bg-gray-100 dark:bg-white/10 text-xs font-bold text-gray-500 dark:text-neutral-400">
-                                @(idx + 1)
-                            </span>
-
-                            <button type="button" @onclick="() => TogglePhase(idx)" class="flex-1 text-left min-w-0">
-                                <span class="block text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                    @(string.IsNullOrWhiteSpace(phase.Title) ? "Untitled phase" : phase.Title)
-                                </span>
-                                @if (!string.IsNullOrWhiteSpace(phase.ShortLabel))
-                                {
-                                    <span class="block text-xs text-gray-500 dark:text-neutral-400 truncate">@phase.ShortLabel</span>
-                                }
-                            </button>
-
-                            <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium @BadgeHelpers.PhaseStatusBadge(phase.Status)">
-                                <span class="size-1.5 rounded-full @BadgeHelpers.PhaseStatusDotColor(phase.Status)"></span>
-                                @BadgeHelpers.PhaseStatusLabel(phase.Status)
-                            </span>
-
-                            <div class="flex gap-1">
-                                <button type="button" @onclick="() => MovePhaseUp(idx)" disabled="@(idx == 0)"
-                                        class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                        title="Move up">
-                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-                                    </svg>
-                                </button>
-                                <button type="button" @onclick="() => MovePhaseDown(idx)" disabled="@(idx == _phases.Count - 1)"
-                                        class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                                        title="Move down">
-                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <button type="button" @onclick="() => RemovePhase(idx)"
-                                    class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-400/10 transition-colors"
-                                    title="Remove phase">
-                                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-
-                            <button type="button" @onclick="() => TogglePhase(idx)"
-                                    class="p-1.5 rounded-lg text-gray-400 dark:text-neutral-500 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
-                                <svg class="size-3.5 transition-transform @(phase.IsExpanded ? "rotate-180" : "")"
-                                     fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        @if (phase.IsExpanded)
-                        {
-                            <div class="px-6 sm:px-8 pb-6 space-y-5 border-t border-gray-100 dark:border-white/5 pt-5">
-                                <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-                                    <div class="sm:col-span-1">
-                                        <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">
-                                            Phase title <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" @bind="_phases[idx].Title"
-                                               placeholder="e.g. Discovery & Planning"
-                                               class="@InputClass" />
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">
-                                            Short label <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" @bind="_phases[idx].ShortLabel"
-                                               placeholder="e.g. Discovery"
-                                               class="@InputClass" />
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Status</label>
-                                        <select @bind="_phases[idx].Status" class="@InputClass">
-                                            @foreach (var opt in EnumExtensions.ToOptions<PhaseStatus>())
-                                            {
-                                                <option value="@opt.Value">@opt.Display</option>
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <details class="group">
-                                    <summary class="cursor-pointer text-xs font-semibold text-gray-500 dark:text-neutral-400 hover:text-gray-700 dark:hover:text-white transition-colors select-none list-none flex items-center gap-1.5">
-                                        <svg class="size-3.5 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                        </svg>
-                                        Optional fields
-                                    </summary>
-                                    <div class="mt-4 space-y-4">
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Target completion date</label>
-                                            <input type="date"
-                                                   value="@(_phases[idx].TargetCompletionDate?.ToString("yyyy-MM-dd"))"
-                                                   @onchange="e => OnPhaseTargetDateChange(idx, e.Value?.ToString())"
-                                                   class="@InputClass" />
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Notes / description</label>
-                                            <textarea @bind="_phases[idx].Notes" rows="2"
-                                                      placeholder="What happens in this phase?"
-                                                      class="@($"{InputClass} resize-none")"></textarea>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Important information</label>
-                                            <textarea @bind="_phases[idx].ImportantInformation" rows="2"
-                                                      placeholder="Key things the client should know…"
-                                                      class="@($"{InputClass} resize-none")"></textarea>
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Dependencies / blockers</label>
-                                            <input type="text" @bind="_phases[idx].Dependencies"
-                                                   placeholder="e.g. Awaiting client content, sign-off required"
-                                                   class="@InputClass" />
-                                        </div>
-                                        <div>
-                                            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Internal admin notes</label>
-                                            <textarea @bind="_phases[idx].InternalNotes" rows="2"
-                                                      placeholder="Not visible to the client…"
-                                                      class="@($"{InputClass} resize-none")"></textarea>
-                                        </div>
-                                    </div>
-                                </details>
-                            </div>
-                        }
-                    </div>
-                }
-
-                @if (_phases.Count >= 5)
-                {
-                    <div class="px-6 sm:px-8 py-3 text-center">
-                        <p class="text-xs text-gray-400 dark:text-neutral-500">Maximum of 5 phases reached.</p>
-                    </div>
-                }
-            </div>
         </div>
     </div>
 }

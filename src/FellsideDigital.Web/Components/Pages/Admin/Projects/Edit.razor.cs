@@ -21,6 +21,17 @@ public partial class Edit : ComponentBase
     private string? _errorMessage;
     private bool _submitting;
 
+    private string _activeTab = "details";
+
+    private string TabClass(string tab) =>
+        tab == _activeTab
+            ? "inline-flex items-center px-4 py-2.5 text-sm font-semibold text-accent border-b-2 border-accent -mb-px"
+            : "inline-flex items-center px-4 py-2.5 text-sm font-medium text-gray-500 dark:text-neutral-400 border-b-2 border-transparent hover:text-gray-900 dark:hover:text-white transition-colors";
+
+    // A validation failure can occur on a field that lives on the Details tab while
+    // the user is looking at Plan — surface it by snapping back to Details.
+    private void OnInvalidEdit() => _activeTab = "details";
+
     // Hero showcase state
     private HeroInputModel _heroInput = new();
     private List<MetricEditorModel> _heroMetrics = [];

@@ -11,8 +11,27 @@ public partial class Index : ComponentBase
 
     private List<ClientProject>? _projects;
 
+    private ClientProject? _pendingDelete;
+    private bool _deleting;
+
     protected override async Task OnInitializedAsync()
     {
         _projects = await ProjectService.GetAllAsync();
+    }
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (_pendingDelete is null) return;
+        _deleting = true;
+        try
+        {
+            await ProjectService.DeleteAsync(_pendingDelete.Id);
+            _pendingDelete = null;
+            _projects = await ProjectService.GetAllAsync();
+        }
+        finally
+        {
+            _deleting = false;
+        }
     }
 }

@@ -32,6 +32,9 @@ public partial class Detail : ComponentBase
     private bool _uploadingInvoice;
     private string? _invoiceError;
 
+    private bool _showDelete;
+    private bool _deleting;
+
     private const string InputClass =
         "block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white " +
         "ring-1 ring-inset ring-gray-200 dark:ring-white/10 placeholder:text-gray-400 dark:placeholder:text-neutral-500 " +
@@ -106,5 +109,12 @@ public partial class Detail : ComponentBase
     {
         await InvoiceService.DeleteAsync(invoiceId);
         await LoadAsync();
+    }
+
+    private async Task ConfirmDeleteAsync()
+    {
+        _deleting = true;
+        await ProjectService.DeleteAsync(Id);
+        NavigationManager.NavigateTo("/Admin/Projects");
     }
 }

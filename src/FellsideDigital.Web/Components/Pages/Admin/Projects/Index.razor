@@ -164,3 +164,16 @@ else
         </table>
     </CardSection>
 }
+
+<ConfirmModal IsOpen="@(_pendingDelete is not null)"
+              IsOpenChanged="@(open => { if (!open) _pendingDelete = null; })"
+              Title="Delete project?"
+              ConfirmWord="@_pendingDelete?.Name"
+              ConfirmLabel="Delete project"
+              ConfirmingLabel="Deleting…"
+              IsBusy="_deleting"
+              OnConfirm="ConfirmDeleteAsync">
+    This permanently deletes
+    <span class="font-semibold text-gray-900 dark:text-white">@_pendingDelete?.Name</span>
+    along with its invoices, status updates and plan phases. This can't be undone.
+</ConfirmModal>

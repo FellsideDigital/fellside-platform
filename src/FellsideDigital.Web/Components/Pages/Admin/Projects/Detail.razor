@@ -416,4 +416,17 @@ else
             </CardSection>
         </div>
     </div>
+
+    <ConfirmModal IsOpen="_showDelete"
+                  IsOpenChanged="@(open => _showDelete = open)"
+                  Title="Delete project?"
+                  ConfirmWord="@_project.Name"
+                  ConfirmLabel="Delete project"
+                  ConfirmingLabel="Deleting…"
+                  IsBusy="_deleting"
+                  OnConfirm="ConfirmDeleteAsync">
+        This permanently deletes
+        <span class="font-semibold text-gray-900 dark:text-white">@_project.Name</span>
+        along with its invoices, status updates and plan phases. This can't be undone.
+    </ConfirmModal>
 }
