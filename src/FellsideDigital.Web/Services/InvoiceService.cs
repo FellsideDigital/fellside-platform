@@ -10,7 +10,8 @@ namespace FellsideDigital.Web.Services;
 public class InvoiceService(
     FellsideDigitalDbContext db,
     IStorageService storage,
-    IOptions<StorageSettings> storageOptions) : IInvoiceService
+    IOptions<StorageSettings> storageOptions,
+    IProjectTimelineService timeline) : IInvoiceService
 {
     private static readonly HashSet<string> AllowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"];
 
@@ -24,7 +25,7 @@ public class InvoiceService(
 
     public async Task<Invoice> UploadAsync(
         Guid projectId, string title, string? description,
-        decimal amount, string currency, DateTime? dueAt, IBrowserFile file)
+        decimal amount, string currency, DateTime? dueAt, IBrowserFile file, string? actorId = null)
     {
         var ext = Path.GetExtension(file.Name).ToLowerInvariant();
         if (!AllowedExtensions.Contains(ext))
@@ -55,6 +56,11 @@ public class InvoiceService(
 
         db.Invoices.Add(invoice);
         await db.SaveChangesAsync();
+
+        await timeline.RecordAsync(
+            projectId, TimelineEventType.InvoiceCreated, $"Invoice issued: {title}",
+            TimelineVisibility.ClientVisible, actorId, occurredAt: invoice.IssuedAt);
+
         return invoice;
     }
 
@@ -86,14 +92,30 @@ public class InvoiceService(
                 .ThenInclude(p => p!.Client)
             .FirstOrDefaultAsync(i => i.Id == id);
 
-    public async Task UpdateStatusAsync(Guid id, InvoiceStatus status)
+    public async Task UpdateStatusAsync(Guid id, InvoiceStatus status, string? actorId = null)
     {
         var invoice = await db.Invoices.FindAsync(id);
         if (invoice is null) return;
+
+        var changed = invoice.Status != status;
         invoice.Status = status;
         if (status == InvoiceStatus.Paid)
             invoice.PaidAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
+
+        if (!changed) return;
+
+        // Draft is an internal pre-send state — no client-facing timeline entry for it.
+        (TimelineEventType Type, string Summary)? evt = status switch
+        {
+            InvoiceStatus.Paid    => (TimelineEventType.InvoicePaid,    $"Invoice paid: {invoice.Title}"),
+            InvoiceStatus.Overdue => (TimelineEventType.InvoiceOverdue, $"Invoice overdue: {invoice.Title}"),
+            InvoiceStatus.Sent    => (TimelineEventType.InvoiceSent,    $"Invoice sent: {invoice.Title}"),
+            _                     => null
+        };
+
+        if (evt is { } e)
+            await timeline.RecordAsync(invoice.ProjectId, e.Type, e.Summary, TimelineVisibility.ClientVisible, actorId);
     }
 
     public async Task DeleteAsync(Guid id)

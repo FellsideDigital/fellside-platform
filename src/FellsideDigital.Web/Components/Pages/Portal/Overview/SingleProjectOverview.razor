@@ -152,46 +152,13 @@
                     All updates →
                 </NavLink>
             </div>
-            @if (!_activity.Any())
-            {
-                <div class="px-5 py-8 text-center">
-                    <p class="text-sm text-gray-400 dark:text-neutral-500">No updates yet.</p>
-                </div>
-            }
-            else
-            {
-                <div class="overflow-y-auto">
-                    @foreach (var update in _activity)
-                    {
-                        <div class="flex gap-3 px-5 py-3.5 border-b border-gray-50 dark:border-white/[0.04] last:border-0">
-                            <div class="flex shrink-0 size-7 items-center justify-center rounded-lg bg-accent/10 text-accent mt-0.5">
-                                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true">
-                                    @if (update.NewStatus.HasValue)
-                                    {
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-                                    }
-                                    else
-                                    {
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
-                                    }
-                                </svg>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-sm text-gray-900 dark:text-white leading-snug">@update.Message</p>
-                                <p class="text-[11px] text-gray-400 dark:text-neutral-500 mt-0.5">
-                                    @update.CreatedAt.ToLocalTime().ToString("d MMM yyyy")
-                                    @if (update.NewStatus.HasValue)
-                                    {
-                                        <span> · @update.NewStatus.Value.DisplayName()</span>
-                                    }
-                                </p>
-                            </div>
-                        </div>
-                    }
-                </div>
-            }
+            <div class="overflow-y-auto">
+                <ProjectTimeline Events="_activity"
+                                 Audience="FellsideDigital.Web.Services.TimelineAudience.Client"
+                                 Max="6"
+                                 TimeFormat="d MMM yyyy"
+                                 EmptyText="No activity yet." />
+            </div>
         </div>
     </div>
 </div>
@@ -201,7 +168,7 @@
     [Parameter]                 public string       FirstName { get; set; } = "there";
 
     private IReadOnlyList<ProjectPlanPhase> _projectPlan = [];
-    private IReadOnlyList<ProjectStatusUpdate> _activity   = [];
+    private IReadOnlyList<ProjectTimelineEvent> _activity = [];
 
     protected override void OnParametersSet()
     {
@@ -209,9 +176,8 @@
             .OrderBy(u => u.CreatedAt)
             .ToList();
 
-        _activity = Project.StatusUpdates
-            .OrderByDescending(u => u.CreatedAt)
-            .Take(5)
+        _activity = Project.TimelineEvents
+            .OrderByDescending(e => e.OccurredAt)
             .ToList();
     }
 

@@ -12,6 +12,7 @@ public partial class ProjectDetail : ComponentBase
 
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
+    [Inject] private IProjectDocumentService DocumentService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
@@ -20,6 +21,7 @@ public partial class ProjectDetail : ComponentBase
     private ClientProject? _project;
     private bool _notFound;
     private Dictionary<Guid, string> _downloadUrls = [];
+    private Dictionary<Guid, string> _documentUrls = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,7 +31,8 @@ public partial class ProjectDetail : ComponentBase
 
         var clientId = PreviewState.ResolveClientId(user.Id, authState.User.IsInRole("SiteAdmin"));
 
-        _project = await ProjectService.GetByIdAsync(Id);
+        // Client-safe load: only client-visible timeline events are included, never internal ones.
+        _project = await ProjectService.GetByIdForClientAsync(Id);
         if (_project is null || _project.ClientId != clientId)
         {
             _notFound = true;
@@ -42,6 +45,14 @@ public partial class ProjectDetail : ComponentBase
         foreach (var inv in _project.Invoices.Where(i => i.FilePath is not null))
         {
             try { _downloadUrls[inv.Id] = await InvoiceService.GetDownloadUrlAsync(inv.Id) ?? ""; }
+            catch { /* non-fatal */ }
+        }
+
+        // Load presigned S3 download URLs for all shared documents
+        _documentUrls = [];
+        foreach (var doc in _project.Documents)
+        {
+            try { _documentUrls[doc.Id] = await DocumentService.GetDownloadUrlAsync(doc.Id) ?? ""; }
             catch { /* non-fatal */ }
         }
     }

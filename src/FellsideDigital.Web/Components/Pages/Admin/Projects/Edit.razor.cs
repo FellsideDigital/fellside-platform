@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.Projects;
@@ -13,6 +15,7 @@ public partial class Edit : ComponentBase
 
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IHeroProjectService HeroProjectService { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private ClientProject? _project;
@@ -172,7 +175,10 @@ public partial class Edit : ComponentBase
             _project.ProjectUrl = string.IsNullOrWhiteSpace(Input.ProjectUrl) ? null : Input.ProjectUrl.Trim();
             _project.DeploymentNotes = string.IsNullOrWhiteSpace(Input.DeploymentNotes) ? null : Input.DeploymentNotes.Trim();
 
-            await ProjectService.UpdateAsync(_project);
+            var authState = await AuthState.GetAuthenticationStateAsync();
+            var actorId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            await ProjectService.UpdateAsync(_project, actorId);
 
             var phases = _phases
                 .Where(p => !string.IsNullOrWhiteSpace(p.Title) && !string.IsNullOrWhiteSpace(p.ShortLabel))
@@ -188,7 +194,7 @@ public partial class Edit : ComponentBase
                     InternalNotes = string.IsNullOrWhiteSpace(p.InternalNotes) ? null : p.InternalNotes.Trim()
                 }).ToList();
 
-            await ProjectService.SavePhasesAsync(_project.Id, phases);
+            await ProjectService.SavePhasesAsync(_project.Id, phases, actorId);
 
             NavigationManager.NavigateTo($"/Admin/Projects/{Id}");
         }

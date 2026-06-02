@@ -21,7 +21,7 @@ public partial class Index : ComponentBase
 
     private List<ClientProject> _projects = [];
     private List<Invoice>       _invoices = [];
-    private List<(ProjectStatusUpdate Update, ClientProject Project)> _recentActivity = [];
+    private List<ProjectTimelineEvent> _recentActivity = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,9 +44,11 @@ public partial class Index : ComponentBase
         _projects = await ProjectService.GetForClientAsync(_userId);
         _invoices = await InvoiceService.GetForClientAsync(_userId);
 
+        // Projects are loaded via GetForClientAsync, which already filters TimelineEvents to
+        // client-visible only and back-references the owning project for display.
         _recentActivity = _projects
-            .SelectMany(p => p.StatusUpdates.Select(u => (Update: u, Project: p)))
-            .OrderByDescending(x => x.Update.CreatedAt)
+            .SelectMany(p => p.TimelineEvents.Select(e => { e.Project = p; return e; }))
+            .OrderByDescending(e => e.OccurredAt)
             .ToList();
 
         _loading = false;

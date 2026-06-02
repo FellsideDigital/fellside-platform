@@ -6,11 +6,11 @@ namespace FellsideDigital.Web.Services;
 
 public interface IInvoiceService
 {
-    Task<Invoice> UploadAsync(Guid projectId, string title, string? description, decimal amount, string currency, DateTime? dueAt, IBrowserFile file);
+    Task<Invoice> UploadAsync(Guid projectId, string title, string? description, decimal amount, string currency, DateTime? dueAt, IBrowserFile file, string? actorId = null);
     Task<List<Invoice>> GetForProjectAsync(Guid projectId);
     Task<List<Invoice>> GetForClientAsync(string clientId);
     Task<Invoice?> GetByIdAsync(Guid id);
-    Task UpdateStatusAsync(Guid id, InvoiceStatus status);
+    Task UpdateStatusAsync(Guid id, InvoiceStatus status, string? actorId = null);
     Task DeleteAsync(Guid id);
 
     /// <summary>Returns a time-limited presigned download URL for the invoice file, or null if no file is attached.</summary>

@@ -1,0 +1,176 @@
+@page "/Admin/Projects/{Id:guid}/Notes"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using FellsideDigital.Domain.Enums
+@using FellsideDigital.Domain.Extensions
+@using FellsideDigital.Web.Services
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Components.Layout
+@using FellsideDigital.Web.Components.Shared
+
+<PageTitle>Project notes — Fellside Digital Admin</PageTitle>
+
+@if (_project is null)
+{
+    <div class="animate-pulse space-y-4 max-w-3xl">
+        <div class="h-4 w-24 rounded-md bg-gray-200 dark:bg-white/10"></div>
+        <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-56"></div>
+    </div>
+}
+else
+{
+    <div class="max-w-3xl space-y-5">
+
+        <!-- Header -->
+        <div>
+            <a href="@($"/Admin/Projects/{Id}")"
+               class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
+                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+                Back to project
+            </a>
+            <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Project notes</h1>
+            <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">@_project.Name · @_project.Client?.CompanyName</p>
+        </div>
+
+        <!-- Add note -->
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Add a note</h2>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-neutral-400">
+                    Document progress, decisions, issues or activity. Internal notes stay private to the team;
+                    client-visible notes appear in the client's project timeline.
+                </p>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1.5">
+                        Note <span class="text-red-500">*</span>
+                    </label>
+                    <textarea @bind="_newBody" rows="4"
+                              placeholder="What happened? e.g. Reviewed client feedback on the homepage and updated the hero copy."
+                              class="@($"{InputClass} resize-y")"></textarea>
+                </div>
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1.5">Visibility</label>
+                        <select @bind="_newVisibility" class="@InputClass">
+                            <option value="@TimelineVisibility.Internal">Internal only (team)</option>
+                            <option value="@TimelineVisibility.ClientVisible">Client visible</option>
+                        </select>
+                    </div>
+                    <SpinnerButton IsLoading="@_saving"
+                                   LoadingText="Saving…"
+                                   Disabled="@string.IsNullOrWhiteSpace(_newBody)"
+                                   OnClick="AddNoteAsync">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Add note</span>
+                    </SpinnerButton>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes list -->
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Notes</h2>
+            </div>
+            @if (_notes.Count == 0)
+            {
+                <div class="px-5 py-8 text-center">
+                    <p class="text-sm text-gray-400 dark:text-neutral-500">No notes yet.</p>
+                </div>
+            }
+            else
+            {
+                <ul role="list" class="divide-y divide-gray-100 dark:divide-white/5">
+                    @foreach (var note in _notes)
+                    {
+                        <li class="px-5 py-4">
+                            @if (_editingId == note.Id)
+                            {
+                                <div class="space-y-3">
+                                    <textarea @bind="_editBody" rows="4" class="@($"{InputClass} resize-y")"></textarea>
+                                    <div class="flex flex-wrap items-center justify-between gap-3">
+                                        <select @bind="_editVisibility" class="@InputClass max-w-[220px]">
+                                            <option value="@TimelineVisibility.Internal">Internal only (team)</option>
+                                            <option value="@TimelineVisibility.ClientVisible">Client visible</option>
+                                        </select>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" @onclick="CancelEdit"
+                                                    class="rounded-xl px-3.5 py-2 text-sm font-medium text-gray-600 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors">
+                                                Cancel
+                                            </button>
+                                            <button type="button" @onclick="SaveEditAsync"
+                                                    disabled="@string.IsNullOrWhiteSpace(_editBody)"
+                                                    class="rounded-xl bg-accent px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 disabled:opacity-50 transition-opacity">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                                            @if (note.Visibility == TimelineVisibility.ClientVisible)
+                                            {
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 dark:bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Client visible</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 dark:bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Internal</span>
+                                            }
+                                        </div>
+                                        <p class="text-sm text-gray-700 dark:text-neutral-200 leading-relaxed whitespace-pre-line">@note.Body</p>
+                                        <p class="mt-1.5 text-[11px] text-gray-400 dark:text-neutral-500">
+                                            @note.CreatedAt.ToLocalTime().ToString("d MMM yyyy, HH:mm")
+                                            @if (!string.IsNullOrWhiteSpace(note.AuthorName))
+                                            {
+                                                <span> · @note.AuthorName</span>
+                                            }
+                                            @if (note.UpdatedAt > note.CreatedAt.AddSeconds(1))
+                                            {
+                                                <span> · edited</span>
+                                            }
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <button type="button" @onclick="() => StartEdit(note)"
+                                                class="rounded-lg p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors" title="Edit">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
+                                            </svg>
+                                        </button>
+                                        <button type="button" @onclick="() => DeleteNoteAsync(note.Id)"
+                                                class="rounded-lg p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" title="Delete">
+                                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <!-- Full timeline (read-only, admin view incl. internal) -->
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-white/5">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Project timeline</h2>
+            </div>
+            <ProjectTimeline Events="@_project.TimelineEvents.ToList()"
+                             Audience="TimelineAudience.Admin"
+                             EmptyText="No activity yet." />
+        </div>
+    </div>
+}
