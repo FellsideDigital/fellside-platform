@@ -82,9 +82,9 @@
                 <div>
                     <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--portal-track)">
                         <div class="h-full rounded-full bg-accent transition-[width] duration-500"
-                             style="width:@(p.Progress)%"></div>
+                             style="width:@(p.ProgressPercent)%"></div>
                     </div>
-                    <p class="text-[11px] text-gray-400 dark:text-neutral-500 mt-1">@(p.Progress)%</p>
+                    <p class="text-[11px] text-gray-400 dark:text-neutral-500 mt-1">@(p.ProgressPercent)%</p>
                 </div>
                 <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(p.Status)"
                              Label="@BadgeHelpers.StatusLabel(p.Status)" />

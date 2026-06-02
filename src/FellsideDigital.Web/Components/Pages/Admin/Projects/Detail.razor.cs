@@ -29,17 +29,7 @@ public partial class Detail : ComponentBase
         _ => _project?.Type.ToString() ?? ""
     };
 
-    private int ProgressPct
-    {
-        get
-        {
-            if (_project is null) return 0;
-            var phases = _project.PlanPhases;
-            if (phases.Count == 0) return _project.Progress;
-            var done = phases.Count(p => p.Status == PhaseStatus.Completed);
-            return (int)Math.Round((double)done / phases.Count * 100);
-        }
-    }
+    private int ProgressPct => _project?.ProgressPercent ?? 0;
 
     private int CompletedPhaseCount => _project?.PlanPhases.Count(p => p.Status == PhaseStatus.Completed) ?? 0;
 

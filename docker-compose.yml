@@ -17,7 +17,11 @@ services:
       - Email__ClientId=${CLIENT_ID}
       - Email__ClientSecret=${CLIENT_SECRET}
 
-      - Storage__ServiceUrl=http://localhost:9000
+      # ServiceUrl is used by the app *inside* the container to talk to MinIO, so it must
+      # be the service hostname on the compose network — not localhost (that's the web
+      # container itself). PublicUrl stays localhost:9000 because it's only used to sign
+      # presigned URLs the browser (on the host) will open.
+      - Storage__ServiceUrl=http://fellsidedigital-storage:9000
       - Storage__PublicUrl=http://localhost:9000
       - Storage__AccessKey=minioadmin
       - Storage__SecretKey=minioadmin
@@ -27,6 +31,8 @@ services:
     depends_on:
       fellsidedigital-postgres:
         condition: service_healthy
+      fellsidedigital-storage:
+        condition: service_started
     volumes:
       - keys_volume:/app/keys
 

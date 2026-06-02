@@ -2,12 +2,11 @@
 
 <HeadContent><meta name="robots" content="noindex, nofollow" /></HeadContent>
 
-@using System.ComponentModel.DataAnnotations
+@using FellsideDigital.UI.Components.Icons
+@using FellsideDigital.Web.Data
 @using FellsideDigital.Web.Services
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-@using FellsideDigital.Web.Data
-@using FellsideDigital.Web.Components.Layout
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
@@ -22,9 +21,8 @@
         <div class="mx-auto w-full max-w-sm lg:w-96">
 
             <div>
-                <NavLink href="/">
-                    <img src="@Assets["favicon.ico"]" alt="Fellside Digital Logo" class="h-10 w-auto dark:hidden" />
-                    <img src="@Assets["favicon-dark.ico"]" alt="Fellside Digital Logo (Dark)" class="h-10 w-auto not-dark:hidden" />
+                <NavLink href="/" class="flex items-center gap-2.5 shrink-0">
+                    <FellsideLogo Class="w-9 text-accent"/>
                 </NavLink>
 
                 <h2 class="mt-8 text-2xl/9 font-bold tracking-tight text-slate-900 dark:text-white">Sign in to your account</h2>
@@ -103,7 +101,7 @@
                     </EditForm>
                 </div>
 
-                <div class="mt-10">
+@*                 <div class="mt-10">
                     <div class="relative">
                         <div aria-hidden="true" class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
@@ -131,7 +129,7 @@
                             <span class="text-sm/6 font-semibold">GitHub</span>
                         </a>
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
     </div>

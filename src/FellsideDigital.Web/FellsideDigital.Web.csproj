@@ -8,6 +8,12 @@
 		<DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
 		<DockerfileContext>..\..</DockerfileContext>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Components\Pages\Portal\Website\**" />
+	  <Content Remove="Components\Pages\Portal\Website\**" />
+	  <EmbeddedResource Remove="Components\Pages\Portal\Website\**" />
+	  <None Remove="Components\Pages\Portal\Website\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AWSSDK.S3" Version="4.0.23" />
@@ -28,7 +34,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Components\Pages\Portal\Website\" />
 	  <Folder Include="Data\Migrations\" />
 	</ItemGroup>
 
