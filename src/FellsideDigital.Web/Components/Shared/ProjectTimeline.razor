@@ -14,6 +14,11 @@
 
     if (Max is { } max)
         visible = visible.Take(max).ToList();
+
+    // Keep the most-recent selection above, but optionally display it oldest-first
+    // (top-to-bottom chronological) rather than the default newest-first.
+    if (OldestFirst)
+        visible.Reverse();
 }
 
 @if (visible.Count == 0)
@@ -83,6 +88,10 @@ else
 
     /// <summary>Cap the number of entries shown (e.g. dashboard previews). Null = show all.</summary>
     [Parameter] public int? Max { get; set; }
+
+    /// <summary>Display the (most-recent) selection oldest-first, so it reads top-to-bottom
+    /// chronologically. Default keeps the newest-first ordering.</summary>
+    [Parameter] public bool OldestFirst { get; set; }
 
     [Parameter] public string EmptyText { get; set; } = "No activity yet.";
     [Parameter] public string TimeFormat { get; set; } = "d MMM yyyy, HH:mm";
