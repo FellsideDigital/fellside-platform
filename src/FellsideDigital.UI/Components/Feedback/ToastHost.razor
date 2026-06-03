@@ -1,0 +1,108 @@
+@namespace FellsideDigital.UI.Components.Feedback
+@implements IDisposable
+@inject ToastService Toasts
+
+<div class="pointer-events-none fixed inset-x-4 top-4 z-[10000] flex flex-col gap-2 sm:inset-x-auto sm:right-4 sm:w-full sm:max-w-sm">
+    @foreach (var toast in Toasts.Toasts)
+    {
+        <div role="alert"
+             class="pointer-events-auto flex items-start gap-3 rounded-xl px-4 py-3 shadow-lg ring-1 @Bg(toast.Level) @Ring(toast.Level)">
+            <svg class="mt-0.5 size-4 shrink-0 @IconColor(toast.Level)" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="@IconPath(toast.Level)" />
+            </svg>
+            <div class="min-w-0 flex-1">
+                @if (!string.IsNullOrEmpty(toast.Title))
+                {
+                    <p class="text-sm font-semibold @TextColor(toast.Level)">@toast.Title</p>
+                }
+                <p class="text-sm @TextColor(toast.Level)">@toast.Message</p>
+            </div>
+            <button type="button" @onclick="() => Toasts.Dismiss(toast.Id)"
+                    class="shrink-0 rounded-md p-0.5 opacity-60 transition-opacity hover:opacity-100 @TextColor(toast.Level)"
+                    aria-label="Dismiss">
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly Dictionary<Guid, Timer> _timers = new();
+
+    protected override void OnInitialized() => Toasts.OnChange += HandleChange;
+
+    private void HandleChange()
+    {
+        var liveIds = Toasts.Toasts.Select(t => t.Id).ToHashSet();
+
+        // Prune timers for toasts that have already been dismissed.
+        foreach (var goneId in _timers.Keys.Where(k => !liveIds.Contains(k)).ToList())
+        {
+            if (_timers.Remove(goneId, out var timer))
+                timer.Dispose();
+        }
+
+        // Schedule auto-dismiss for any newly-added toasts.
+        foreach (var toast in Toasts.Toasts)
+        {
+            if (_timers.ContainsKey(toast.Id)) continue;
+            var id = toast.Id;
+            _timers[id] = new Timer(_ => AutoDismiss(id), null, toast.Duration, Timeout.InfiniteTimeSpan);
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    // Timer callbacks fire off the render thread — marshal back onto the circuit.
+    private void AutoDismiss(Guid id) => InvokeAsync(() => Toasts.Dismiss(id));
+
+    public void Dispose()
+    {
+        Toasts.OnChange -= HandleChange;
+        foreach (var timer in _timers.Values)
+            timer.Dispose();
+        _timers.Clear();
+    }
+
+    private static string Bg(ToastLevel level) => level switch
+    {
+        ToastLevel.Error   => "bg-red-50 dark:bg-red-950",
+        ToastLevel.Warning => "bg-amber-50 dark:bg-amber-950",
+        ToastLevel.Info    => "bg-white dark:bg-neutral-900",
+        _                  => "bg-emerald-50 dark:bg-emerald-950",
+    };
+
+    private static string Ring(ToastLevel level) => level switch
+    {
+        ToastLevel.Error   => "ring-red-200 dark:ring-red-400/20",
+        ToastLevel.Warning => "ring-amber-200 dark:ring-amber-400/20",
+        ToastLevel.Info    => "ring-gray-200 dark:ring-white/10",
+        _                  => "ring-emerald-200 dark:ring-emerald-400/20",
+    };
+
+    private static string IconColor(ToastLevel level) => level switch
+    {
+        ToastLevel.Error   => "text-red-500 dark:text-red-400",
+        ToastLevel.Warning => "text-amber-500 dark:text-amber-400",
+        ToastLevel.Info    => "text-accent",
+        _                  => "text-emerald-500 dark:text-emerald-400",
+    };
+
+    private static string TextColor(ToastLevel level) => level switch
+    {
+        ToastLevel.Error   => "text-red-800 dark:text-red-200",
+        ToastLevel.Warning => "text-amber-800 dark:text-amber-200",
+        ToastLevel.Info    => "text-gray-800 dark:text-neutral-100",
+        _                  => "text-emerald-800 dark:text-emerald-200",
+    };
+
+    private static string IconPath(ToastLevel level) => level switch
+    {
+        ToastLevel.Error   => "M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z",
+        ToastLevel.Warning => "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z",
+        ToastLevel.Info    => "m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z",
+        _                  => "M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+    };
+}

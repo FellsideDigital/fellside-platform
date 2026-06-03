@@ -99,6 +99,7 @@ public static class ServiceConfigurationExtensions
         services.AddScoped<IQrLeadService, QrLeadService>();
         services.AddScoped<LayoutStateService>();
         services.AddScoped<PortalPreviewState>();
+        services.AddScoped<FellsideDigital.UI.Components.Feedback.ToastService>();
         return services;
     }
 

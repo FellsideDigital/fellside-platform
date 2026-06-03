@@ -100,8 +100,13 @@
     <!-- Main content -->
     <main class=" bg-white dark:bg-neutral-900 flex-1 min-w-0 min-h-[calc(100vh-3.5rem)]">
         <div class="px-4 pt-5 pb-12 sm:px-6 lg:px-8 lg:pt-6">
-            @Body
+            <ErrorBoundary>
+                <ChildContent>@Body</ChildContent>
+                <ErrorContent><ErrorFallback /></ErrorContent>
+            </ErrorBoundary>
         </div>
     </main>
 
 </div>
+
+<ToastHost />

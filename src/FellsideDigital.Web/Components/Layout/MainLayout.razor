@@ -11,8 +11,13 @@
     }
 
     <main class="flex flex-col flex-1 w-full">
-        @Body
+        <ErrorBoundary>
+            <ChildContent>@Body</ChildContent>
+            <ErrorContent><ErrorFallback /></ErrorContent>
+        </ErrorBoundary>
     </main>
+
+    <ToastHost />
 
     <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-neutral-950 pt-16 pb-8 px-6">
         <div class="max-w-7xl mx-auto">
