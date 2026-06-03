@@ -14,7 +14,7 @@ public class StorageSettings
 
     public string AccessKey { get; set; } = "";
     public string SecretKey { get; set; } = "";
-    public string BucketName { get; set; } = "invoices";
+    public string BucketName { get; set; } = "documents";
     public string Region { get; set; } = "us-east-1";
     public int PresignedUrlExpiryMinutes { get; set; } = 60;
 }

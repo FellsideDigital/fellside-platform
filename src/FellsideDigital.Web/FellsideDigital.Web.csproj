@@ -30,6 +30,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<InternalsVisibleTo Include="FellsideDigital.Tests" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Watch Include="./Styles/tailwind.css" />
 	</ItemGroup>
 

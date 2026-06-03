@@ -31,13 +31,13 @@ namespace FellsideDigital.Web.Components.Account
             try
             {
                 navigationManager.NavigateTo(uri);
+                throw new InvalidOperationException($"{nameof(IdentityRedirectManager)} can only be used during static rendering.");
             }
             catch
             {
                 // Error caught safely.
             }
 
-            throw new InvalidOperationException($"{nameof(IdentityRedirectManager)} can only be used during static rendering.");
         }
 
         [DoesNotReturn]

@@ -1,6 +1,7 @@
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -11,7 +12,10 @@ public class InvoiceService(
     FellsideDigitalDbContext db,
     IStorageService storage,
     IOptions<StorageSettings> storageOptions,
-    IProjectTimelineService timeline) : IInvoiceService
+    IProjectTimelineService timeline,
+    EmailService email,
+    NavigationManager nav,
+    ILogger<InvoiceService> logger) : IInvoiceService
 {
     private static readonly HashSet<string> AllowedExtensions = [".pdf", ".png", ".jpg", ".jpeg"];
 
@@ -60,6 +64,9 @@ public class InvoiceService(
         await timeline.RecordAsync(
             projectId, TimelineEventType.InvoiceCreated, $"Invoice issued: {title}",
             TimelineVisibility.ClientVisible, actorId, occurredAt: invoice.IssuedAt);
+
+        await NotifyClientAsync(projectId, (client, project, url) =>
+            email.SendInvoiceAddedAsync(client, project, invoice, url));
 
         return invoice;
     }
@@ -116,6 +123,35 @@ public class InvoiceService(
 
         if (evt is { } e)
             await timeline.RecordAsync(invoice.ProjectId, e.Type, e.Summary, TimelineVisibility.ClientVisible, actorId);
+
+        // Notify the client when an invoice becomes Sent or Overdue. Draft is internal
+        // and Paid is bookkeeping — neither warrants a client email.
+        if (status is InvoiceStatus.Sent or InvoiceStatus.Overdue)
+            await NotifyClientAsync(invoice.ProjectId, (client, project, url) =>
+                email.SendInvoiceStatusChangedAsync(client, project, invoice, url));
+    }
+
+    /// <summary>
+    /// Emails the project's client (admin BCC'd) about an invoice change. Never throws —
+    /// a notification failure must not break the upload or status change that triggered it.
+    /// </summary>
+    private async Task NotifyClientAsync(Guid projectId, Func<ApplicationUser, ClientProject, string, Task> send)
+    {
+        try
+        {
+            var project = await db.ClientProjects
+                .Include(p => p.Client)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project?.Client?.Email is not { Length: > 0 }) return;
+
+            var url = nav.ToAbsoluteUri($"/Portal/Projects/{projectId}").ToString();
+            await send(project.Client, project, url);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send invoice notification for project {ProjectId}", projectId);
+        }
     }
 
     public async Task DeleteAsync(Guid id)

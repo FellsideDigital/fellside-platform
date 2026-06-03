@@ -1,6 +1,7 @@
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -11,7 +12,10 @@ public class ProjectDocumentService(
     FellsideDigitalDbContext db,
     IStorageService storage,
     IOptions<StorageSettings> storageOptions,
-    IProjectTimelineService timeline) : IProjectDocumentService
+    IProjectTimelineService timeline,
+    EmailService email,
+    NavigationManager nav,
+    ILogger<ProjectDocumentService> logger) : IProjectDocumentService
 {
     private static readonly HashSet<string> AllowedExtensions = [".pdf", ".png", ".jpg", ".jpeg", ".doc", ".docx"];
 
@@ -55,7 +59,33 @@ public class ProjectDocumentService(
             projectId, TimelineEventType.DocumentShared, $"Document shared: {title}",
             TimelineVisibility.ClientVisible, actorId, occurredAt: document.CreatedAt);
 
+        await NotifyClientAsync(projectId, (client, project, url) =>
+            email.SendDocumentAddedAsync(client, project, title, url));
+
         return document;
+    }
+
+    /// <summary>
+    /// Emails the project's client (admin BCC'd) that something changed. Never throws —
+    /// a notification failure must not break the upload that triggered it.
+    /// </summary>
+    private async Task NotifyClientAsync(Guid projectId, Func<ApplicationUser, ClientProject, string, Task> send)
+    {
+        try
+        {
+            var project = await db.ClientProjects
+                .Include(p => p.Client)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project?.Client?.Email is not { Length: > 0 }) return;
+
+            var url = nav.ToAbsoluteUri($"/Portal/Projects/{projectId}").ToString();
+            await send(project.Client, project, url);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to send document notification for project {ProjectId}", projectId);
+        }
     }
 
     public async Task<List<ProjectDocument>> GetForProjectAsync(Guid projectId)
