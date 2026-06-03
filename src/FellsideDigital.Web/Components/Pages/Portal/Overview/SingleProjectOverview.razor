@@ -50,7 +50,7 @@
                     </span>
                     <span>
                         <strong class="text-gray-900 dark:text-white font-semibold">Current phase</strong>
-                        · @CurrentPhaseLabel
+                        · @CurrentPhaseShort
                     </span>
                 </div>
                 <div class="flex gap-2.5 flex-wrap">
@@ -193,23 +193,12 @@
         ? Project.TargetLaunchDate.Value.ToString("d MMM yyyy")
         : "To be confirmed";
 
-    private ProjectPlanPhase? LatestPhase => _projectPlan.Count > 0 ? _projectPlan[^1] : null;
+    // Phase selection + label come from ClientProject so this matches the admin view.
+    private string CurrentPhaseShort => Project.CurrentPhaseShortLabel;
 
-    private string CurrentPhaseLabel => LatestPhase?.Status.DisplayName() ?? "Discovery";
-
-    private string CurrentPhaseShort
-    {
-        get
-        {
-            if (LatestPhase?.Status is null) return "Discovery";
-            var label = LatestPhase.Status.DisplayName();
-            var words = label.Split(' ');
-            return words.Length > 2 ? string.Join(' ', words.Take(2)) : label;
-        }
-    }
-
-    private string CurrentPhaseSub => LatestPhase is not null
-        ? "Since " + LatestPhase.CreatedAt.ToLocalTime().ToString("d MMM")
+    // Overview keeps a "Since {date}" sub-line rather than the status used elsewhere.
+    private string CurrentPhaseSub => Project.CurrentPhase is { } p
+        ? "Since " + p.CreatedAt.ToLocalTime().ToString("d MMM")
         : "Project just started";
 
     private string DaysToLaunchStr

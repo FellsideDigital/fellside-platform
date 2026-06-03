@@ -10,7 +10,7 @@
     var resolvedBackLabel = BackLabel ?? (isAutomation ? "My automations" : "My websites");
     var liveUrl   = Project.ProjectUrl;
     var phases    = Project.PlanPhases.OrderBy(p => p.Order).ToList();
-    var current   = CurrentPhase(phases);
+    var current   = Project.CurrentPhase;
     var outstanding = Project.Invoices
         .Where(i => i.Status is InvoiceStatus.Sent or InvoiceStatus.Overdue)
         .ToList();
@@ -71,7 +71,7 @@
         </div>
         <div class="px-5 py-4">
             <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400 dark:text-neutral-500">Current phase</p>
-            <p class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white truncate">@(current?.Title ?? "—")</p>
+            <p class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white truncate">@(current is not null ? Project.CurrentPhaseShortLabel : "—")</p>
             @if (current is not null)
             {
                 <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500">Phase @(phases.IndexOf(current) + 1) of @phases.Count</p>
@@ -293,12 +293,4 @@
     [Parameter] public string? BackHref { get; set; }
     [Parameter] public string? BackLabel { get; set; }
 
-    // Current phase = the in-progress one; else the first not-completed; else the last.
-    private static ProjectPlanPhase? CurrentPhase(List<ProjectPlanPhase> phases)
-    {
-        if (phases.Count == 0) return null;
-        return phases.FirstOrDefault(p => p.Status == PhaseStatus.InProgress)
-            ?? phases.FirstOrDefault(p => p.Status != PhaseStatus.Completed)
-            ?? phases[^1];
-    }
 }

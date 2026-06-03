@@ -1,4 +1,5 @@
 using FellsideDigital.Domain.Enums;
+using FellsideDigital.Domain.Extensions;
 
 namespace FellsideDigital.Web.Data;
 
@@ -65,4 +66,26 @@ public class ClientProject
             return (int)Math.Round(done / PlanPhases.Count * 100);
         }
     }
+
+    /// <summary>
+    /// The phase the project is currently working on: the first not-yet-completed
+    /// phase by <see cref="ProjectPlanPhase.Order"/>, falling back to the last phase.
+    /// This is the single source of truth for "current phase" shown across the admin
+    /// and portal views — don't re-derive it per page.
+    /// </summary>
+    public ProjectPlanPhase? CurrentPhase =>
+        PlanPhases.OrderBy(p => p.Order).FirstOrDefault(p => p.Status != PhaseStatus.Completed)
+        ?? PlanPhases.OrderBy(p => p.Order).LastOrDefault();
+
+    /// <summary>
+    /// Short, human label for <see cref="CurrentPhase"/>: its short label, then its
+    /// title, then a default when there are no phases.
+    /// </summary>
+    public string CurrentPhaseShortLabel =>
+        CurrentPhase?.ShortLabel is { Length: > 0 } s ? s
+        : CurrentPhase?.Title is { Length: > 0 } t ? t
+        : "Not started";
+
+    /// <summary>Status display name for <see cref="CurrentPhase"/>.</summary>
+    public string CurrentPhaseStatusLabel => CurrentPhase?.Status.DisplayName() ?? "No phases yet";
 }

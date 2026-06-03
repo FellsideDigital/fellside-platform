@@ -36,17 +36,10 @@ public partial class Detail : ComponentBase
 
     private int CompletedPhaseCount => _project?.PlanPhases.Count(p => p.Status == PhaseStatus.Completed) ?? 0;
 
-    // First not-yet-complete phase by order, falling back to the last phase.
-    private ProjectPlanPhase? CurrentPhase =>
-        _project?.PlanPhases.OrderBy(p => p.Order).FirstOrDefault(p => p.Status != PhaseStatus.Completed)
-        ?? _project?.PlanPhases.OrderBy(p => p.Order).LastOrDefault();
+    // Current phase + its labels are derived on ClientProject so admin and portal stay in sync.
+    private string CurrentPhaseShort => _project?.CurrentPhaseShortLabel ?? "Not started";
 
-    private string CurrentPhaseShort =>
-        CurrentPhase?.ShortLabel is { Length: > 0 } s ? s
-        : CurrentPhase?.Title is { Length: > 0 } t ? t
-        : "Not started";
-
-    private string CurrentPhaseSub => CurrentPhase?.Status.DisplayName() ?? "No phases yet";
+    private string CurrentPhaseSub => _project?.CurrentPhaseStatusLabel ?? "No phases yet";
 
     private string DaysToLaunchStr
     {
