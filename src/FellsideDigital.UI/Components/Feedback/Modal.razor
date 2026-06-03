@@ -1,0 +1,34 @@
+@namespace FellsideDigital.UI.Components.Feedback
+
+@* Centered modal shell: backdrop + panel. Compose dialog content as ChildContent. *@
+@if (IsOpen)
+{
+    <div class="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm" @onclick="HandleBackdrop"></div>
+
+        <div class="relative w-full @MaxWidth rounded-2xl bg-white dark:bg-neutral-900
+                    border border-gray-200 dark:border-white/10 shadow-xl p-6">
+            @ChildContent
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+
+    /// <summary>Panel max-width utility (e.g. "max-w-md", "max-w-lg").</summary>
+    [Parameter] public string MaxWidth { get; set; } = "max-w-md";
+
+    /// <summary>When true (default), clicking the backdrop invokes <see cref="OnBackdropClick"/>.</summary>
+    [Parameter] public bool CloseOnBackdrop { get; set; } = true;
+
+    [Parameter] public EventCallback OnBackdropClick { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private async Task HandleBackdrop()
+    {
+        if (CloseOnBackdrop)
+            await OnBackdropClick.InvokeAsync();
+    }
+}

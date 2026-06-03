@@ -1,66 +1,58 @@
 @* Reusable confirmation dialog. When ConfirmWord is set, the confirm button stays
    disabled until the user types that exact word — used for destructive actions. *@
 
-@if (IsOpen)
-{
-    <div class="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-neutral-950/60 backdrop-blur-sm" @onclick="CancelAsync"></div>
-
-        <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-neutral-900
-                    border border-gray-200 dark:border-white/10 shadow-xl p-6">
-            <div class="flex items-start gap-4">
-                <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/10">
-                    <svg class="size-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                    </svg>
-                </div>
-                <div class="min-w-0 flex-1">
-                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">@Title</h3>
-                    <div class="mt-1.5 text-sm text-gray-500 dark:text-neutral-400">
-                        @ChildContent
-                    </div>
-                </div>
-            </div>
-
-            @if (!string.IsNullOrEmpty(ConfirmWord))
-            {
-                <div class="mt-4">
-                    <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">
-                        Type <span class="font-semibold text-gray-900 dark:text-white">@ConfirmWord</span> to confirm
-                    </label>
-                    <input type="text" @bind="_typed" @bind:event="oninput" autocomplete="off"
-                           class="block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm
-                                  text-gray-900 dark:text-white ring-1 ring-inset ring-gray-200 dark:ring-white/10
-                                  focus:ring-2 focus:ring-inset focus:ring-red-400 transition-shadow outline-none" />
-                </div>
-            }
-
-            <div class="mt-6 flex items-center justify-end gap-3">
-                <button type="button" @onclick="CancelAsync" disabled="@IsBusy"
-                        class="text-sm font-medium text-gray-500 dark:text-neutral-400
-                               hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-50">
-                    Cancel
-                </button>
-                <button type="button" @onclick="ConfirmAsync" disabled="@(!CanConfirm)"
-                        class="inline-flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-semibold text-white
-                               hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                    @if (IsBusy)
-                    {
-                        <svg class="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        <span>@ConfirmingLabel</span>
-                    }
-                    else
-                    {
-                        <span>@ConfirmLabel</span>
-                    }
-                </button>
+<Modal IsOpen="IsOpen" OnBackdropClick="CancelAsync" CloseOnBackdrop="@(!IsBusy)">
+    <div class="flex items-start gap-4">
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/10">
+            <svg class="size-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+        </div>
+        <div class="min-w-0 flex-1">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white">@Title</h3>
+            <div class="mt-1.5 text-sm text-gray-500 dark:text-neutral-400">
+                @ChildContent
             </div>
         </div>
     </div>
-}
+
+    @if (!string.IsNullOrEmpty(ConfirmWord))
+    {
+        <div class="mt-4">
+            <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">
+                Type <span class="font-semibold text-gray-900 dark:text-white">@ConfirmWord</span> to confirm
+            </label>
+            <input type="text" @bind="_typed" @bind:event="oninput" autocomplete="off"
+                   class="block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm
+                          text-gray-900 dark:text-white ring-1 ring-inset ring-gray-200 dark:ring-white/10
+                          focus:ring-2 focus:ring-inset focus:ring-red-400 transition-shadow outline-none" />
+        </div>
+    }
+
+    <div class="mt-6 flex items-center justify-end gap-3">
+        <button type="button" @onclick="CancelAsync" disabled="@IsBusy"
+                class="text-sm font-medium text-gray-500 dark:text-neutral-400
+                       hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-50">
+            Cancel
+        </button>
+        <button type="button" @onclick="ConfirmAsync" disabled="@(!CanConfirm)"
+                class="inline-flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2.5 text-sm font-semibold text-white
+                       hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            @if (IsBusy)
+            {
+                <svg class="size-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span>@ConfirmingLabel</span>
+            }
+            else
+            {
+                <span>@ConfirmLabel</span>
+            }
+        </button>
+    </div>
+</Modal>
 
 @code {
     [Parameter] public bool IsOpen { get; set; }
