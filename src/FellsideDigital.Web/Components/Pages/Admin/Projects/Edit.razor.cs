@@ -1,10 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.Projects;
@@ -15,7 +12,6 @@ public partial class Edit : ComponentBase
 
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IHeroProjectService HeroProjectService { get; set; } = default!;
-    [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private ILogger<Edit> Logger { get; set; } = default!;
 
@@ -126,23 +122,11 @@ public partial class Edit : ComponentBase
         _phases.Add(new PhaseEditorModel { IsExpanded = true });
     }
 
-    private void RemovePhase(int index)
-    {
-        if (index < 0 || index >= _phases.Count) return;
-        _phases.RemoveAt(index);
-    }
+    private void RemovePhase(int index) => ListEditing.RemoveAt(_phases, index);
 
-    private void MovePhaseUp(int index)
-    {
-        if (index <= 0 || index >= _phases.Count) return;
-        (_phases[index - 1], _phases[index]) = (_phases[index], _phases[index - 1]);
-    }
+    private void MovePhaseUp(int index) => ListEditing.MoveUp(_phases, index);
 
-    private void MovePhaseDown(int index)
-    {
-        if (index < 0 || index >= _phases.Count - 1) return;
-        (_phases[index], _phases[index + 1]) = (_phases[index + 1], _phases[index]);
-    }
+    private void MovePhaseDown(int index) => ListEditing.MoveDown(_phases, index);
 
     private void TogglePhase(int index)
     {
@@ -173,10 +157,7 @@ public partial class Edit : ComponentBase
             _project.ProjectUrl = string.IsNullOrWhiteSpace(Input.ProjectUrl) ? null : Input.ProjectUrl.Trim();
             _project.DeploymentNotes = string.IsNullOrWhiteSpace(Input.DeploymentNotes) ? null : Input.DeploymentNotes.Trim();
 
-            var authState = await AuthState.GetAuthenticationStateAsync();
-            var actorId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            await ProjectService.UpdateAsync(_project, actorId);
+            await ProjectService.UpdateAsync(_project);
 
             var phases = _phases
                 .Where(p => !string.IsNullOrWhiteSpace(p.Title) && !string.IsNullOrWhiteSpace(p.ShortLabel))
@@ -192,7 +173,7 @@ public partial class Edit : ComponentBase
                     InternalNotes = string.IsNullOrWhiteSpace(p.InternalNotes) ? null : p.InternalNotes.Trim()
                 }).ToList();
 
-            await ProjectService.SavePhasesAsync(_project.Id, phases, actorId);
+            await ProjectService.SavePhasesAsync(_project.Id, phases);
 
             NavigationManager.NavigateTo($"/Admin/Projects/{Id}");
         }
@@ -212,27 +193,18 @@ public partial class Edit : ComponentBase
         if (_heroMetrics.Count < 3) _heroMetrics.Add(new MetricEditorModel());
     }
 
-    private void RemoveMetric(int index)
-    {
-        if (index >= 0 && index < _heroMetrics.Count) _heroMetrics.RemoveAt(index);
-    }
+    private void RemoveMetric(int index) => ListEditing.RemoveAt(_heroMetrics, index);
 
     private void AddPipelineStep()
     {
         if (_heroPipelineSteps.Count < 5) _heroPipelineSteps.Add(new PipelineStepEditorModel());
     }
 
-    private void RemovePipelineStep(int index)
-    {
-        if (index >= 0 && index < _heroPipelineSteps.Count) _heroPipelineSteps.RemoveAt(index);
-    }
+    private void RemovePipelineStep(int index) => ListEditing.RemoveAt(_heroPipelineSteps, index);
 
     private void AddIntegration() => _heroIntegrations.Add(new IntegrationEditorModel());
 
-    private void RemoveIntegration(int index)
-    {
-        if (index >= 0 && index < _heroIntegrations.Count) _heroIntegrations.RemoveAt(index);
-    }
+    private void RemoveIntegration(int index) => ListEditing.RemoveAt(_heroIntegrations, index);
 
     private async Task OnScreenshotSelectedAsync(InputFileChangeEventArgs e)
     {
@@ -325,55 +297,4 @@ public partial class Edit : ComponentBase
         }
     }
 
-    private sealed class InputModel
-    {
-        [Required] public string Name { get; set; } = "";
-        [Required] public string Description { get; set; } = "";
-        public ProjectType Type { get; set; } = ProjectType.Website;
-        public ProjectStatus Status { get; set; } = ProjectStatus.Pending;
-        public DateTime? TargetLaunchDate { get; set; }
-        public string? PreviewUrl { get; set; }
-        public string? ProjectUrl { get; set; }
-        public string? DeploymentNotes { get; set; }
-    }
-
-    private sealed class PhaseEditorModel
-    {
-        public string Title { get; set; } = "";
-        public string ShortLabel { get; set; } = "";
-        public PhaseStatus Status { get; set; } = PhaseStatus.NotStarted;
-        public DateTime? TargetCompletionDate { get; set; }
-        public string? Notes { get; set; }
-        public string? ImportantInformation { get; set; }
-        public string? Dependencies { get; set; }
-        public string? InternalNotes { get; set; }
-        public bool IsExpanded { get; set; } = true;
-    }
-
-    private sealed class HeroInputModel
-    {
-        public bool IsHeroProject { get; set; }
-        public int HeroDisplayOrder { get; set; }
-        public string? HeroTagline { get; set; }
-        public string? HeroShowcaseUrl { get; set; }
-        public string? ScreenshotPath { get; set; }
-    }
-
-    private sealed class MetricEditorModel
-    {
-        public string Value { get; set; } = "";
-        public string Label { get; set; } = "";
-        public MetricStyle Style { get; set; } = MetricStyle.Neutral;
-    }
-
-    private sealed class PipelineStepEditorModel
-    {
-        public string Label { get; set; } = "";
-        public PipelineStepType StepType { get; set; } = PipelineStepType.Process;
-    }
-
-    private sealed class IntegrationEditorModel
-    {
-        public string Name { get; set; } = "";
-    }
 }
