@@ -1,5 +1,6 @@
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.Domain.Extensions;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +14,8 @@ public partial class Detail : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Detail> Logger { get; set; } = default!;
 
     private ClientProject? _project;
     private Dictionary<Guid, string> _downloadUrls = [];
@@ -122,7 +125,16 @@ public partial class Detail : ComponentBase
     private async Task ConfirmDeleteAsync()
     {
         _deleting = true;
-        await ProjectService.DeleteAsync(Id);
-        NavigationManager.NavigateTo("/Admin/Projects");
+        try
+        {
+            await ProjectService.DeleteAsync(Id);
+            Toasts.Success("Project deleted.");
+            NavigationManager.NavigateTo("/Admin/Projects");
+        }
+        catch (Exception ex)
+        {
+            _deleting = false;
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the project"));
+        }
     }
 }

@@ -1,9 +1,8 @@
-using System.Security.Claims;
 using FellsideDigital.Domain.Enums;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,9 +15,9 @@ public partial class Invoices : ComponentBase
 
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
     [Inject] private IProjectService ProjectService { get; set; } = default!;
-    [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private ILogger<Invoices> Logger { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
 
     private bool _loading = true;
     private ApplicationUser? _client;
@@ -68,12 +67,6 @@ public partial class Invoices : ComponentBase
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
-    private async Task<string?> CurrentUserIdAsync()
-    {
-        var authState = await AuthState.GetAuthenticationStateAsync();
-        return authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
-
     private async Task LoadAsync()
     {
         _client = await UserManager.FindByIdAsync(ClientId);
@@ -101,9 +94,8 @@ public partial class Invoices : ComponentBase
         _error = null;
         try
         {
-            var actorId = await CurrentUserIdAsync();
             await InvoiceService.UploadAsync(projectId, _title.Trim(), null, _amount,
-                _currency, _dueDate, _selectedFile, actorId);
+                _currency, _dueDate, _selectedFile);
             _title = "";
             _amount = 0;
             _dueDate = null;
@@ -123,14 +115,30 @@ public partial class Invoices : ComponentBase
 
     private async Task ChangeStatusAsync(Guid invoiceId, ChangeEventArgs e)
     {
-        if (Enum.TryParse<InvoiceStatus>(e.Value?.ToString(), out var status))
-            await InvoiceService.UpdateStatusAsync(invoiceId, status, await CurrentUserIdAsync());
-        await LoadAsync();
+        if (!Enum.TryParse<InvoiceStatus>(e.Value?.ToString(), out var status)) return;
+        try
+        {
+            await InvoiceService.UpdateStatusAsync(invoiceId, status);
+            await LoadAsync();
+            Toasts.Success($"Invoice marked as {status}.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "updating the invoice status"));
+        }
     }
 
     private async Task DeleteInvoiceAsync(Guid invoiceId)
     {
-        await InvoiceService.DeleteAsync(invoiceId);
-        await LoadAsync();
+        try
+        {
+            await InvoiceService.DeleteAsync(invoiceId);
+            await LoadAsync();
+            Toasts.Success("Invoice deleted.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the invoice"));
+        }
     }
 }

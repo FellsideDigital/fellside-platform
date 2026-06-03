@@ -1,3 +1,4 @@
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -10,11 +11,10 @@ public partial class Index : ComponentBase
     [Inject] private IInvitationService InvitationService { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Index> Logger { get; set; } = default!;
 
     private List<ClientInvitation>? _invitations;
-    private string? _successMessage;
-    private string? _copiedMessage;
-    private string? _errorMessage;
     private Guid? _openActionsFor;
     private Guid? _resendingId;
 
@@ -23,48 +23,30 @@ public partial class Index : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        if (Success == "1")
-            _successMessage = "Invitation created and sent successfully.";
-
         _invitations = await InvitationService.GetValidInvitationsAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && Success == "1")
+            Toasts.Success("Invitation created and sent successfully.");
     }
 
     private async Task CopyLink(ClientInvitation inv)
     {
-        _errorMessage = null;
         _openActionsFor = null;
 
         var url = NavigationManager.ToAbsoluteUri(
             $"/Account/Register?token={Uri.EscapeDataString(inv.Token)}").ToString();
-        await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
-        _copiedMessage = $"Invitation link for {inv.FirstName} copied to clipboard.";
-        StateHasChanged();
-        await Task.Delay(3000);
-        _copiedMessage = null;
-        StateHasChanged();
-    }
-
-    private async Task ResendAsync(ClientInvitation inv)
-    {
-        _errorMessage = null;
-        _copiedMessage = null;
-        _successMessage = null;
-        _resendingId = inv.Id;
-        _openActionsFor = null;
-
-        var emailError = await InvitationService.ResendInvitationAsync(inv.Id);
-
-        if (emailError is null)
+        try
         {
-            _successMessage = $"Invitation resent to {inv.Email}.";
-            _invitations = await InvitationService.GetValidInvitationsAsync();
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
+            Toasts.Success($"Invitation link for {inv.FirstName} copied to clipboard.");
         }
-        else
+        catch (Exception ex)
         {
-            _errorMessage = $"Could not resend invitation: {emailError}";
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "copying the invitation link"));
         }
-
-        _resendingId = null;
     }
 
     private void ToggleActions(Guid invitationId)
@@ -72,11 +54,45 @@ public partial class Index : ComponentBase
         _openActionsFor = _openActionsFor == invitationId ? null : invitationId;
     }
 
+    private async Task ResendAsync(ClientInvitation inv)
+    {
+        _resendingId = inv.Id;
+        _openActionsFor = null;
+        try
+        {
+            var emailError = await InvitationService.ResendInvitationAsync(inv.Id);
+            if (emailError is null)
+            {
+                Toasts.Success($"Invitation resent to {inv.Email}.");
+                _invitations = await InvitationService.GetValidInvitationsAsync();
+            }
+            else
+            {
+                Toasts.Error($"Could not resend invitation: {emailError}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "resending the invitation"));
+        }
+        finally
+        {
+            _resendingId = null;
+        }
+    }
+
     private async Task RevokeAsync(Guid id)
     {
-        _errorMessage = null;
         _openActionsFor = null;
-        await InvitationService.RevokeInvitationAsync(id);
-        _invitations = await InvitationService.GetValidInvitationsAsync();
+        try
+        {
+            await InvitationService.RevokeInvitationAsync(id);
+            _invitations = await InvitationService.GetValidInvitationsAsync();
+            Toasts.Success("Invitation revoked.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "revoking the invitation"));
+        }
     }
 }

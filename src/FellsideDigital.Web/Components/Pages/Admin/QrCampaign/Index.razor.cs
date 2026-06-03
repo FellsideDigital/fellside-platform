@@ -1,3 +1,4 @@
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -7,6 +8,8 @@ namespace FellsideDigital.Web.Components.Pages.Admin.QrCampaign;
 public partial class Index : ComponentBase
 {
     [Inject] private IQrLeadService QrLeadService { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Index> Logger { get; set; } = default!;
 
     private QrCampaignStats? _stats;
     private List<QrLead>?    _leads;
@@ -27,8 +30,15 @@ public partial class Index : ComponentBase
     {
         if (_selected is null) return;
 
-        await QrLeadService.MarkLeadAsReadAsync(_selected.Id);
-        _selected.IsRead = true;
+        try
+        {
+            await QrLeadService.MarkLeadAsReadAsync(_selected.Id);
+            _selected.IsRead = true;
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "updating the lead"));
+        }
         StateHasChanged();
     }
 }
