@@ -1,0 +1,9 @@
+@namespace FellsideDigital.UI.Components.Tables
+
+@* Standard table body cell (px-6 py-4). Use Class for responsive visibility / alignment overrides. *@
+<td class="@($"px-6 py-4 {Class}".Trim())">@ChildContent</td>
+
+@code {
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -90,41 +90,41 @@ else
 
     <!-- Invoice table -->
     <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-100 dark:divide-white/5">
+        <table class="@TableStyles.Table">
             <thead>
-                <tr class="bg-gray-50/80 dark:bg-white/[0.02]">
-                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Invoice</th>
-                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider hidden sm:table-cell">Project</th>
-                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider hidden md:table-cell">Due</th>
-                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Amount</th>
-                    <th scope="col" class="px-6 py-3.5 text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">Status</th>
-                    <th scope="col" class="px-6 py-3.5 text-right text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider">File</th>
+                <tr class="@TableStyles.HeadRow">
+                    <Th>Invoice</Th>
+                    <Th Class="hidden sm:table-cell">Project</Th>
+                    <Th Class="hidden md:table-cell">Due</Th>
+                    <Th>Amount</Th>
+                    <Th>Status</Th>
+                    <Th Right>File</Th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-white/5">
+            <tbody class="@TableStyles.Body">
                 @foreach (var inv in _invoices)
                 {
-                    <tr class="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                        <td class="px-6 py-4">
+                    <tr class="@TableStyles.Row">
+                        <Td>
                             <p class="text-sm font-medium text-gray-900 dark:text-white">@inv.Title</p>
                             <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">@inv.IssuedAt.ToLocalTime().ToString("d MMM yyyy")</p>
-                        </td>
-                        <td class="px-6 py-4 hidden sm:table-cell">
+                        </Td>
+                        <Td Class="hidden sm:table-cell">
                             <span class="text-sm text-gray-700 dark:text-neutral-300">@inv.Project?.Name</span>
-                        </td>
-                        <td class="px-6 py-4 hidden md:table-cell">
+                        </Td>
+                        <Td Class="hidden md:table-cell">
                             <span class="text-sm text-gray-500 dark:text-neutral-400">
                                 @(inv.DueAt.HasValue ? inv.DueAt.Value.ToLocalTime().ToString("d MMM yyyy") : "—")
                             </span>
-                        </td>
-                        <td class="px-6 py-4">
+                        </Td>
+                        <Td>
                             <span class="text-sm font-semibold text-gray-900 dark:text-white">@inv.Currency @inv.Amount.ToString("N2")</span>
-                        </td>
-                        <td class="px-6 py-4">
+                        </Td>
+                        <Td>
                             <StatusBadge CssClasses="@BadgeHelpers.InvoiceStatusBadge(inv.Status)"
                                          Label="@inv.Status.ToString()" />
-                        </td>
-                        <td class="px-6 py-4 text-right">
+                        </Td>
+                        <Td Class="text-right">
                             @if (!string.IsNullOrEmpty(inv.FilePath))
                             {
                                 <a href="@inv.FilePath" download="@inv.FileName"
@@ -139,7 +139,7 @@ else
                             {
                                 <span class="text-xs text-gray-400 dark:text-neutral-500">—</span>
                             }
-                        </td>
+                        </Td>
                     </tr>
                 }
             </tbody>
