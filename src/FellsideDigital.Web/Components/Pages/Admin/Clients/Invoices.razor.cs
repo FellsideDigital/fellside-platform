@@ -18,6 +18,7 @@ public partial class Invoices : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
+    [Inject] private ILogger<Invoices> Logger { get; set; } = default!;
 
     private bool _loading = true;
     private ApplicationUser? _client;
@@ -112,7 +113,7 @@ public partial class Invoices : ComponentBase
         }
         catch (Exception ex)
         {
-            _error = ex.Message;
+            _error = ErrorHandling.LogAndDescribe(Logger, ex, "uploading the invoice");
         }
         finally
         {

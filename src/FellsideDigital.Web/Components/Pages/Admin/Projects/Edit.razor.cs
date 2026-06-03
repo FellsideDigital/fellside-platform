@@ -17,6 +17,7 @@ public partial class Edit : ComponentBase
     [Inject] private IHeroProjectService HeroProjectService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private ILogger<Edit> Logger { get; set; } = default!;
 
     private ClientProject? _project;
     private InputModel Input { get; set; } = new();
@@ -197,7 +198,7 @@ public partial class Edit : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to save: {ex.Message}";
+            _errorMessage = ErrorHandling.LogAndDescribe(Logger, ex, "saving the project");
         }
         finally
         {
@@ -244,9 +245,14 @@ public partial class Edit : ComponentBase
             _heroInput.ScreenshotPath = key;
             _screenshotPreviewUrl = await HeroProjectService.ResolveScreenshotUrlAsync(key);
         }
+        catch (InvalidOperationException ex)
+        {
+            // Service throws these with user-facing validation text (file type/size).
+            _screenshotError = ex.Message;
+        }
         catch (Exception ex)
         {
-            _screenshotError = ex.Message;
+            _screenshotError = ErrorHandling.LogAndDescribe(Logger, ex, "uploading the screenshot");
         }
         finally
         {
@@ -266,7 +272,7 @@ public partial class Edit : ComponentBase
         }
         catch (Exception ex)
         {
-            _screenshotError = ex.Message;
+            _screenshotError = ErrorHandling.LogAndDescribe(Logger, ex, "removing the screenshot");
         }
     }
 
@@ -311,7 +317,7 @@ public partial class Edit : ComponentBase
         }
         catch (Exception ex)
         {
-            _heroError = $"Failed to save: {ex.Message}";
+            _heroError = ErrorHandling.LogAndDescribe(Logger, ex, "saving the showcase settings");
         }
         finally
         {

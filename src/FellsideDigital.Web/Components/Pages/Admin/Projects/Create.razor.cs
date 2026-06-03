@@ -14,6 +14,7 @@ public partial class Create : ComponentBase
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private ILogger<Create> Logger { get; set; } = default!;
 
     private InputModel Input { get; set; } = new();
     private List<ApplicationUser> _clients = [];
@@ -129,7 +130,7 @@ public partial class Create : ComponentBase
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Failed to create project: {ex.Message}";
+            _errorMessage = ErrorHandling.LogAndDescribe(Logger, ex, "creating the project");
         }
         finally
         {
