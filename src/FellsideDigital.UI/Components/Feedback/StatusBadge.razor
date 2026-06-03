@@ -1,6 +1,21 @@
-<span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium @CssClasses">@Label</span>
+<span class="@_classes">
+    @if (!string.IsNullOrEmpty(Dot))
+    {
+        <span class="size-1.5 rounded-full @Dot"></span>
+    }
+    @Label
+</span>
 
 @code {
     [Parameter] public string CssClasses { get; set; } = "";
     [Parameter] public string Label { get; set; } = "";
+
+    /// <summary>Optional leading status-dot colour classes (e.g. "bg-emerald-400"). When set, a dot is rendered.</summary>
+    [Parameter] public string? Dot { get; set; }
+
+    /// <summary>Extra classes appended to the badge (e.g. responsive visibility).</summary>
+    [Parameter] public string? Class { get; set; }
+
+    private string _classes =>
+        $"inline-flex items-center {(string.IsNullOrEmpty(Dot) ? "" : "gap-1.5 ")}rounded-full px-2.5 py-0.5 text-xs font-medium {CssClasses} {Class}".Trim();
 }

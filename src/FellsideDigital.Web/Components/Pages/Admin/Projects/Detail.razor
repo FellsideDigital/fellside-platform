@@ -40,10 +40,9 @@ else
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-3">
                     <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@_project.Name</h1>
-                    <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium @BadgeHelpers.ProjectStatusBadge(_project.Status)">
-                        <span class="size-1.5 rounded-full @BadgeHelpers.ProjectStatusDotColor(_project.Status)"></span>
-                        @_project.Status.DisplayName()
-                    </span>
+                    <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(_project.Status)"
+                                 Dot="@BadgeHelpers.ProjectStatusDotColor(_project.Status)"
+                                 Label="@_project.Status.DisplayName()" />
                 </div>
                 <div class="flex flex-wrap items-center gap-2 sm:justify-end">
                     <PrimaryButton Color="ButtonColor.Muted" Style="ButtonStyle.Outline" Href="@($"/Admin/Projects/{Id}/PortalPreview")">
@@ -261,10 +260,9 @@ else
                                         <div class="flex-1 min-w-0">
                                             <div class="flex flex-wrap items-center gap-2 mb-0.5">
                                                 <span class="text-sm font-semibold text-gray-900 dark:text-white">@phase.Title</span>
-                                                <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium @BadgeHelpers.PhaseStatusBadge(phase.Status)">
-                                                    <span class="size-1.5 rounded-full @BadgeHelpers.PhaseStatusDotColor(phase.Status)"></span>
-                                                    @BadgeHelpers.PhaseStatusLabel(phase.Status)
-                                                </span>
+                                                <StatusBadge CssClasses="@BadgeHelpers.PhaseStatusBadge(phase.Status)"
+                                                             Dot="@BadgeHelpers.PhaseStatusDotColor(phase.Status)"
+                                                             Label="@BadgeHelpers.PhaseStatusLabel(phase.Status)" />
                                             </div>
                                             @if (!string.IsNullOrWhiteSpace(phase.ShortLabel))
                                             {

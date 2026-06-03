@@ -215,10 +215,10 @@
                         </button>
 
                         <!-- Status badge -->
-                        <span class="hidden sm:inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium @BadgeHelpers.PhaseStatusBadge(phase.Status)">
-                            <span class="size-1.5 rounded-full @BadgeHelpers.PhaseStatusDotColor(phase.Status)"></span>
-                            @BadgeHelpers.PhaseStatusLabel(phase.Status)
-                        </span>
+                        <StatusBadge Class="max-sm:hidden"
+                                     CssClasses="@BadgeHelpers.PhaseStatusBadge(phase.Status)"
+                                     Dot="@BadgeHelpers.PhaseStatusDotColor(phase.Status)"
+                                     Label="@BadgeHelpers.PhaseStatusLabel(phase.Status)" />
 
                         <!-- Reorder buttons -->
                         <div class="flex gap-1">
