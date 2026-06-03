@@ -36,7 +36,9 @@
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2.5">
                     <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">@Project.Name</h1>
-                    <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(Project.Status)" Label="@Project.Status.DisplayName()" />
+                    <StatusBadge CssClasses="@BadgeHelpers.ProjectStatusBadge(Project.Status)"
+                                 Dot="@BadgeHelpers.ProjectStatusDotColor(Project.Status)"
+                                 Label="@Project.Status.DisplayName()" />
                     <StatusBadge CssClasses="@(isAutomation ? "bg-accent-hover text-accent" : "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400")" Label="@Project.Type.DisplayName()" />
                 </div>
                 @if (!string.IsNullOrWhiteSpace(Project.Description))
