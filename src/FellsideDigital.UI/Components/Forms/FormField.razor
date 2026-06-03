@@ -1,0 +1,45 @@
+@namespace FellsideDigital.UI.Components.Forms
+
+@*
+    Consistent label + required-marker + optional hint wrapper around a form control.
+    The control itself (and any <ValidationMessage>) is supplied as ChildContent, so this
+    composes with Blazor's EditForm/Input* binding without re-implementing it.
+*@
+
+<div class="@Class">
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <label class="@LabelClass">
+            @Label
+            @if (Required)
+            {
+                <span class="text-red-500">*</span>
+            }
+            @if (!string.IsNullOrEmpty(Hint))
+            {
+                <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">@Hint</span>
+            }
+        </label>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public bool Required { get; set; }
+
+    /// <summary>Optional inline hint shown after the label (e.g. "(optional)").</summary>
+    [Parameter] public string? Hint { get; set; }
+
+    /// <summary>Wrapper classes (e.g. grid spans / margins).</summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Use the compact uppercase label style (matches the phase/sub-form editors).</summary>
+    [Parameter] public bool Compact { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string LabelClass => Compact
+        ? "block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5"
+        : "block text-sm font-medium text-gray-900 dark:text-white mb-1.5";
+}

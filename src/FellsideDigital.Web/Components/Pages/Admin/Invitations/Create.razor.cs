@@ -19,10 +19,7 @@ public partial class Create : ComponentBase
     private string? _emailErrorDetails;
     private bool _submitting;
 
-    private const string InputClass =
-        "block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white " +
-        "ring-1 ring-inset ring-gray-200 dark:ring-white/10 placeholder:text-gray-400 dark:placeholder:text-neutral-500 " +
-        "focus:ring-2 focus:ring-inset focus:ring-accent transition-shadow outline-none";
+    private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
 
     private async Task CreateInvitationAsync()
     {

@@ -39,40 +39,28 @@
             <!-- Section label -->
             <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider -mb-2">Project details</p>
 
-            <!-- Client -->
-            <div>
-                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                    Client <span class="text-red-500">*</span>
-                </label>
-                <InputSelect @bind-Value="Input.ClientId" class="@InputClass">
+            <FormField Label="Client" Required>
+                <InputSelect @bind-Value="Input.ClientId" class="@FieldStyles.Input">
                     <option value="">Select a client…</option>
                     @foreach (var client in _clients)
                     {
                         <option value="@client.Id">@client.CompanyName — @client.Email</option>
                     }
                 </InputSelect>
-                <ValidationMessage For="() => Input.ClientId" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-            </div>
+                <ValidationMessage For="() => Input.ClientId" class="@FieldStyles.Error" />
+            </FormField>
 
-            <!-- Name -->
-            <div>
-                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                    Project name <span class="text-red-500">*</span>
-                </label>
-                <InputText @bind-Value="Input.Name" placeholder="e.g. Acme Ltd Website" class="@InputClass" />
-                <ValidationMessage For="() => Input.Name" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-            </div>
+            <FormField Label="Project name" Required>
+                <InputText @bind-Value="Input.Name" placeholder="e.g. Acme Ltd Website" class="@FieldStyles.Input" />
+                <ValidationMessage For="() => Input.Name" class="@FieldStyles.Error" />
+            </FormField>
 
-            <!-- Description -->
-            <div>
-                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                    Description <span class="text-red-500">*</span>
-                </label>
+            <FormField Label="Description" Required>
                 <InputTextArea @bind-Value="Input.Description" rows="3"
                                placeholder="Brief summary shown to the client in their portal…"
-                               class="@($"{InputClass} resize-none")" />
-                <ValidationMessage For="() => Input.Description" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-            </div>
+                               class="@FieldStyles.TextArea" />
+                <ValidationMessage For="() => Input.Description" class="@FieldStyles.Error" />
+            </FormField>
 
             <!-- Type + Status + Target launch date -->
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
@@ -107,23 +95,18 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Status</label>
-                    <InputSelect @bind-Value="Input.Status" class="@InputClass">
+                <FormField Label="Status">
+                    <InputSelect @bind-Value="Input.Status" class="@FieldStyles.Input">
                         @foreach (var opt in EnumExtensions.ToOptions<ProjectStatus>())
                         {
                             <option value="@opt.Value">@opt.Display</option>
                         }
                     </InputSelect>
-                </div>
+                </FormField>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                        Target launch date
-                        <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">(optional)</span>
-                    </label>
-                    <InputDate @bind-Value="Input.TargetLaunchDate" class="@InputClass" />
-                </div>
+                <FormField Label="Target launch date" Hint="(optional)">
+                    <InputDate @bind-Value="Input.TargetLaunchDate" class="@FieldStyles.Input" />
+                </FormField>
             </div>
 
             <!-- Type-specific deployment fields -->
@@ -134,47 +117,31 @@
 
                 @if (Input.Type == ProjectType.Website)
                 {
-                    <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                            Railway preview URL
-                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— shown as live iframe embed in the client portal</span>
-                        </label>
+                    <FormField Label="Railway preview URL" Hint="— shown as live iframe embed in the client portal">
                         <InputText @bind-Value="Input.PreviewUrl"
                                    placeholder="https://mysite.up.railway.app"
-                                   class="@InputClass" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                            Live website URL
-                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— "Visit live site" button in portal (optional)</span>
-                        </label>
+                                   class="@FieldStyles.Input" />
+                    </FormField>
+                    <FormField Label="Live website URL" Hint='— "Visit live site" button in portal (optional)'>
                         <InputText @bind-Value="Input.ProjectUrl"
                                    placeholder="https://yourclient.co.uk"
-                                   class="@InputClass" />
-                    </div>
+                                   class="@FieldStyles.Input" />
+                    </FormField>
                 }
                 else
                 {
-                    <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                            Live tool URL
-                            <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— shown as "Your automation tool" card in portal</span>
-                        </label>
+                    <FormField Label="Live tool URL" Hint='— shown as "Your automation tool" card in portal'>
                         <InputText @bind-Value="Input.ProjectUrl"
                                    placeholder="https://tool.yourclient.co.uk"
-                                   class="@InputClass" />
-                    </div>
+                                   class="@FieldStyles.Input" />
+                    </FormField>
                 }
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                        Notes for client
-                        <span class="ml-1 text-xs font-normal text-gray-400 dark:text-neutral-500">— shown in their portal</span>
-                    </label>
+                <FormField Label="Notes for client" Hint="— shown in their portal">
                     <InputTextArea @bind-Value="Input.DeploymentNotes" rows="2"
                                    placeholder="@(Input.Type == ProjectType.Website ? "Any notes about the build or deployment…" : "Notes about the automation setup…")"
-                                   class="@($"{InputClass} resize-none")" />
-                </div>
+                                   class="@FieldStyles.TextArea" />
+                </FormField>
             </div>
 
             <div class="flex items-center justify-end gap-4 pt-2 border-t border-gray-100 dark:border-white/5">

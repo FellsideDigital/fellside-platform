@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Components\Forms\**" />
-    <Content Remove="Components\Forms\**" />
-    <EmbeddedResource Remove="Components\Forms\**" />
-    <None Remove="Components\Forms\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
