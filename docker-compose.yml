@@ -22,7 +22,7 @@ services:
       # container itself). PublicUrl stays localhost:9000 because it's only used to sign
       # presigned URLs the browser (on the host) will open.
       - Storage__ServiceUrl=http://fellsidedigital-storage:9000
-      - Storage__PublicUrl=http://localhost:9000
+      - Storage__PublicUrl=http://localhost:8080
       - Storage__AccessKey=minioadmin
       - Storage__SecretKey=minioadmin
     ports:

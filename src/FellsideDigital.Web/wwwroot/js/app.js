@@ -149,21 +149,21 @@ window.fellsideTheme = {
     init() {
         const s = localStorage.getItem('fellside-theme') ?? 'dark';
         document.documentElement.classList.toggle('dark', s === 'dark');
-        this.updateFavicon(s);
+        // this.updateFavicon(s);
     },
     toggle() {
         const isDark = document.documentElement.classList.toggle('dark');
         const theme = isDark ? 'dark' : 'light';
         localStorage.setItem('fellside-theme', theme);
-        this.updateFavicon(theme);
+        // this.updateFavicon(theme);
     },
-    updateFavicon(theme) {
-        const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
-        link.type = 'image/x-icon';
-        link.rel = 'icon';
-        link.href = theme === 'dark' ? '/favicon-dark.png' : '/favicon.png';
-        document.getElementsByTagName('head')[0].appendChild(link);
-    }
+    // updateFavicon(theme) {
+    //     const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    //     link.type = 'image/x-icon';
+    //     link.rel = 'icon';
+    //     link.href = theme === 'dark' ? '/favicon.ico' : '/favicon-96x96.png';
+    //     document.getElementsByTagName('head')[0].appendChild(link);
+    // }
 };
 
 window.fellsideTheme.init();
