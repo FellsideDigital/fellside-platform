@@ -6,9 +6,9 @@ namespace FellsideDigital.Web.Components.Pages.Marketing;
 
 public partial class Scan : ComponentBase
 {
-    [Inject] private FellsideDigitalDbContext Db           { get; set; } = default!;
-    [Inject] private EmailService             EmailService { get; set; } = default!;
-    [Inject] private ILogger<Scan>            Logger       { get; set; } = default!;
+    [Inject] private IQrLeadService QrLeadService { get; set; } = default!;
+    [Inject] private EmailService   EmailService  { get; set; } = default!;
+    [Inject] private ILogger<Scan>  Logger        { get; set; } = default!;
 
     [SupplyParameterFromQuery(Name = "from")] public string? From { get; set; }
     [SupplyParameterFromQuery(Name = "ref")]  public string? Ref  { get; set; }
@@ -78,8 +78,7 @@ public partial class Scan : ComponentBase
             QrScanId = Guid.TryParse(Ref, out var scanId)   ? scanId : null,
         };
 
-        Db.QrLeads.Add(lead);
-        await Db.SaveChangesAsync();
+        await QrLeadService.CreateLeadAsync(lead);
 
         try { await EmailService.SendQrLeadDiscountAsync(lead); }
         catch (Exception ex) { Logger.LogError(ex, "Failed to send QR discount email to {Email}", lead.Email); }

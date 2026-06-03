@@ -1,12 +1,12 @@
 using FellsideDigital.Web.Data;
+using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.QrCampaign;
 
 public partial class Index : ComponentBase
 {
-    [Inject] private FellsideDigitalDbContext Db { get; set; } = default!;
+    [Inject] private IQrLeadService QrLeadService { get; set; } = default!;
 
     private QrCampaignStats? _stats;
     private List<QrLead>?    _leads;
@@ -16,18 +16,8 @@ public partial class Index : ComponentBase
 
     private async Task LoadAsync()
     {
-        var scans = await Db.QrScans.ToListAsync();
-        var leads = await Db.QrLeads.OrderByDescending(l => l.SubmittedAt).ToListAsync();
-
-        _stats = new QrCampaignStats
-        {
-            TotalScans = scans.Count,
-            ShirtScans = scans.Count(s => s.Source == "shirt"),
-            CardScans  = scans.Count(s => s.Source == "card"),
-            TotalLeads = leads.Count,
-        };
-
-        _leads = leads;
+        _stats = await QrLeadService.GetCampaignStatsAsync();
+        _leads = await QrLeadService.GetLeadsAsync();
     }
 
     private void OpenLead(QrLead lead) => _selected = lead;
@@ -37,22 +27,8 @@ public partial class Index : ComponentBase
     {
         if (_selected is null) return;
 
-        var entity = await Db.QrLeads.FindAsync(_selected.Id);
-        if (entity is not null)
-        {
-            entity.IsRead = true;
-            await Db.SaveChangesAsync();
-        }
-
+        await QrLeadService.MarkLeadAsReadAsync(_selected.Id);
         _selected.IsRead = true;
         StateHasChanged();
-    }
-
-    private sealed record QrCampaignStats
-    {
-        public int TotalScans { get; init; }
-        public int ShirtScans { get; init; }
-        public int CardScans  { get; init; }
-        public int TotalLeads { get; init; }
     }
 }

@@ -110,23 +110,14 @@ public static class StartupCompositionExtensions
 
     private static void MapQrRedirects(this WebApplication app)
     {
-        var validSources = new HashSet<string> { "shirt", "card" };
-
-        app.MapGet("/q/{source}", async (string source, FellsideDigitalDbContext db, HttpContext ctx) =>
+        app.MapGet("/q/{source}", async (string source, IQrLeadService qrLeads, HttpContext ctx) =>
         {
-            var normalized = validSources.Contains(source.ToLower()) ? source.ToLower() : "unknown";
+            var scan = await qrLeads.RecordScanAsync(
+                source,
+                ctx.Connection.RemoteIpAddress?.ToString(),
+                ctx.Request.Headers.UserAgent.ToString());
 
-            var scan = new QrScan
-            {
-                Source    = normalized,
-                IpAddress = ctx.Connection.RemoteIpAddress?.ToString(),
-                UserAgent = ctx.Request.Headers.UserAgent.ToString(),
-            };
-
-            db.QrScans.Add(scan);
-            await db.SaveChangesAsync();
-
-            return Results.Redirect($"/scan?from={normalized}&ref={scan.Id}");
+            return Results.Redirect($"/scan?from={scan.Source}&ref={scan.Id}");
         });
     }
 }

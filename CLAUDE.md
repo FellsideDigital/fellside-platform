@@ -23,13 +23,13 @@ docker-compose -f docker-compose.prod.yml up --build
 
 **Database migrations:**
 ```bash
-dotnet ef migrations add <MigrationName> --project FellsideDigital
-dotnet ef database update --project FellsideDigital
+dotnet ef migrations add <MigrationName> --project src/FellsideDigital.Web
+dotnet ef database update --project src/FellsideDigital.Web
 ```
 
 **Tailwind CSS** — runs automatically on `dotnet build` via MSBuild targets, but to run manually:
 ```bash
-cd FellsideDigital
+cd src/FellsideDigital.Web
 npm install
 npx tailwindcss -i ./Styles/tailwind.css -o ./wwwroot/css/tailwind.css
 ```
@@ -47,9 +47,17 @@ There are no test projects in this solution.
 
 ## Architecture
 
+### Solution Layout
+
+The solution is split into three projects under `src/`:
+
+- `FellsideDigital.Domain` — framework-free enums and extensions (e.g. enum display-name helpers).
+- `FellsideDigital.UI` — the shared Razor component library (buttons, cards, feedback, navigation). New reusable UI primitives belong here, not in `.Web`.
+- `FellsideDigital.Web` — the Blazor Server app: pages, layouts, services, data layer, and startup composition.
+
 ### Startup Composition Pattern
 
-`Program.cs` is intentionally minimal (3 meaningful lines). All service registration and middleware lives in `Extensions/`:
+`Program.cs` is intentionally thin — it wires data-protection key persistence, then delegates service registration to `AddFellsideDigitalPlatform()`, startup tasks to `ApplyStartupTasksAsync()`, and the middleware pipeline to `UseFellsideDigitalPlatform()`. Everything else lives in `Extensions/`:
 
 - `StartupCompositionExtensions.cs` — orchestrates the other extensions; also contains `ApplyStartupTasksAsync()` (runs migrations + admin seeding) and `UseFellsideDigitalPlatform()` (middleware pipeline)
 - `AuthenticationExtensions.cs` — ASP.NET Identity config, cookie settings, registers `IdentityNoOpEmailSender`
@@ -70,11 +78,10 @@ New services should be added as extension methods in this `Extensions/` folder a
 - `FellsideDigitalDbContext` extends `IdentityDbContext<ApplicationUser>`. The `Customers` DbSet is a semantic alias for the Identity users table.
 - `ApplicationUser` currently has no custom properties beyond the base `IdentityUser`.
 - Migrations apply automatically on startup — no manual `dotnet ef database update` needed in normal operation.
-- `HomeModels.cs` contains hardcoded static data for the landing page (projects, services, testimonials, FAQs) — this is not database-driven.
+- `Components/Pages/Marketing/Home.razor.model.cs` contains hardcoded static data for the landing page (projects, services, testimonials, FAQs) — this is not database-driven.
 
 ### Blazor Rendering
 
 - All components use **Interactive Server** render mode. The router is in `Routes.razor` with `MainLayout` as the default layout.
-- Most pages inherit from `PageBase.cs`, which provides a `LoadingScreen` overlay reference and `FinishLoading()` lifecycle hook.
+- Admin pages use `AdminLayout` and portal pages use `PortalLayout`; both are under `Components/Layout/`.
 - The landing page (`/`) delegates scroll and entrance animations to JavaScript (Anime.js) via JS interop on first render.
-- The `/auth` route exists as a protected page requiring `[Authorize]` and is used for dev/testing authenticated state.

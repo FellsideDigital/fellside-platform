@@ -1,12 +1,12 @@
 using FellsideDigital.Web.Data;
+using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.Enquiries;
 
 public partial class Index : ComponentBase
 {
-    [Inject] private FellsideDigitalDbContext Db { get; set; } = default!;
+    [Inject] private IEnquiryService EnquiryService { get; set; } = default!;
 
     private List<ContactEnquiry>? _enquiries;
     private ContactEnquiry? _selected;
@@ -18,9 +18,7 @@ public partial class Index : ComponentBase
 
     private async Task LoadAsync()
     {
-        _enquiries = await Db.ContactEnquiries
-            .OrderByDescending(e => e.SubmittedAt)
-            .ToListAsync();
+        _enquiries = await EnquiryService.GetAllAsync();
     }
 
     private void OpenEnquiry(ContactEnquiry enquiry)
@@ -37,13 +35,7 @@ public partial class Index : ComponentBase
     {
         if (_selected is null) return;
 
-        var entity = await Db.ContactEnquiries.FindAsync(_selected.Id);
-        if (entity is not null)
-        {
-            entity.IsRead = true;
-            await Db.SaveChangesAsync();
-        }
-
+        await EnquiryService.MarkAsReadAsync(_selected.Id);
         _selected.IsRead = true;
         StateHasChanged();
     }

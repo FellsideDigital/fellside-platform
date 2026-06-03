@@ -10,7 +10,7 @@ namespace FellsideDigital.Web.Components.Pages.Marketing;
 
 public partial class Contact : ComponentBase
 {
-    [Inject] private FellsideDigitalDbContext Db { get; set; } = default!;
+    [Inject] private IEnquiryService EnquiryService { get; set; } = default!;
     [Inject] private EmailService EmailService { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
 
@@ -52,8 +52,7 @@ public partial class Contact : ComponentBase
         };
 
 
-        Db.ContactEnquiries.Add(enquiry);
-        await Db.SaveChangesAsync();
+        await EnquiryService.CreateAsync(enquiry);
 
         try { await EmailService.SendContactEnquiryAsync(enquiry); }
         catch { /* saved to DB regardless — email failure is non-fatal */ }
