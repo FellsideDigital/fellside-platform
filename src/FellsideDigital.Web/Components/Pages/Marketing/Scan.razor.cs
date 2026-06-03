@@ -78,7 +78,16 @@ public partial class Scan : ComponentBase
             QrScanId = Guid.TryParse(Ref, out var scanId)   ? scanId : null,
         };
 
-        await QrLeadService.CreateLeadAsync(lead);
+        try
+        {
+            await QrLeadService.CreateLeadAsync(lead);
+        }
+        catch (Exception ex)
+        {
+            _error  = ErrorHandling.LogAndDescribe(Logger, ex, "submitting your details");
+            _saving = false;
+            return;
+        }
 
         try { await EmailService.SendQrLeadDiscountAsync(lead); }
         catch (Exception ex) { Logger.LogError(ex, "Failed to send QR discount email to {Email}", lead.Email); }

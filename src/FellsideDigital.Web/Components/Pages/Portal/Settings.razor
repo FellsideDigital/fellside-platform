@@ -17,7 +17,6 @@
                  Subtitle="Update your name and display details."
                  HeaderPadding="py-5">
         <div class="px-6 py-6">
-            <AlertBanner Message="@_profileSuccess" Variant="success" Class="mb-5" />
             <AlertBanner Message="@_profileError" Variant="error" Class="mb-5" />
             <EditForm Model="ProfileInput" OnValidSubmit="SaveProfileAsync">
                 <DataAnnotationsValidator />
@@ -52,7 +51,6 @@
                  Subtitle="Keep your account secure with a strong password."
                  HeaderPadding="py-5">
         <div class="px-6 py-6">
-            <AlertBanner Message="@_passwordSuccess" Variant="success" Class="mb-5" />
             <AlertBanner Message="@_passwordError" Variant="error" Class="mb-5" />
             <EditForm Model="PasswordInput" OnValidSubmit="ChangePasswordAsync">
                 <DataAnnotationsValidator />

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.Domain.Extensions;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -13,6 +14,8 @@ public partial class Contact : ComponentBase
     [Inject] private IEnquiryService EnquiryService { get; set; } = default!;
     [Inject] private EmailService EmailService { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Contact> Logger { get; set; } = default!;
 
     private string _bookingsUrl = "";
 
@@ -52,10 +55,20 @@ public partial class Contact : ComponentBase
         };
 
 
-        await EnquiryService.CreateAsync(enquiry);
+        try
+        {
+            await EnquiryService.CreateAsync(enquiry);
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "sending your enquiry"));
+            _sending = false;
+            return;
+        }
 
+        // Saved to the DB regardless — a failed notification email is non-fatal, just logged.
         try { await EmailService.SendContactEnquiryAsync(enquiry); }
-        catch { /* saved to DB regardless — email failure is non-fatal */ }
+        catch (Exception ex) { Logger.LogError(ex, "Contact enquiry notification email failed for {Email}", enquiry.Email); }
 
         _sending = false;
         _submitted = true;

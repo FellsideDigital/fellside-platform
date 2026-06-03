@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -11,6 +12,8 @@ public partial class Settings : ComponentBase
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private SignInManager<ApplicationUser> SignInManager { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Settings> Logger { get; set; } = default!;
 
     private ApplicationUser? _user;
     private string _email = "";
@@ -20,9 +23,7 @@ public partial class Settings : ComponentBase
 
     private bool _savingProfile;
     private bool _changingPassword;
-    private string? _profileSuccess;
     private string? _profileError;
-    private string? _passwordSuccess;
     private string? _passwordError;
 
     private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
@@ -42,19 +43,27 @@ public partial class Settings : ComponentBase
     {
         if (_user is null) return;
         _savingProfile = true;
-        _profileSuccess = null;
         _profileError = null;
 
         _user.FirstName = ProfileInput.FirstName;
         _user.LastName = ProfileInput.LastName;
 
-        var result = await UserManager.UpdateAsync(_user);
-        _savingProfile = false;
-
-        if (result.Succeeded)
-            _profileSuccess = "Profile updated successfully.";
-        else
-            _profileError = string.Join(" ", result.Errors.Select(e => e.Description));
+        try
+        {
+            var result = await UserManager.UpdateAsync(_user);
+            if (result.Succeeded)
+                Toasts.Success("Profile updated successfully.");
+            else
+                _profileError = string.Join(" ", result.Errors.Select(e => e.Description));
+        }
+        catch (Exception ex)
+        {
+            _profileError = ErrorHandling.LogAndDescribe(Logger, ex, "updating your profile");
+        }
+        finally
+        {
+            _savingProfile = false;
+        }
     }
 
     private async Task ChangePasswordAsync()
@@ -67,20 +76,28 @@ public partial class Settings : ComponentBase
         }
 
         _changingPassword = true;
-        _passwordSuccess = null;
         _passwordError = null;
 
-        var result = await UserManager.ChangePasswordAsync(_user, PasswordInput.CurrentPassword, PasswordInput.NewPassword);
-        _changingPassword = false;
-
-        if (result.Succeeded)
+        try
         {
-            _passwordSuccess = "Password updated successfully.";
-            PasswordInput = new();
+            var result = await UserManager.ChangePasswordAsync(_user, PasswordInput.CurrentPassword, PasswordInput.NewPassword);
+            if (result.Succeeded)
+            {
+                Toasts.Success("Password updated successfully.");
+                PasswordInput = new();
+            }
+            else
+            {
+                _passwordError = string.Join(" ", result.Errors.Select(e => e.Description));
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _passwordError = string.Join(" ", result.Errors.Select(e => e.Description));
+            _passwordError = ErrorHandling.LogAndDescribe(Logger, ex, "changing your password");
+        }
+        finally
+        {
+            _changingPassword = false;
         }
     }
 
