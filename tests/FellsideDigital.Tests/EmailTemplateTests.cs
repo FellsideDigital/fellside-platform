@@ -49,10 +49,10 @@ public class EmailTemplateTests
     }
 
     [Fact]
-    public void Button_fill_is_blue600_for_contrast()
+    public void Button_fill_uses_accent_for_contrast()
     {
         var button = EmailTheme.Button("https://x", "Go");
-        Assert.Contains("#2563eb", button);
+        Assert.Contains(EmailTheme.AccentButton, button);
     }
 
     [Theory]
@@ -83,9 +83,36 @@ public class EmailTemplateTests
             Name = "Ada", Email = "ada@example.com", ServiceType = "Website", Message = "Hi",
         })];
         yield return [EmailTemplates.QrLeadDiscount(new QrLead { Name = "Ada", Email = "ada@example.com" })];
+        yield return [EmailTemplates.QrLeadNotification(new QrLead
+        {
+            Name = "Ada", Email = "ada@example.com", Source = "shirt", Interest = "Both",
+        })];
         yield return [EmailTemplates.DocumentAdded(Client(), Project(), "Contract.pdf", url)];
         yield return [EmailTemplates.InvoiceAdded(Client(), Project(), SampleInvoice(), url)];
         yield return [EmailTemplates.InvoiceStatusChanged(Client(), Project(), SampleInvoice(), url)];
+    }
+
+    [Fact]
+    public void QrLeadNotification_includes_contact_details_interest_and_reply_cta()
+    {
+        var lead = new QrLead
+        {
+            Name = "Ada", Email = "ada@example.com", Phone = "07700 900000",
+            Company = "Acme", Source = "shirt", Interest = "Automation",
+            Budget = "£1k–£3k", Timeline = "ASAP", Message = "Keen to chat",
+        };
+
+        var html = EmailTemplates.QrLeadNotification(lead);
+
+        Assert.Contains("Ada", html);
+        Assert.Contains("ada@example.com", html);
+        Assert.Contains("07700 900000", html);
+        Assert.Contains("Acme", html);
+        Assert.Contains("Automation", html);
+        Assert.Contains("£1k–£3k", html);
+        Assert.Contains("ASAP", html);
+        Assert.Contains("Keen to chat", html);
+        Assert.Contains("mailto:ada@example.com", html); // reply CTA
     }
 
     [Fact]

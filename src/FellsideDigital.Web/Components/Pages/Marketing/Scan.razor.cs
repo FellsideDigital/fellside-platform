@@ -89,6 +89,10 @@ public partial class Scan : ComponentBase
             return;
         }
 
+        // Both emails are non-fatal — the lead is already saved, so a failed send is just logged.
+        try { await EmailService.SendQrLeadNotificationAsync(lead); }
+        catch (Exception ex) { Logger.LogError(ex, "Failed to send QR lead admin notification for {Email}", lead.Email); }
+
         try { await EmailService.SendQrLeadDiscountAsync(lead); }
         catch (Exception ex) { Logger.LogError(ex, "Failed to send QR discount email to {Email}", lead.Email); }
 

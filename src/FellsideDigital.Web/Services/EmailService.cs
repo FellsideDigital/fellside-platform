@@ -62,6 +62,12 @@ public class EmailService : IEmailSender<ApplicationUser>
             $"New enquiry from {enquiry.Name} — {enquiry.ServiceType}",
             EmailTemplates.ContactEnquiry(enquiry));
 
+    public Task SendQrLeadNotificationAsync(QrLead lead) =>
+        SendAsync(
+            _settings.AdminEmail,
+            $"New QR lead: {lead.Name} — {lead.Interest}",
+            EmailTemplates.QrLeadNotification(lead));
+
     public Task SendQrLeadDiscountAsync(QrLead lead) =>
         SendAsync(
             lead.Email,

@@ -102,6 +102,42 @@ internal static class EmailTemplates
             """);
     }
 
+    public static string QrLeadNotification(QrLead lead)
+    {
+        var source = lead.Source switch
+        {
+            "shirt" => "T-shirt",
+            "card"  => "Business card",
+            _       => "Unknown",
+        };
+
+        var rows = new List<(string, string)> { ("Name", lead.Name), ("Email", lead.Email) };
+        if (lead.Phone is not null)    rows.Add(("Phone", lead.Phone));
+        if (lead.Company is not null)  rows.Add(("Company", lead.Company));
+        rows.Add(("Interest", lead.Interest));
+        if (lead.Budget is not null)   rows.Add(("Budget", lead.Budget));
+        if (lead.Timeline is not null) rows.Add(("Timeline", lead.Timeline));
+        rows.Add(("Scanned", source));
+
+        var body = $"""
+            {H2("New QR lead")}
+            {P("Someone scanned a QR code and claimed the LAUNCH26 offer.")}
+            {EmailTheme.InfoTable(rows)}
+            """;
+
+        if (lead.Message is not null)
+            body += $"""
+                <div style="background:{EmailTheme.SurfaceMute};border:1px solid {EmailTheme.Border};border-radius:10px;padding:16px 20px;margin-bottom:24px;">
+                    <p style="margin:0 0 6px;font-size:13px;color:{EmailTheme.Muted};font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Message</p>
+                    <p style="margin:0;font-size:14px;color:{EmailTheme.Heading};line-height:1.65;white-space:pre-wrap;">{lead.Message}</p>
+                </div>
+                """;
+
+        body += EmailTheme.Button($"mailto:{lead.Email}", $"Reply to {lead.Name} →");
+
+        return EmailTheme.Layout(body);
+    }
+
     // ── Marketing ───────────────────────────────────────────────────────────
 
     public static string QrLeadDiscount(QrLead lead) => EmailTheme.Layout($"""

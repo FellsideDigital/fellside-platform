@@ -26,8 +26,7 @@ services:
       - Storage__AccessKey=minioadmin
       - Storage__SecretKey=minioadmin
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8085:8080"
     depends_on:
       fellsidedigital-postgres:
         condition: service_healthy
