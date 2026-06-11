@@ -7,6 +7,7 @@ namespace FellsideDigital.Web.Data
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? CompanyName { get; set; }
+        public string? JobTitle { get; set; }
         public string? ServiceType { get; set; }
         public string? ProjectDescription { get; set; }
         public string? Notes { get; set; }

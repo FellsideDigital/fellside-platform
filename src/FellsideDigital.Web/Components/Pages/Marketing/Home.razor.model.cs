@@ -14,12 +14,6 @@ public record Service(
     string Description,
     string IconSvg);
 
-public record Testimonial(
-    string Quote,
-    string Name,
-    string Role,
-    string AvatarUrl);
-
 public record Faq(
     string Question,
     string Answer);
@@ -172,21 +166,6 @@ public static class HomeData
         """
     ),
 ];
-
-    public static readonly IReadOnlyList<Testimonial> Testimonials = new[]
-    {
-        new Testimonial(
-            "The portal Fellside Digital built has completely changed how we communicate progress. Clients love having real-time visibility into their projects.",
-            "Jane Cooper", "Director, Lakeland Consulting", ""),
-
-        new Testimonial(
-            "Professional, communicative, and technically excellent. The booking system is rock-solid and has saved us hours every single week.",
-            "Tom Wright", "Owner, Eden Valley Stays", ""),
-
-        new Testimonial(
-            "We came to Fellside Digital with a complex brief and they delivered something beyond what we imagined. Clear design, fast, built to last.",
-            "Sarah Hodgson", "Operations Manager, Northern Roots CIC", ""),
-    };
 
     public static readonly IReadOnlyList<Faq> Faqs = new[]
     {

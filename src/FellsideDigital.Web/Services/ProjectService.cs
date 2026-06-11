@@ -66,6 +66,9 @@ public class ProjectService(
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
+    public async Task<int> GetProjectCountAsync()
+        => await db.ClientProjects.CountAsync();
+
     public async Task<List<ClientProject>> GetForClientAsync(string clientId)
         => await db.ClientProjects
             .Include(p => p.Invoices)

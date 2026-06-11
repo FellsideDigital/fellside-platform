@@ -1,3 +1,4 @@
+using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -6,6 +7,31 @@ namespace FellsideDigital.Web.Components.Pages.Marketing;
 public partial class Home : ComponentBase
 {
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private ITestimonialService Testimonials { get; set; } = default!;
+    [Inject] private ILogger<Home> Logger { get; set; } = default!;
+
+    /// <summary>A testimonial to render on the public page (quote, attribution, stars).</summary>
+    public sealed record TestimonialView(string Quote, string Name, string Role, int Rating);
+
+    private IReadOnlyList<TestimonialView> _testimonials = [];
+
+    /// <summary>
+    /// Loads approved testimonials. If there are none (or the lookup fails) the list stays
+    /// empty and the section renders an empty state instead.
+    /// </summary>
+    private async Task LoadTestimonialsAsync()
+    {
+        try
+        {
+            _testimonials = (await Testimonials.GetApprovedAsync())
+                .Select(t => new TestimonialView(t.Quote, t.AuthorName, t.AuthorRole, t.Rating))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            ErrorHandling.LogAndDescribe(Logger, ex, "loading testimonials for the home page");
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

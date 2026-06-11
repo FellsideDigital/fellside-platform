@@ -44,6 +44,7 @@ public partial class Create : ComponentBase
                 FirstName = Input.FirstName,
                 LastName = Input.LastName,
                 CompanyName = Input.CompanyName,
+                JobTitle = Input.JobTitle,
                 ServiceType = Input.ServiceType,
                 ProjectDescription = Input.ProjectDescription,
                 Notes = Input.Notes
@@ -77,6 +78,7 @@ public partial class Create : ComponentBase
         [Required] public string LastName { get; set; } = "";
         [Required, EmailAddress] public string Email { get; set; } = "";
         [Required] public string CompanyName { get; set; } = "";
+        [Required] public string JobTitle { get; set; } = "";
         [Required] public string ServiceType { get; set; } = "";
         [Required] public string ProjectDescription { get; set; } = "";
         public string Notes { get; set; } = "";
