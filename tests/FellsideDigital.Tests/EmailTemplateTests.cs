@@ -89,6 +89,7 @@ public class EmailTemplateTests
         })];
         yield return [EmailTemplates.DocumentAdded(Client(), Project(), "Contract.pdf", url)];
         yield return [EmailTemplates.InvoiceAdded(Client(), Project(), SampleInvoice(), url)];
+        yield return [EmailTemplates.InvoiceUpdated(Client(), Project(), SampleInvoice(), url)];
         yield return [EmailTemplates.InvoiceStatusChanged(Client(), Project(), SampleInvoice(), url)];
     }
 
@@ -134,6 +135,17 @@ public class EmailTemplateTests
     {
         var html = EmailTemplates.InvoiceAdded(Client(), Project(), SampleInvoice(), "https://x");
 
+        Assert.Contains("GBP 1,200.50", html);
+        Assert.Contains("Milestone 1", html);
+        Assert.Contains("1 July 2026", html);
+    }
+
+    [Fact]
+    public void InvoiceUpdated_shows_details_and_reads_as_an_update()
+    {
+        var html = EmailTemplates.InvoiceUpdated(Client(), Project(), SampleInvoice(), "https://x");
+
+        Assert.Contains("updated", html, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("GBP 1,200.50", html);
         Assert.Contains("Milestone 1", html);
         Assert.Contains("1 July 2026", html);

@@ -46,6 +46,7 @@ public static class TimelineEventPresenter
         TimelineEventType.NoteAdded          => new(IconNote, ToneGray, ToneGrayI),
 
         TimelineEventType.InvoiceCreated     => new(IconInvoice, ToneAccent, ToneAccentI),
+        TimelineEventType.InvoiceUpdated     => new(IconInvoice, ToneAccent, ToneAccentI),
         TimelineEventType.InvoiceSent        => new(IconInvoice, ToneAccent, ToneAccentI),
         TimelineEventType.InvoicePaid        => new(IconInvoice, ToneEmerald, ToneEmeraldI),
         TimelineEventType.InvoiceOverdue     => new(IconWarn, ToneRose, ToneRoseI),

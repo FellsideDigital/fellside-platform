@@ -90,6 +90,13 @@ public class EmailService : IEmailSender<ApplicationUser>
             EmailTemplates.InvoiceAdded(client, project, invoice, portalUrl),
             bccAdmin: true);
 
+    public Task SendInvoiceUpdatedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl) =>
+        SendAsync(
+            client.Email!,
+            $"Invoice updated for your {project.Name} project",
+            EmailTemplates.InvoiceUpdated(client, project, invoice, portalUrl),
+            bccAdmin: true);
+
     public Task SendInvoiceStatusChangedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl) =>
         SendAsync(
             client.Email!,

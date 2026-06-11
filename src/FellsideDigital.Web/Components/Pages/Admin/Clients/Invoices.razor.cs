@@ -35,6 +35,17 @@ public partial class Invoices : ComponentBase
     private bool _uploading;
     private string? _error;
 
+    // Edit-invoice modal
+    private Invoice? _editing;
+    private string _editTitle = "";
+    private decimal _editAmount;
+    private string _editCurrency = "GBP";
+    private DateTime? _editDueDate;
+    private IBrowserFile? _editFile;
+    private bool _notifyClient = true;
+    private bool _saving;
+    private string? _editError;
+
     private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
 
     private string _backHref => From.HasValue ? $"/Admin/Projects/{From}" : "/Admin/Projects";
@@ -110,6 +121,50 @@ public partial class Invoices : ComponentBase
         finally
         {
             _uploading = false;
+        }
+    }
+
+    private void OpenEdit(Invoice inv)
+    {
+        _editing      = inv;
+        _editTitle    = inv.Title;
+        _editAmount   = inv.Amount;
+        _editCurrency = inv.Currency;
+        _editDueDate  = inv.DueAt?.ToLocalTime().Date;
+        _editFile     = null;
+        _notifyClient = true;
+        _editError    = null;
+    }
+
+    private void CloseEdit() => _editing = null;
+
+    private void OnEditFileSelected(InputFileChangeEventArgs e) => _editFile = e.File;
+
+    private async Task SaveEditAsync()
+    {
+        if (_editing is null || string.IsNullOrWhiteSpace(_editTitle)) return;
+
+        _saving = true;
+        _editError = null;
+        try
+        {
+            await InvoiceService.UpdateAsync(_editing.Id, _editTitle.Trim(), _editing.Description,
+                _editAmount, _editCurrency, _editDueDate, _editFile, _notifyClient);
+            _editing = null;
+            await LoadAsync();
+            Toasts.Success(_notifyClient ? "Invoice updated and the client was notified." : "Invoice updated.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _editError = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _editError = ErrorHandling.LogAndDescribe(Logger, ex, "updating the invoice");
+        }
+        finally
+        {
+            _saving = false;
         }
     }
 

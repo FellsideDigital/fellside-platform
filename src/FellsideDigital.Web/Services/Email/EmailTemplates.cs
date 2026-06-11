@@ -199,6 +199,14 @@ internal static class EmailTemplates
             <div style="margin:0 0 4px;">{EmailTheme.Button(portalUrl, "View invoice →")}</div>
             """);
 
+    public static string InvoiceUpdated(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl) =>
+        EmailTheme.Layout($"""
+            {H2("Your invoice has been updated")}
+            {P($"{Greeting(client.FirstName)} an invoice on your <strong>{project.Name}</strong> project has been updated. The latest details are below.")}
+            {EmailTheme.InfoTable(InvoiceRows(project, invoice))}
+            <div style="margin:0 0 4px;">{EmailTheme.Button(portalUrl, "View invoice →")}</div>
+            """);
+
     public static string InvoiceStatusChanged(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl)
     {
         var (heading, intro) = invoice.Status switch

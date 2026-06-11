@@ -28,6 +28,7 @@ public enum TimelineEventType
     [Display(Name = "Project reopened")] ProjectReopened,
     [Display(Name = "Note added")] NoteAdded,
     [Display(Name = "Invoice created")] InvoiceCreated,
+    [Display(Name = "Invoice updated")] InvoiceUpdated,
     [Display(Name = "Invoice sent")] InvoiceSent,
     [Display(Name = "Invoice paid")] InvoicePaid,
     [Display(Name = "Invoice overdue")] InvoiceOverdue,

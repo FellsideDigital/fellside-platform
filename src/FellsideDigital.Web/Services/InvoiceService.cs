@@ -71,6 +71,61 @@ public class InvoiceService(
         return invoice;
     }
 
+    public async Task<Invoice> UpdateAsync(
+        Guid id, string title, string? description,
+        decimal amount, string currency, DateTime? dueAt,
+        IBrowserFile? newFile, bool notifyClient, string? actorId = null)
+    {
+        var invoice = await db.Invoices.FindAsync(id)
+            ?? throw new InvalidOperationException("That invoice no longer exists.");
+
+        invoice.Title       = title;
+        invoice.Description = description;
+        invoice.Amount      = amount;
+        invoice.Currency    = currency;
+        invoice.DueAt       = dueAt.HasValue ? DateTime.SpecifyKind(dueAt.Value, DateTimeKind.Utc) : null;
+
+        if (newFile is not null)
+        {
+            var ext = Path.GetExtension(newFile.Name).ToLowerInvariant();
+            if (!AllowedExtensions.Contains(ext))
+                throw new InvalidOperationException($"File type '{ext}' is not allowed. Use PDF or an image.");
+
+            var key = $"invoices/{invoice.ProjectId}/{invoice.Id}{ext}";
+            var contentType = ContentTypes.GetValueOrDefault(ext, "application/octet-stream");
+
+            await using var stream = newFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+            await storage.UploadAsync(key, stream, contentType);
+
+            // If the extension changed the key changes too, leaving the old object orphaned — remove it.
+            var oldPath = invoice.FilePath;
+            if (!string.IsNullOrEmpty(oldPath) && oldPath != key)
+            {
+                try { await storage.DeleteAsync(oldPath); }
+                catch (Exception ex)
+                {
+                    // Non-fatal — an orphaned S3 object is recoverable and must not block the update.
+                    logger.LogWarning(ex, "Failed to delete replaced invoice file {Key}", oldPath);
+                }
+            }
+
+            invoice.FilePath = key;
+            invoice.FileName = newFile.Name;
+        }
+
+        await db.SaveChangesAsync();
+
+        await timeline.RecordAsync(
+            invoice.ProjectId, TimelineEventType.InvoiceUpdated, $"Invoice updated: {title}",
+            TimelineVisibility.ClientVisible, actorId);
+
+        if (notifyClient)
+            await NotifyClientAsync(invoice.ProjectId, (client, project, url) =>
+                email.SendInvoiceUpdatedAsync(client, project, invoice, url));
+
+        return invoice;
+    }
+
     public async Task<string?> GetDownloadUrlAsync(Guid id)
     {
         var invoice = await db.Invoices.FindAsync(id);

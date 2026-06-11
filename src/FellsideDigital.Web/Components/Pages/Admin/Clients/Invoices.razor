@@ -100,6 +100,10 @@ else
                                         <a href="@url" target="_blank" rel="noopener noreferrer"
                                            class="text-xs font-medium text-accent hover:underline transition-colors">Download</a>
                                     }
+                                    <button @onclick="() => OpenEdit(inv)"
+                                            class="text-xs font-medium text-accent hover:underline transition-colors">
+                                        Edit
+                                    </button>
                                     <button @onclick="() => DeleteInvoiceAsync(inv.Id)"
                                             class="text-xs font-medium text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors">
                                         Delete
@@ -180,3 +184,78 @@ else
         </div>
     </CardSection>
 }
+
+<Modal IsOpen="@(_editing is not null)" MaxWidth="max-w-lg" OnBackdropClick="CloseEdit">
+    @if (_editing is not null)
+    {
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">Edit invoice</h3>
+                <p class="text-xs text-gray-500 dark:text-neutral-400">@_editing.Project?.Name</p>
+            </div>
+            <button @onclick="CloseEdit" class="text-gray-400 hover:text-gray-600 dark:hover:text-neutral-200 transition-colors">
+                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <AlertBanner Message="@_editError" Variant="error" Class="mb-3" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Title *</label>
+                <input @bind="_editTitle" placeholder="e.g. Deposit invoice" class="@InputClass" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Amount *</label>
+                <input @bind="_editAmount" type="number" step="0.01" min="0" placeholder="0.00" class="@InputClass" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Currency</label>
+                <select @bind="_editCurrency" class="@InputClass">
+                    <option value="GBP">GBP £</option>
+                    <option value="USD">USD $</option>
+                    <option value="EUR">EUR €</option>
+                </select>
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Due date (optional)</label>
+                <input @bind="_editDueDate" type="date" class="@InputClass" />
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Replace document</label>
+                <div class="rounded-xl border-2 border-dashed border-gray-200 dark:border-white/10 p-4 text-center hover:border-accent transition-colors">
+                    <InputFile OnChange="OnEditFileSelected" accept=".pdf,.png,.jpg,.jpeg"
+                               class="block w-full text-xs text-gray-500 dark:text-neutral-400
+                                      file:mr-3 file:rounded-lg file:border-0 file:bg-accent
+                                      file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white
+                                      hover:file:opacity-90 cursor-pointer" />
+                    <p class="mt-2 text-xs text-gray-400 dark:text-neutral-500">
+                        Leave empty to keep current@(string.IsNullOrEmpty(_editing.FileName) ? "" : $" ({_editing.FileName})") — PDF, PNG or JPG, max 10 MB
+                    </p>
+                </div>
+            </div>
+            <div class="sm:col-span-2">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" @bind="_notifyClient"
+                           class="rounded border-gray-300 dark:border-white/20 text-accent focus:ring-accent" />
+                    <span class="text-xs text-gray-600 dark:text-neutral-300">Notify client by email</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="mt-5 flex justify-end gap-2">
+            <button @onclick="CloseEdit"
+                    class="px-4 py-2 text-xs font-medium text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                Cancel
+            </button>
+            <SpinnerButton IsLoading="@_saving"
+                           LoadingText="Saving…"
+                           Disabled="@string.IsNullOrWhiteSpace(_editTitle)"
+                           OnClick="SaveEditAsync">
+                <span>Save changes</span>
+            </SpinnerButton>
+        </div>
+    }
+</Modal>

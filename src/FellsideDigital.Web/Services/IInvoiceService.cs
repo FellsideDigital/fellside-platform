@@ -7,6 +7,12 @@ namespace FellsideDigital.Web.Services;
 public interface IInvoiceService
 {
     Task<Invoice> UploadAsync(Guid projectId, string title, string? description, decimal amount, string currency, DateTime? dueAt, IBrowserFile file, string? actorId = null);
+
+    /// <summary>
+    /// Updates an invoice's details and, when <paramref name="newFile"/> is supplied, replaces its
+    /// attached document. When <paramref name="notifyClient"/> is true the project's client is emailed.
+    /// </summary>
+    Task<Invoice> UpdateAsync(Guid id, string title, string? description, decimal amount, string currency, DateTime? dueAt, IBrowserFile? newFile, bool notifyClient, string? actorId = null);
     Task<List<Invoice>> GetForProjectAsync(Guid projectId);
     Task<List<Invoice>> GetForClientAsync(string clientId);
     Task<Invoice?> GetByIdAsync(Guid id);
