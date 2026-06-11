@@ -13,6 +13,10 @@ public class ClientInvitation
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
     public string CompanyName { get; set; } = "";
+
+    /// <summary>The client's job title (e.g. "Director"), used for testimonial attribution.</summary>
+    public string JobTitle { get; set; } = "";
+
     public string ServiceType { get; set; } = "";
     public string ProjectDescription { get; set; } = "";
 

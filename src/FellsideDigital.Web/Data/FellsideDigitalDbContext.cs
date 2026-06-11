@@ -20,6 +20,7 @@ namespace FellsideDigital.Web.Data
         public DbSet<ProjectMetric> ProjectMetrics => Set<ProjectMetric>();
         public DbSet<ProjectPipelineStep> ProjectPipelineSteps => Set<ProjectPipelineStep>();
         public DbSet<ProjectIntegration> ProjectIntegrations => Set<ProjectIntegration>();
+        public DbSet<ClientTestimonial> ClientTestimonials => Set<ClientTestimonial>();
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
@@ -216,6 +217,16 @@ namespace FellsideDigital.Web.Data
                 e.HasOne(i => i.Project)
                     .WithMany(p => p.Integrations)
                     .HasForeignKey(i => i.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<ClientTestimonial>(e =>
+            {
+                e.HasIndex(t => t.UserId).IsUnique();
+
+                e.HasOne(t => t.User)
+                    .WithMany()
+                    .HasForeignKey(t => t.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }

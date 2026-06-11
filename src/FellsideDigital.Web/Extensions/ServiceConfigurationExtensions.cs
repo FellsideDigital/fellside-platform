@@ -95,6 +95,7 @@ public static class ServiceConfigurationExtensions
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
         services.AddScoped<IHeroProjectService, HeroProjectService>();
+        services.AddScoped<ITestimonialService, TestimonialService>();
         services.AddScoped<IEnquiryService, EnquiryService>();
         services.AddScoped<IQrLeadService, QrLeadService>();
         services.AddScoped<LayoutStateService>();

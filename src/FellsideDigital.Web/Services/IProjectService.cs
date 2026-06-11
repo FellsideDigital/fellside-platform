@@ -8,6 +8,7 @@ public interface IProjectService
     Task<ClientProject?> GetByIdAsync(Guid id);
     Task<ClientProject?> GetByIdForClientAsync(Guid id);
     Task<List<ClientProject>> GetAllAsync();
+    Task<int> GetProjectCountAsync();
     Task<List<ClientProject>> GetForClientAsync(string clientId);
     Task UpdateAsync(ClientProject project, string? actorId = null);
     Task DeleteAsync(Guid id);

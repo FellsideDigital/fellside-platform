@@ -41,7 +41,8 @@ public enum IconName
     Bolt,
     CircleStack,
     DocumentText,
-    CheckCircle
+    CheckCircle,
+    Star
 }
 
 public enum IconVariant

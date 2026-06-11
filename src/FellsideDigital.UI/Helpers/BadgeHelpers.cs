@@ -39,6 +39,14 @@ public static class BadgeHelpers
         _                         => ""
     };
 
+    public static string TestimonialStatusBadge(TestimonialStatus s) => s switch
+    {
+        TestimonialStatus.Approved => "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-400",
+        TestimonialStatus.Pending  => "bg-amber-50 text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-400",
+        TestimonialStatus.Rejected => "bg-red-50 text-red-700 ring-1 ring-red-600/20 dark:bg-red-400/10 dark:text-red-400",
+        _                          => ""
+    };
+
     public static string ProjectStatusDotColor(ProjectStatus s) => s switch
     {
         ProjectStatus.InProgress => "bg-blue-400",
