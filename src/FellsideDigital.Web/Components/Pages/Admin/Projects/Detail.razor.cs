@@ -4,6 +4,7 @@ using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.Projects;
 
@@ -16,12 +17,17 @@ public partial class Detail : ComponentBase
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private ToastService Toasts { get; set; } = default!;
     [Inject] private ILogger<Detail> Logger { get; set; } = default!;
+    [Inject] private ITestimonialService Testimonials { get; set; } = default!;
+    [Inject] private EmailService Email { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private ClientProject? _project;
     private Dictionary<Guid, string> _downloadUrls = [];
 
     private bool _showDelete;
     private bool _deleting;
+    private bool _clientHasTestimonial;
+    private bool _sendingRequest;
 
     // ── Snapshot computeds (project + client overview) ──
 
@@ -103,6 +109,8 @@ public partial class Detail : ComponentBase
     private async Task LoadAsync()
     {
         _project = await ProjectService.GetByIdAsync(Id);
+        _clientHasTestimonial = _project is not null
+            && await Testimonials.GetForUserAsync(_project.ClientId) is not null;
         _downloadUrls = [];
 
         if (_project?.Invoices is not null)
@@ -128,6 +136,46 @@ public partial class Detail : ComponentBase
         {
             _deleting = false;
             Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the project"));
+        }
+    }
+
+    private async Task CopyTestimonialLinkAsync()
+    {
+        var url = NavigationManager.ToAbsoluteUri("/Portal/Testimonial").ToString();
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
+            Toasts.Success("Testimonial link copied to clipboard.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "copying the testimonial link"));
+        }
+    }
+
+    private async Task RequestTestimonialAsync()
+    {
+        if (_project?.Client?.Email is not { Length: > 0 })
+        {
+            Toasts.Error("This client has no email address on file.");
+            return;
+        }
+
+        _sendingRequest = true;
+        try
+        {
+            var url = NavigationManager.ToAbsoluteUri("/Portal/Testimonial").ToString();
+            await Email.SendTestimonialRequestAsync(_project.Client, _project, url);
+            _clientHasTestimonial = true;
+            Toasts.Success($"Testimonial request sent to {_project.Client.Email}.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "sending the testimonial request"));
+        }
+        finally
+        {
+            _sendingRequest = false;
         }
     }
 }
