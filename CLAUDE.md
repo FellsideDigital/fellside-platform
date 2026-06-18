@@ -134,3 +134,77 @@ Don't re-declare local `InputClass` Tailwind strings or hand-roll `<th>`/`<td>` 
 When you add or change a service / business logic, add or extend tests in `tests/FellsideDigital.Tests`. DB-backed tests derive from `[Collection("postgres")]` and use `PostgresFixture.CreateContext()` (Testcontainers — Docker required). Pure-logic tests (e.g. `ToastService`, `ErrorHandling`) need no fixture.
 
 Design rationale for larger refactors is recorded under `docs/superpowers/specs/`.
+
+## Working Principles & Security Policy
+
+This section is the single source of truth for how work is done and the security bar every change must clear. Where any other note conflicts with the verified code, the code wins — these rules are written to match the codebase as it actually is.
+
+### Core principles
+
+| Principle | Rule |
+|-----------|------|
+| **Simplicity first** | The simplest correct solution wins. No unnecessary abstraction. |
+| **No laziness** | Find root causes. Never apply band-aid fixes. |
+| **Minimal impact** | Only touch what the task requires. No drive-by refactors. |
+| **Verify before done** | Never mark a task complete without proving it works. |
+
+### Workflow
+
+- **Features / changes with 3+ steps:** write a short plan first (goal, steps, risks, success criteria), confirm it makes sense, track progress as you go, and STOP to re-plan if something goes wrong mid-task rather than pushing through uncertainty.
+- **Bug reports:** just fix them — no check-in needed. Reproduce and understand the bug, find the root cause (not the symptom), fix with minimal blast radius, verify, then report what was wrong and what changed.
+
+(The plan-first rule applies to new/feature work; the fix-directly rule applies to bug reports.)
+
+### Security rules (non-negotiable on every change)
+
+- **Never hardcode secrets.** Credentials, connection strings, and S3 keys come from environment variables or bound settings (`StorageSettings`, `EmailSettings`, `ConnectionStrings__DefaultConnection`, `DATABASE_URL`) — never literals in code, not even in tests.
+- **Always use parameterised queries.** The data layer is **EF Core only** (no Dapper, no raw SQL). Do not introduce `FromSqlRaw`/`ExecuteSqlRaw` with string concatenation; if raw SQL is ever truly needed, parameterise it.
+- **S3 is private.** All blob access goes through `IStorageService` — reads/writes via presigned URLs (`GetPresignedUrlAsync`), never public bucket ACLs. Bucket privacy and lifecycle rules are infra config (see "Out of code scope" below).
+- **Auth & session cookies** are `HttpOnly` + `Secure` (`CookieSecurePolicy.Always`) with **`SameSite=Lax`** — this is deliberate; `Lax` is required so redirect-back flows (external login return, email-link landings) keep the cookie. Do **not** change auth/session cookies to `Strict`. `SameSite=Strict` is used only for the non-navigational status-message cookie in `IdentityRedirectManager`.
+- **No exception detail to users.** This is a Blazor Server app: catch risky operations and use `ErrorHandling.LogAndDescribe(Logger, ex, "doing X")` (logs the real exception, returns a safe message); every layout already wraps the routed body in `<ErrorBoundary>` with `ErrorFallback`. API routes under `/api/*` return safe 401/403 JSON. There is no generic "global exception middleware" pattern — use the existing `ErrorHandling` + `ErrorBoundary` mechanism.
+- **Every protected route needs `[Authorize]`.** Audit any new page/endpoint for the correct role (`SiteAdmin` / `AuctionAdmin`) before marking work done.
+
+### Auth specifics (as configured in `AuthenticationExtensions.cs`)
+
+- Account lockout is active: 5 failed attempts → 15-minute lockout. Keep it on.
+- Password policy: 12-char minimum, requires upper/lower/digit/non-alphanumeric. Don't weaken it.
+- 2FA is supported (`LoginWith2fa`, recovery codes) — don't break it.
+- **Email is no-op in normal operation:** identity confirmation / password-reset go through `IdentityNoOpEmailSender`, so those emails are **not delivered** (dev renders the confirmation link on screen). A separate transactional `EmailService` exists for app emails. If you build a flow that depends on a delivered identity email, wire a real `IEmailSender` first — don't assume reset/confirm emails currently send.
+
+### Database (PostgreSQL via EF Core)
+
+- App connects with a least-privilege user — never the superuser.
+- All inputs parameterised (EF Core handles this; don't bypass it).
+- Add indexes when introducing new `WHERE`/join columns.
+- Never run a destructive migration without a rollback plan. Migrations apply automatically on startup.
+
+### Code style
+
+- Follow existing conventions — don't introduce new patterns without reason (see "Conventions for New Work" above).
+- Remove dead code / unused imports you touch as part of a task.
+- Log via the injected `ILogger` (auth, errors, S3 ops) — never `Console.WriteLine`.
+- Keep methods small and single-purpose.
+
+### What NOT to do
+
+- Don't refactor code outside the task.
+- Don't upgrade packages unless asked.
+- Don't expose internal error detail to API consumers.
+- Don't commit secrets, even test ones.
+- Don't assume infrastructure — ask if unsure.
+
+### Out of code scope (infra — can't be verified from this repo)
+
+These are real requirements but live in infra/IAM/bucket config, not in code, so a code review can't confirm them — treat as ops checklist items, not code-change gates:
+
+- S3 bucket privacy (no public ACLs) and lifecycle rules for temp/unused objects.
+- Least-privilege DB grants for the app user.
+
+### Definition of done
+
+- [ ] Code compiles and runs without errors.
+- [ ] The specific requirement is met and tested.
+- [ ] No secrets hardcoded.
+- [ ] No new security holes; auth/cookie/query rules above upheld.
+- [ ] Existing functionality not broken.
+- [ ] Changes summarised clearly.

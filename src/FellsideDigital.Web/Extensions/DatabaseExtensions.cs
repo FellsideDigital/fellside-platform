@@ -16,7 +16,15 @@ public static class DatabaseExtensions
         {
             var uri = new Uri(databaseUrl);
             var userInfo = uri.UserInfo.Split(':');
-            connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+
+            // TLS to the database. Railway's managed Postgres presents a self-signed certificate
+            // on the project-private network, so full chain validation (VerifyFull) isn't possible
+            // without their CA — hence the default trusts the server cert. On any platform that
+            // exposes a CA, set DB_SSL_MODE=VerifyFull (and DB_TRUST_SERVER_CERT=false) to get a
+            // fully authenticated channel without a code change.
+            var sslMode = Environment.GetEnvironmentVariable("DB_SSL_MODE") ?? "Require";
+            var trustServerCert = Environment.GetEnvironmentVariable("DB_TRUST_SERVER_CERT") ?? "true";
+            connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode={sslMode};Trust Server Certificate={trustServerCert}";
         }
 
         if (string.IsNullOrWhiteSpace(connectionString))

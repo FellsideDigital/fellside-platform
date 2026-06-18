@@ -12,8 +12,12 @@ namespace FellsideDigital.Web.Data.Seeding;
 /// </summary>
 public static class DemoDataSeeder
 {
-    // Must satisfy the Identity password policy (length >= 12, upper, lower, digit, non-alphanumeric).
-    private const string DemoPassword = "DemoClient!2026";
+    // Password for the dev-only demo client accounts. Overridable via DEMO_CLIENT_PASSWORD;
+    // the fallback must satisfy the Identity password policy (length >= 12, upper, lower,
+    // digit, non-alphanumeric). This seeder only runs under IsDevelopment(), so the fallback
+    // never reaches a production environment.
+    private static string DemoPassword =>
+        Environment.GetEnvironmentVariable("DEMO_CLIENT_PASSWORD") ?? "DemoClient!2026";
 
     public static async Task SeedDemoProjectsAsync(IServiceProvider serviceProvider)
     {

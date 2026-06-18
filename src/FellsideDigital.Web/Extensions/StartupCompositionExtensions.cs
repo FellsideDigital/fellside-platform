@@ -28,6 +28,12 @@ public static class StartupCompositionExtensions
             .ConfigurePortalServices();
 
         // Required when running behind reverse proxies/load balancers (containers, cloud).
+        // The known-proxy/known-network allowlists are cleared because Railway's edge proxy
+        // has no fixed/announced IP, so the forwarded headers can't be pinned to a specific
+        // source. The residual host-header risk that this would otherwise open up (e.g. link
+        // poisoning via NavigationManager) is bounded by the AllowedHosts allowlist, which
+        // rejects unexpected Host headers before they reach the app. ForwardLimit defaults to
+        // 1, matching Railway's single proxy hop.
         services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
