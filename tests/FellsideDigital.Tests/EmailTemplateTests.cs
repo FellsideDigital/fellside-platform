@@ -91,6 +91,7 @@ public class EmailTemplateTests
         yield return [EmailTemplates.InvoiceAdded(Client(), Project(), SampleInvoice(), url)];
         yield return [EmailTemplates.InvoiceUpdated(Client(), Project(), SampleInvoice(), url)];
         yield return [EmailTemplates.InvoiceStatusChanged(Client(), Project(), SampleInvoice(), url)];
+        yield return [EmailTemplates.TestimonialRequest(Client(), Project(), url)];
     }
 
     [Fact]
@@ -128,6 +129,20 @@ public class EmailTemplateTests
         Assert.Contains(project.Name, html);
         Assert.Contains(url, html);
         Assert.Contains("Ada", html); // greeting uses first name
+    }
+
+    [Fact]
+    public void TestimonialRequest_includes_project_name_cta_and_greeting()
+    {
+        var project = Project();
+        var url = "https://fellsidedigital.co.uk/Portal/Testimonial";
+
+        var html = EmailTemplates.TestimonialRequest(Client(), project, url);
+
+        Assert.Contains(project.Name, html);                 // "Acme Rebuild"
+        Assert.Contains(url, html);                           // CTA points at the form
+        Assert.Contains("Ada", html);                         // greeting uses first name
+        Assert.Contains("testimonial", html, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
