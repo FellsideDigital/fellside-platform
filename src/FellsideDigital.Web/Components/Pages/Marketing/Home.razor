@@ -21,6 +21,12 @@
       "publisher": { "@@id": "https://fellsidedigital.co.uk/#business" }
     }
     </script>
+    @* LOCAL SEO — to fully match your Google Business Profile and strengthen the Maps/local-pack signal,
+       add the following keys to the ProfessionalService object below (values must match GBP exactly):
+         "address": add  "streetAddress": "<your street>",  "postalCode": "<your postcode>"
+         "hasMap": "<your Google Maps place URL>"
+         "sameAs": [ "<LinkedIn>", "<Facebook/Instagram>", "<Google Business Profile URL>" ]
+       Keep Name + Address + Phone (NAP) identical across the site, GBP, and any directories. *@
     <script type="application/ld+json">
     {
       "@@context": "https://schema.org",
@@ -29,6 +35,8 @@
       "name": "Fellside Digital",
       "description": "Bespoke web development and intelligent business automation, based in Keswick, Cumbria. Serving businesses across the Lake District and UK-wide.",
       "url": "https://fellsidedigital.co.uk",
+      "logo": "https://fellsidedigital.co.uk/web-app-manifest-512x512.png",
+      "image": "https://fellsidedigital.co.uk/web-app-manifest-512x512.png",
       "telephone": "+447484323505",
       "email": "hello@fellsidedigital.co.uk",
       "address": {
@@ -37,12 +45,17 @@
         "addressRegion": "Cumbria",
         "addressCountry": "GB"
       },
+      "geo": {
+        "@@type": "GeoCoordinates",
+        "latitude": 54.6013,
+        "longitude": -3.1347
+      },
       "areaServed": [
         { "@@type": "Place", "name": "Cumbria" },
         { "@@type": "Place", "name": "Lake District" },
         { "@@type": "Place", "name": "United Kingdom" }
       ],
-      "knowsAbout": ["Web Development", "Website Design", "Business Automation", "API Integration", "AI Automation", "Blazor", ".NET"],
+      "knowsAbout": ["Web Development", "Website Design", "Astro", "Web Applications", "Business Automation", "API Integration", "AI Automation", "Blazor", ".NET"],
       "priceRange": "££",
       "openingHoursSpecification": {
         "@@type": "OpeningHoursSpecification",
@@ -70,7 +83,7 @@
         {
           "@@type": "Question",
           "name": "How much does a project cost?",
-          "acceptedAnswer": { "@@type": "Answer", "text": "A foundational website starts from around £450. Software-driven sites and bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins." }
+          "acceptedAnswer": { "@@type": "Answer", "text": "A static marketing website starts from £295. Software-driven sites and bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins." }
         },
         {
           "@@type": "Question",

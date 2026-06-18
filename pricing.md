@@ -7,36 +7,47 @@ Modern websites and automation systems for small businesses that want more custo
 
 # 🌐 Website Packages (Astro Static Sites)
 
-## Starter Website
-£295–£495 setup
+## Tier 1 — Static Marketing Site
+**£295–£495 setup**
 
-- 1–3 pages
+Best for: sole traders, local services, simple portfolio/brochure sites
+
+- Fully static — no backend, no logins
 - Mobile responsive design
-- Basic SEO setup
-- Contact form
-- Fast Astro static build
+- Basic SEO setup (meta tags, sitemap)
+- Contact form (Formspree or similar — no server required)
+- Fast Astro static build + deployment
 
 ---
 
-## Business Website
-£495–£850 setup
+## Tier 2 — Business Site with Light Logic
+**£495–£1,750 setup**
 
-- 4–6 pages
-- Service pages (SEO structured)
-- Conversion-focused layout (CTAs)
-- Google Analytics setup (GA4)
-- Optimised enquiry/contact flow
+Best for: businesses needing booking, filtering, simple dynamic content, or basic integrations
+
+Everything in Tier 1, plus:
+- Lightweight backend logic (e.g. availability checks, filtered listings, simple APIs)
+- Third-party integrations (Calendly, CRM hooks, email capture with tags)
+- Conversion-focused layout with structured service pages
+- Google Analytics 4 setup
+- Optimised enquiry flow with conditional routing
 
 ---
 
-## Growth Website
-£850–£1,500 setup
+## Tier 3 — Advanced / Custom Build
+**£1,750–£7,500+ setup**
 
-- 7–12 pages
-- Full SEO structure (services + locations)
-- Conversion-focused design
-- Optional blog setup
-- Performance optimisation
+Best for: businesses needing custom systems, complex workflows, or a web app layer
+
+Everything in Tier 2, plus:
+- Complex business logic (multi-step forms, role-based content, dynamic pricing, etc.)
+- Database-backed features or authenticated sections
+- Custom integrations (bespoke APIs, ERP/CRM, data feeds)
+- Advanced SEO structure (service + location pages, schema markup)
+- Performance optimisation + Core Web Vitals tuning
+- Optional: AI-assisted features (chatbots, smart forms, recommendation logic)
+
+> **Not sure which tier?** Most small businesses need Tier 1 or 2. If you're unsure, we'll scope it together before quoting.
 
 ---
 

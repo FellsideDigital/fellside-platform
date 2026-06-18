@@ -24,9 +24,9 @@
       "url": "https://fellsidedigital.co.uk/websites",
       "offers": {
         "@@type": "Offer",
-        "description": "Fixed-price website design and development. Foundational sites from £450.",
+        "description": "Fixed-price website design and development. Static marketing sites from £295.",
         "priceCurrency": "GBP",
-        "priceSpecification": { "@@type": "UnitPriceSpecification", "price": "450", "priceCurrency": "GBP", "minPrice": "450" }
+        "priceSpecification": { "@@type": "UnitPriceSpecification", "price": "295", "priceCurrency": "GBP", "minPrice": "295" }
       }
     }
     </script>
@@ -340,6 +340,28 @@
         </div>
     </section>
 
+    <!-- ── AREAS WE SERVE ─────────────────────────────────────────────────── -->
+    <section class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
+        <div class="max-w-5xl mx-auto">
+            <SectionHeader Label="Areas we serve"
+                           Heading="Website design across Cumbria."
+                           Description="We're based in Keswick and build websites for businesses right across Cumbria and the Lake District. Find your area:" />
+
+            <div class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-4">
+                @foreach (var loc in FellsideDigital.Web.Components.Pages.Marketing.LocationData.All)
+                {
+                    <a href="/website-design/@loc.Slug"
+                       class="group rounded-2xl bg-white dark:bg-neutral-900
+                              ring-1 ring-slate-200 dark:ring-white/5
+                              hover:ring-accent/40 hover:shadow-lg transition-all p-6 text-center">
+                        <p class="text-base font-semibold text-slate-900 dark:text-neutral-100 group-hover:text-accent transition-colors">@loc.Town</p>
+                        <p class="mt-1 text-xs text-slate-400 dark:text-neutral-500">Website design</p>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
     <!-- ── CTA ────────────────────────────────────────────────────────────── -->
     <section class="py-24 px-6 relative overflow-hidden bg-white dark:bg-neutral-950 transition-colors duration-300">
         <div class="hero-glow opacity-20" aria-hidden="true"></div>
@@ -407,7 +429,7 @@
             Number: "01",
             Title: "Custom Website Design",
             Description: "Beautifully crafted, high-performance websites designed to reflect your brand and convert visitors. No templates — every pixel is built for you.",
-            Tags: ["Bespoke design", "Blazor & .NET", "Mobile-first"],
+            Tags: ["Bespoke design", "Astro static", "Mobile-first"],
             Visual: """
                 <div class="flex flex-col gap-2 w-2/3">
                     <div class="h-7 w-full rounded-md bg-slate-100 dark:bg-neutral-800 flex items-center px-3 gap-2">

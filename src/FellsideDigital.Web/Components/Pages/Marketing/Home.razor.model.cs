@@ -179,11 +179,11 @@ public static class HomeData
 
         new Faq(
             "What technology stack do you use?",
-            "We build primarily with Blazor and .NET 9, with Tailwind CSS for UI. For databases we typically use SQL Server or PostgreSQL. We deploy to Azure, AWS, or managed VPS depending on your needs."),
+            "Marketing websites are built with Astro for fast, lightweight static sites. For web applications and software-driven projects we use .NET 9 and Blazor, with Tailwind CSS for UI and SQL Server or PostgreSQL for data. We deploy to Azure, AWS, or a managed VPS depending on your needs."),
 
         new Faq(
             "How much does a project cost?",
-            "A foundational website starts from around £450. Software-driven sites and bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins."),
+            "A static marketing website starts from £295. Software-driven sites and bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins."),
 
         new Faq(
             "How long does a project take?",

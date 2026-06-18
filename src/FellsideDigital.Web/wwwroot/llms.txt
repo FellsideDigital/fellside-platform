@@ -1,0 +1,30 @@
+# Fellside Digital
+
+> Fellside Digital is a bespoke web development and business automation studio based in Keswick, Cumbria. We hand-code premium websites and build intelligent automation for businesses across the Lake District, Cumbria and the UK. Founder-led, no templates, fixed prices agreed before work begins.
+
+## About
+
+- **What we do:** Custom website design, web application development, e-commerce, client portals, and business/workflow automation (API integration, AI automation).
+- **How we work:** Every project is hand-coded — no page builders or templates. You deal directly with the developer building your project. Work is tracked in a dedicated client portal.
+- **Where we are:** Based in Keswick, Cumbria (CA12). We serve Keswick, Penrith, Kendal, Carlisle and businesses across Cumbria, the Lake District and UK-wide.
+- **Tech:** Astro for fast static marketing websites; .NET 9 and Blazor for web applications and software-driven projects; Tailwind CSS; SQL Server / PostgreSQL.
+- **Pricing:** Static marketing websites from £295. Business sites, web applications and automation scoped individually with a fixed quote up front. Hosting/support from £10/month. See /pricing.txt.
+- **Contact:** hello@fellsidedigital.co.uk · +44 7484 323505
+
+## Key pages
+
+- [Home](https://fellsidedigital.co.uk/): Overview of websites and automation services.
+- [Website design & development](https://fellsidedigital.co.uk/websites): Bespoke websites, web apps, e-commerce, support.
+- [Business automation](https://fellsidedigital.co.uk/automation): Workflow automation, API integration, AI automation.
+- [Contact](https://fellsidedigital.co.uk/contact): Get a free fixed-price quote.
+
+## Service areas (local web development)
+
+- [Website design in Keswick](https://fellsidedigital.co.uk/website-design/keswick)
+- [Website design in Penrith](https://fellsidedigital.co.uk/website-design/penrith)
+- [Website design in Kendal](https://fellsidedigital.co.uk/website-design/kendal)
+- [Website design in Carlisle](https://fellsidedigital.co.uk/website-design/carlisle)
+
+## Pricing
+
+- [Pricing](https://fellsidedigital.co.uk/pricing.txt): Structured, machine-readable pricing.

@@ -1,0 +1,75 @@
+# Pricing — Fellside Digital
+
+Modern websites and automation systems for small businesses that want more customers and
+less admin. All prices in GBP. Every project is quoted at a fixed price agreed before work
+begins. Setup = one-off; support/care = monthly. Ranges below are starting points; final
+quote depends on scope.
+
+## Websites (Astro static sites)
+
+### Tier 1 — Static Marketing Site
+- Setup: £295–£495 (one-off)
+- Best for: sole traders, local services, simple portfolio/brochure sites
+- Includes: fully static (no backend/logins), mobile-responsive design, basic SEO
+  (meta tags, sitemap), contact form (Formspree or similar), fast Astro static build + deploy
+
+### Tier 2 — Business Site with Light Logic
+- Setup: £495–£1,750 (one-off)
+- Best for: businesses needing booking, filtering, simple dynamic content or basic integrations
+- Includes: everything in Tier 1, plus lightweight backend logic (availability checks,
+  filtered listings, simple APIs), third-party integrations (Calendly, CRM hooks, tagged
+  email capture), conversion-focused layout, Google Analytics 4, optimised enquiry flow
+
+### Tier 3 — Advanced / Custom Build
+- Setup: £1,750–£7,500+ (one-off)
+- Best for: businesses needing custom systems, complex workflows or a web-app layer
+- Includes: everything in Tier 2, plus complex business logic (multi-step forms, role-based
+  content, dynamic pricing), database-backed or authenticated sections, custom integrations
+  (bespoke APIs, ERP/CRM, data feeds), advanced SEO (service + location pages, schema),
+  Core Web Vitals tuning, optional AI features (chatbots, smart forms, recommendations)
+
+Most small businesses need Tier 1 or 2. Unsure? We scope it together before quoting.
+
+## Website hosting & support (optional)
+
+### Basic Care
+- Price: £10/month
+- Includes: hosting + SSL, domain management, uptime monitoring
+
+### Standard Care
+- Price: £20–£30/month
+- Includes: everything in Basic, 30–60 mins content edits/month, priority support
+
+### Premium Care
+- Price: £40–£75/month
+- Includes: everything in Standard, faster-response support, regular updates, light SEO monitoring
+
+## Automation
+
+### Starter Automation
+- Setup: £150–£400 (one-off)
+- Support: £10–£25/month (optional)
+- Includes: lead-capture automations, email auto-replies, form → spreadsheet/CRM workflows,
+  basic Zapier / Make integrations
+
+### Business Automation
+- Setup: £400–£900 (one-off)
+- Support: £25–£60/month
+- Includes: CRM + lead-pipeline setup, email/SMS follow-ups, calendar booking automation,
+  invoice / notification automation
+
+### Advanced Automation
+- Setup: £900–£2,500 (one-off)
+- Support: £50–£150/month
+- Includes: multi-step workflow systems, CRM + operations integration, reporting dashboards,
+  optional AI-assisted workflows, cross-platform automation
+
+## Bundle — Digital Setup Package (flagship offer)
+- Any website package + 1 Starter Automation included; hosting optional add-on
+- Positioning: your website and systems fully set up so your business runs more efficiently
+  and generates more enquiries
+
+## Contact
+- Email: hello@fellsidedigital.co.uk
+- Phone: +44 7484 323505
+- Quote requests: https://fellsidedigital.co.uk/contact
