@@ -104,6 +104,13 @@ public class EmailService : IEmailSender<ApplicationUser>
             EmailTemplates.InvoiceStatusChanged(client, project, invoice, portalUrl),
             bccAdmin: true);
 
+    public Task SendTestimonialRequestAsync(ApplicationUser client, ClientProject project, string testimonialUrl) =>
+        SendAsync(
+            client.Email!,
+            $"How did your {project.Name} project go?",
+            EmailTemplates.TestimonialRequest(client, project, testimonialUrl),
+            bccAdmin: true);
+
     // ── Core send ──────────────────────────────────────────────────────────────
 
     private async Task SendAsync(string to, string subject, string htmlBody, bool bccAdmin = false)

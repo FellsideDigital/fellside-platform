@@ -191,6 +191,14 @@ internal static class EmailTemplates
             <div style="margin:0 0 4px;">{EmailTheme.Button(portalUrl, "View in your portal →")}</div>
             """);
 
+    public static string TestimonialRequest(ApplicationUser client, ClientProject project, string testimonialUrl) =>
+        EmailTheme.Layout($"""
+            {H2("How did we do?")}
+            {P($"{Greeting(client.FirstName)} now that your <strong>{project.Name}</strong> project is complete, we'd love to hear how it went. A short testimonial helps other businesses know what it's like to work with us — it only takes a minute.")}
+            {P("Log in to your portal using the button below and share a few words. Already left one? The same link lets you update it.")}
+            <div style="margin:0 0 4px;">{EmailTheme.Button(testimonialUrl, "Leave a testimonial →")}</div>
+            """);
+
     public static string InvoiceAdded(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl) =>
         EmailTheme.Layout($"""
             {H2("You have a new invoice")}
