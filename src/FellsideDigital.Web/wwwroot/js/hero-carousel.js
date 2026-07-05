@@ -19,7 +19,6 @@ window.heroCarousel = {
         const fallback = document.getElementById(fallbackId);
         if (!iframe) return;
 
-        iframe.dataset.fallbackId = fallbackId;
         const key = iframe.dataset.previewKey || iframeId;
 
         if (this._loaded.has(key)) {
@@ -30,9 +29,14 @@ window.heroCarousel = {
         this._swap(iframe, fallback, false);
 
         // Framing refusals (X-Frame-Options / CSP) usually never fire `load`:
-        // keep the fallback if nothing arrives in time.
+        // keep the fallback if nothing arrives in time. Re-resolve the node
+        // and key at fire time rather than trusting this closure — Blazor may
+        // have reused/repurposed these DOM nodes for a different slide by
+        // the time this timer fires.
         setTimeout(() => {
-            if (!this._loaded.has(key)) this._swap(iframe, fallback, false);
+            const el = document.getElementById(iframeId);
+            if (!el || el.dataset.previewKey !== key) return; // slide changed — stale timer
+            if (!this._loaded.has(key)) this._swap(el, document.getElementById(el.dataset.fallbackId), false);
         }, 6000);
     },
 

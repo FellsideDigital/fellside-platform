@@ -80,12 +80,13 @@ else
                     </div>
 
                     <!-- Preview viewport: live iframe with screenshot/wireframe fallback -->
-                    <div class="relative flex-1 overflow-hidden bg-white dark:bg-slate-900">
+                    <div @key="Current.Id" class="relative flex-1 overflow-hidden bg-white dark:bg-slate-900">
                         @if (!string.IsNullOrWhiteSpace(Current.PreviewUrl))
                         {
                             <iframe id="@IframeId"
                                     src="@Current.PreviewUrl"
                                     data-preview-key="@Current.Id"
+                                    data-fallback-id="@FallbackId"
                                     onload="heroCarousel.onIframeLoad(this)"
                                     sandbox="allow-scripts allow-same-origin"
                                     loading="lazy"
