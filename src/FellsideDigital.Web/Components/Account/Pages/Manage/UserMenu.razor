@@ -24,21 +24,19 @@
 
             @if (_open)
             {
-                <div class="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg">
+                <div class="absolute right-0 z-10 mt-2 w-48 rounded-xl bg-white dark:bg-neutral-900
+                            border border-gray-200/80 dark:border-white/10 py-1 shadow-lg">
 
-                    <div class="px-4 py-2 border-b">
-                        <p class="text-sm font-medium truncate">@context.User.Identity?.Name</p>
-                        <p class="text-xs truncate">@context.User.FindFirst("email")?.Value</p>
+                    <div class="px-4 py-2 border-b border-gray-100 dark:border-white/10">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">@context.User.Identity?.Name</p>
+                        <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">@context.User.FindFirst("email")?.Value</p>
                     </div>
 
-                    <a href="/account/manage"
-                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">
-                        Your profile
-                    </a>
-                    <a href="/portal/settings"
-                           class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5">
-                        Settings
-                    </a>
+                    <a href="/Account/Manage" class="@ItemClass">Your account</a>
+                    @if (!string.IsNullOrEmpty(SettingsUrl))
+                    {
+                        <a href="@SettingsUrl" class="@ItemClass">Settings</a>
+                    }
 
                     <LogoutForm ReturnUrl="@CurrentUrl" />
                 </div>
@@ -49,6 +47,12 @@
 
 @code {
     [Parameter] public string? CurrentUrl { get; set; }
+
+    /// <summary>Optional area-specific settings page; the hosting layout supplies it.</summary>
+    [Parameter] public string? SettingsUrl { get; set; }
+
+    private const string ItemClass =
+        "block px-4 py-2 text-sm text-gray-700 dark:text-neutral-300 hover:bg-gray-100 dark:hover:bg-white/5";
 
     private bool _open;
 
