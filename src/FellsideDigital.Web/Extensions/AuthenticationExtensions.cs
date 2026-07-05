@@ -82,7 +82,7 @@ public static class AuthenticationExtensions
             };
         });
 
-        services.AddSingleton<IEmailSender<ApplicationUser>>(sp => sp.GetRequiredService<EmailService>());
+        services.AddSingleton<IEmailSender<ApplicationUser>>(sp => sp.GetRequiredService<IEmailService>());
 
         return services;
     }

@@ -7,7 +7,7 @@ namespace FellsideDigital.Web.Components.Pages.Marketing;
 public partial class Scan : ComponentBase
 {
     [Inject] private IQrLeadService QrLeadService { get; set; } = default!;
-    [Inject] private EmailService   EmailService  { get; set; } = default!;
+    [Inject] private IEmailService EmailService  { get; set; } = default!;
     [Inject] private ILogger<Scan>  Logger        { get; set; } = default!;
 
     [SupplyParameterFromQuery(Name = "from")] public string? From { get; set; }

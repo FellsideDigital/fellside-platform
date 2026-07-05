@@ -71,6 +71,7 @@ public static class ServiceConfigurationExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddSingleton<EmailService>();
+        services.AddSingleton<IEmailService>(sp => sp.GetRequiredService<EmailService>());
         return services;
     }
 

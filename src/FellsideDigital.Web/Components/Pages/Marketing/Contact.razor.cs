@@ -12,7 +12,7 @@ namespace FellsideDigital.Web.Components.Pages.Marketing;
 public partial class Contact : ComponentBase
 {
     [Inject] private IEnquiryService EnquiryService { get; set; } = default!;
-    [Inject] private EmailService EmailService { get; set; } = default!;
+    [Inject] private IEmailService EmailService { get; set; } = default!;
     [Inject] private IConfiguration Configuration { get; set; } = default!;
     [Inject] private ToastService Toasts { get; set; } = default!;
     [Inject] private ILogger<Contact> Logger { get; set; } = default!;

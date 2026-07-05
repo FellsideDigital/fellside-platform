@@ -10,7 +10,7 @@ using EmailSettings = FellsideDigital.Web.Models.EmailSettings;
 
 namespace FellsideDigital.Web.Services;
 
-public class EmailService : IEmailSender<ApplicationUser>
+public class EmailService : IEmailService
 {
     private readonly EmailSettings _settings;
     private readonly ILogger<EmailService> _logger;
