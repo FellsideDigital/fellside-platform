@@ -85,6 +85,8 @@ else
                         {
                             <iframe id="@IframeId"
                                     src="@Current.PreviewUrl"
+                                    data-preview-key="@Current.Id"
+                                    onload="heroCarousel.onIframeLoad(this)"
                                     sandbox="allow-scripts allow-same-origin"
                                     loading="lazy"
                                     title="@Current.Name preview"
@@ -284,8 +286,8 @@ else
     private int _index = 0;
     private ClientProject Current => Projects[_index];
 
-    private string IframeId => $"hero-iframe-{_index}";
-    private string FallbackId => $"hero-fallback-{_index}";
+    private string IframeId => $"hero-iframe-{Current.Id}";
+    private string FallbackId => $"hero-fallback-{Current.Id}";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
