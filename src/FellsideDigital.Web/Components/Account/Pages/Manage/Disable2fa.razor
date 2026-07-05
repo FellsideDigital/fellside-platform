@@ -10,23 +10,35 @@
 
 <PageTitle>Disable two-factor authentication (2FA)</PageTitle>
 
-<StatusMessage />
-<h3>Disable two-factor authentication (2FA)</h3>
+<div class="space-y-6">
+    <div>
+        <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">
+            Disable two-factor authentication (2FA)
+        </h2>
+    </div>
 
-<div class="alert alert-warning" role="alert">
-    <p>
-        <strong>This action only disables 2FA.</strong>
-    </p>
-    <p>
-        Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
-        used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator">reset your authenticator keys.</a>
-    </p>
-</div>
+    <StatusMessage />
 
-<div>
-    <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post">
+    <div class="rounded-md bg-yellow-50 p-4 dark:bg-yellow-900/20">
+        <div class="flex items-start gap-3">
+            <svg class="h-5 w-5 flex-shrink-0 text-yellow-700 dark:text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+            </svg>
+            <div class="text-sm text-yellow-700 dark:text-yellow-400">
+                <p><strong class="font-semibold">This action only disables 2FA.</strong></p>
+                <p class="mt-1">
+                    Disabling 2FA does not change the keys used in authenticator apps. If you wish to change the key
+                    used in an authenticator app you should <a href="Account/Manage/ResetAuthenticator" class="underline hover:text-yellow-800 dark:hover:text-yellow-300">reset your authenticator keys.</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <form @formname="disable-2fa" @onsubmit="OnSubmitAsync" method="post" class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
         <AntiforgeryToken />
-        <button class="btn btn-danger" type="submit">Disable 2FA</button>
+        <button class="inline-flex justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors" type="submit">
+            Disable 2FA
+        </button>
     </form>
 </div>
 
