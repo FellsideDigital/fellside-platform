@@ -23,4 +23,11 @@ public class EmailSettings
 
     [Required(ErrorMessage = "Email:AdminEmail is required")]
     public string AdminEmail { get; set; } = "";
+
+    /// <summary>True when every field needed to send via Microsoft Graph is present.</summary>
+    public bool IsConfigured =>
+        !string.IsNullOrWhiteSpace(TenantId) &&
+        !string.IsNullOrWhiteSpace(ClientId) &&
+        !string.IsNullOrWhiteSpace(ClientSecret) &&
+        !string.IsNullOrWhiteSpace(FromAddress);
 }

@@ -115,11 +115,17 @@ public class EmailService : IEmailService
 
     private async Task SendAsync(string to, string subject, string htmlBody, bool bccAdmin = false)
     {
-        if (string.IsNullOrWhiteSpace(_settings.TenantId) ||
-            string.IsNullOrWhiteSpace(_settings.ClientId) ||
-            string.IsNullOrWhiteSpace(_settings.ClientSecret) ||
-            string.IsNullOrWhiteSpace(_settings.FromAddress))
+        if (!_settings.IsConfigured)
         {
+            if (_env.IsDevelopment())
+            {
+                _logger.LogWarning(
+                    "Email not configured — skipping send to {To} ({Subject}). " +
+                    "Set Email:TenantId/ClientId/ClientSecret/FromAddress to enable.",
+                    to, subject);
+                return;
+            }
+
             throw new InvalidOperationException(
                 "Email is not configured. Ensure Email:TenantId, Email:ClientId, Email:ClientSecret, " +
                 "and Email:FromAddress are set in environment variables (e.g. Email__FromAddress on Railway).");
