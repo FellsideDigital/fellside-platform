@@ -92,7 +92,7 @@ public partial class Create : ComponentBase
 
             var project = new ClientProject
             {
-                ClientId = Input.ClientId,
+                ClientId = string.IsNullOrWhiteSpace(Input.ClientId) ? null : Input.ClientId,
                 Name = Input.Name,
                 Description = Input.Description,
                 Type = Input.Type,
@@ -140,7 +140,7 @@ public partial class Create : ComponentBase
 
     private sealed class InputModel
     {
-        [Required] public string ClientId { get; set; } = "";
+        public string ClientId { get; set; } = "";
         [Required] public string Name { get; set; } = "";
         [Required] public string Description { get; set; } = "";
         public ProjectType Type { get; set; } = ProjectType.Website;
