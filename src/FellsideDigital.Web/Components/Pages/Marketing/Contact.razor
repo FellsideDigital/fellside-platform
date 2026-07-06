@@ -215,7 +215,7 @@
                             </label>
                             <InputText @bind-Value="_model.Name"
                                        placeholder="Jane Smith"
-                                       class="@InputClass" />
+                                       class="@FieldStyles.MarketingInput" />
                             <ValidationMessage For="() => _model.Name" class="text-xs text-red-500" />
                         </div>
                         <div class="space-y-1.5">
@@ -225,7 +225,7 @@
                             <InputText @bind-Value="_model.Email"
                                        type="email"
                                        placeholder="jane@example.com"
-                                       class="@InputClass" />
+                                       class="@FieldStyles.MarketingInput" />
                             <ValidationMessage For="() => _model.Email" class="text-xs text-red-500" />
                         </div>
                         <div class="space-y-1.5">
@@ -236,7 +236,7 @@
                             <InputText @bind-Value="_model.Phone"
                                        type="tel"
                                        placeholder="+44 7700 000000"
-                                       class="@InputClass" />
+                                       class="@FieldStyles.MarketingInput" />
                         </div>
                     </div>
                 }
@@ -252,14 +252,14 @@
                             </label>
                             <InputText @bind-Value="_model.Company"
                                        placeholder="Acme Ltd"
-                                       class="@InputClass" />
+                                       class="@FieldStyles.MarketingInput" />
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-sm font-medium text-slate-700 dark:text-neutral-300">
                                 What are you looking for?
                             </label>
                             <InputSelect @bind-Value="_model.ServiceType"
-                                         class="@(InputClass + " appearance-none")">
+                                         class="@(FieldStyles.MarketingInput + " appearance-none")">
                                 <option value="">Select a service…</option>
                                 @foreach (var opt in EnumExtensions.ToOptions<ContactServiceType>())
                                 {
@@ -273,7 +273,7 @@
                                 Approximate budget
                             </label>
                             <InputSelect @bind-Value="_model.Budget"
-                                         class="@(InputClass + " appearance-none")">
+                                         class="@(FieldStyles.MarketingInput + " appearance-none")">
                                 <option value="">Select a range…</option>
                                 @foreach (var opt in EnumExtensions.ToOptions<ContactBudget>())
                                 {
@@ -295,7 +295,7 @@
                             <InputTextArea @bind-Value="_model.Message"
                                            rows="6"
                                            placeholder="Describe your idea, goals, timeline, or any questions you have…"
-                                           class="@(InputClass + " resize-none")" />
+                                           class="@(FieldStyles.MarketingInput + " resize-none")" />
                             <ValidationMessage For="() => _model.Message" class="text-xs text-red-500" />
                         </div>
                         <div class="space-y-1.5">
@@ -304,7 +304,7 @@
                                 <span class="text-slate-400 dark:text-neutral-500 font-normal">(optional)</span>
                             </label>
                             <InputSelect @bind-Value="_model.HowHeard"
-                                         class="@(InputClass + " appearance-none")">
+                                         class="@(FieldStyles.MarketingInput + " appearance-none")">
                                 <option value="">Select…</option>
                                 @foreach (var opt in EnumExtensions.ToOptions<ContactHowHeard>())
                                 {

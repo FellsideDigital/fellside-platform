@@ -74,14 +74,6 @@ public partial class Contact : ComponentBase
         _submitted = true;
     }
 
-    private const string InputClass =
-        "w-full rounded-xl px-4 py-2.5 text-sm " +
-        "bg-slate-50 dark:bg-neutral-800 " +
-        "ring-1 ring-slate-200 dark:ring-white/10 " +
-        "text-slate-900 dark:text-neutral-100 " +
-        "placeholder:text-slate-400 dark:placeholder:text-neutral-500 " +
-        "focus:outline-none focus:ring-2 focus:ring-accent/50 transition";
-
     private sealed class ContactFormModel
     {
         [Required(ErrorMessage = "Please enter your name.")]

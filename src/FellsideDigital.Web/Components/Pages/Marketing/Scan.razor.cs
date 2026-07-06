@@ -36,14 +36,6 @@ public partial class Scan : ComponentBase
     private bool   _saving;
     private bool   _submitted;
 
-    private const string InputClass =
-        "w-full rounded-xl px-4 py-2.5 text-sm " +
-        "bg-slate-50 dark:bg-white/5 " +
-        "border border-slate-200 dark:border-white/10 " +
-        "text-slate-900 dark:text-white " +
-        "placeholder:text-slate-400 dark:placeholder:text-neutral-600 " +
-        "focus:outline-none focus:ring-2 focus:ring-accent/50 transition";
-
     private static string ToggleClass(bool active) => active
         ? "rounded-xl border px-4 py-2.5 text-sm text-left transition-colors " +
           "bg-accent/20 border-accent text-accent"
