@@ -34,4 +34,13 @@ public class ClientInvitation
     public DateTime? AcceptedAt { get; set; }
     public string? AcceptedUserId { get; set; }
     public ApplicationUser? AcceptedUser { get; set; }
+
+    /// <summary>When set, accepting this invitation attaches the new user to this
+    /// project (as primary if <see cref="IsPrimaryClient"/>, else as a collaborator).
+    /// Null for a standalone account-only invitation.</summary>
+    public Guid? ProjectId { get; set; }
+
+    /// <summary>Only meaningful when <see cref="ProjectId"/> is set: attach the new
+    /// user as the project's primary client (if it has none yet) rather than a member.</summary>
+    public bool IsPrimaryClient { get; set; }
 }
