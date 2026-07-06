@@ -68,6 +68,39 @@ public class InvitationService(
         invitation.AcceptedAt = DateTime.UtcNow;
         invitation.AcceptedUserId = newUserId;
 
+        // If the invitation was scoped to a project, attach the new user to it.
+        if (invitation.ProjectId is { } projectId)
+        {
+            var project = await db.ClientProjects
+                .Include(p => p.Members)
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project is not null)
+            {
+                var alreadyPrimary = project.ClientId == newUserId;
+                var alreadyMember = project.Members.Any(m => m.UserId == newUserId);
+
+                // Primary invite only claims the primary slot when it is still empty;
+                // otherwise (and for collaborator invites) the user joins as a member.
+                if (invitation.IsPrimaryClient && project.ClientId is null)
+                {
+                    project.ClientId = newUserId;
+                    project.UpdatedAt = DateTime.UtcNow;
+                }
+                else if (!alreadyPrimary && !alreadyMember)
+                {
+                    db.ProjectMembers.Add(new ProjectMember
+                    {
+                        Id = Guid.NewGuid(),
+                        ProjectId = projectId,
+                        UserId = newUserId,
+                        Role = ProjectMemberRole.Collaborator,
+                        AddedAt = DateTime.UtcNow
+                    });
+                }
+            }
+        }
+
         await db.SaveChangesAsync();
     }
 
