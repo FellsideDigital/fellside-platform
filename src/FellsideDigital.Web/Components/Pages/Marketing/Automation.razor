@@ -127,7 +127,7 @@
         <div class="max-w-7xl mx-auto">
             <SectionHeader Label="Our offerings"
                            Heading="Automation for every scale."
-                           Description="Whether you're a growing business or a large enterprise, we build solutions that fit where you are and scale with where you're going." />
+                           Description="Whether you're a growing business or a large enterprise, we build solutions that fit where you are and scale with where you're going. Fixed-price setup with optional monthly support — starting points below." />
 
             <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                 @foreach (var tier in _tiers)
@@ -153,6 +153,14 @@
                             <p class="text-sm leading-relaxed text-slate-500 dark:text-neutral-400 mb-4">
                                 @tier.Description
                             </p>
+                            <div class="mb-5 pb-5 border-b border-slate-100 dark:border-white/5">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="text-xs font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">From</span>
+                                    <span class="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">@tier.Price</span>
+                                    <span class="text-sm text-slate-400 dark:text-neutral-500">setup</span>
+                                </div>
+                                <p class="mt-1 text-xs text-slate-400 dark:text-neutral-500">@tier.Support</p>
+                            </div>
                             <ul class="space-y-2.5">
                                 @foreach (var feature in tier.Features)
                                 {
@@ -385,25 +393,31 @@
         ("""<svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>""", "Report and archive", true),
     ];
 
-    private record AutoTier(string Title, string Description, string[] Tags, string[] Features);
+    private record AutoTier(string Title, string Description, string Price, string Support, string[] Tags, string[] Features);
 
     private static readonly AutoTier[] _tiers =
     [
         new(
             Title: "Small Business Automation",
             Description: "Cut out the manual work slowing your team down. We identify your highest-impact repetitive tasks and replace them with reliable, low-maintenance automation.",
+            Price: "£150",
+            Support: "+ £10–£25/mo support (optional)",
             Tags: ["Workflow Automation", "AI Tools", "Integrations"],
             Features: ["Automated invoicing & scheduling", "Email & notification workflows", "CRM and spreadsheet integrations", "Quick turnaround, fixed-scope delivery"]
         ),
         new(
             Title: "Mid-Market Automation",
             Description: "For growing organisations juggling multiple systems and teams. We connect your tools, automate your data flows, and build scalable processes that grow with you.",
+            Price: "£400",
+            Support: "+ £25–£60/mo support",
             Tags: ["Process Automation", "API Integration", "Reporting"],
             Features: ["Cross-system API integrations", "Automated reporting & dashboards", "Multi-team workflow coordination", "Custom business logic & rules engines"]
         ),
         new(
             Title: "Enterprise Automation",
             Description: "Complex operations demand robust, secure, and auditable automation. We design and deliver enterprise-grade solutions built for scale, compliance, and long-term performance.",
+            Price: "£900",
+            Support: "+ £50–£150/mo support",
             Tags: ["Enterprise", "AI-Powered", "Scalable"],
             Features: ["AI-powered process automation", "Legacy system integration & modernisation", "Audit trails, compliance & security", "Dedicated support & SLA agreements"]
         ),
