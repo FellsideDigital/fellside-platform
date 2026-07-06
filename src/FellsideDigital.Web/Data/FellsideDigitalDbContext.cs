@@ -9,6 +9,7 @@ namespace FellsideDigital.Web.Data
         DbSet<ApplicationUser> Customers { get; set; }
         public DbSet<ClientInvitation> ClientInvitations => Set<ClientInvitation>();
         public DbSet<ClientProject> ClientProjects => Set<ClientProject>();
+        public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
         public DbSet<Invoice> Invoices => Set<Invoice>();
         public DbSet<ProjectNote> ProjectNotes => Set<ProjectNote>();
         public DbSet<ProjectTimelineEvent> ProjectTimelineEvents => Set<ProjectTimelineEvent>();
@@ -116,12 +117,30 @@ namespace FellsideDigital.Web.Data
                 e.HasOne(p => p.Client)
                     .WithMany()
                     .HasForeignKey(p => p.ClientId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
 
                 e.HasOne(p => p.CreatedByAdmin)
                     .WithMany()
                     .HasForeignKey(p => p.CreatedByAdminId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            builder.Entity<ProjectMember>(e =>
+            {
+                e.HasOne(m => m.Project)
+                    .WithMany(p => p.Members)
+                    .HasForeignKey(m => m.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasOne(m => m.User)
+                    .WithMany()
+                    .HasForeignKey(m => m.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // One row per (project, user) — prevents duplicate memberships and
+                // indexes the join columns used by the access query.
+                e.HasIndex(m => new { m.ProjectId, m.UserId }).IsUnique();
             });
 
             builder.Entity<Invoice>(e =>

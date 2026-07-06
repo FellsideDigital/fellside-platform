@@ -1,0 +1,126 @@
+@using FellsideDigital.Web.Data
+@using FellsideDigital.UI.Components.Forms
+@using FellsideDigital.UI.Components.Feedback
+
+<div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm">
+    <div class="px-6 sm:px-8 py-5 border-b border-gray-100 dark:border-white/5">
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white">People</h2>
+        <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">The primary client is billed; collaborators can view the project in their portal.</p>
+    </div>
+
+    <div class="px-6 sm:px-8 py-5 space-y-6">
+        <!-- Primary client -->
+        <div>
+            <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Primary client</p>
+            @if (Project.Client is not null)
+            {
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">@DisplayName(Project.Client)</p>
+                        <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">@Project.Client.Email</p>
+                    </div>
+                    <button type="button" @onclick="ClearPrimaryAsync"
+                            class="text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-red-500 transition-colors">
+                        Clear
+                    </button>
+                </div>
+            }
+            else
+            {
+                <p class="text-sm text-gray-500 dark:text-neutral-400 mb-3">No primary client yet.</p>
+                <div class="flex flex-wrap items-end gap-2">
+                    <select @bind="_selectedPrimaryId" class="@FieldStyles.Input max-w-xs">
+                        <option value="">Select an existing user…</option>
+                        @foreach (var u in AssignableUsers())
+                        {
+                            <option value="@u.Id">@DisplayName(u) — @u.Email</option>
+                        }
+                    </select>
+                    <button type="button" @onclick="SetPrimaryAsync" disabled="@string.IsNullOrEmpty(_selectedPrimaryId)"
+                            class="rounded-xl bg-accent text-white px-3.5 py-2 text-xs font-semibold disabled:opacity-40 transition-colors">
+                        Set primary
+                    </button>
+                    <button type="button" @onclick="() => OpenInvite(true)"
+                            class="rounded-xl bg-accent/10 hover:bg-accent/20 text-accent px-3.5 py-2 text-xs font-semibold transition-colors">
+                        Invite by email
+                    </button>
+                </div>
+            }
+        </div>
+
+        <!-- Collaborators -->
+        <div class="border-t border-gray-100 dark:border-white/5 pt-5">
+            <p class="text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-2">Collaborators</p>
+            @if (Project.Members.Count == 0)
+            {
+                <p class="text-sm text-gray-500 dark:text-neutral-400 mb-3">No collaborators yet.</p>
+            }
+            else
+            {
+                <ul class="space-y-2 mb-3">
+                    @foreach (var m in Project.Members)
+                    {
+                        <li class="flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">@DisplayName(m.User)</p>
+                                <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">@(m.User?.Email)</p>
+                            </div>
+                            <button type="button" @onclick="() => RemoveMemberAsync(m.UserId)"
+                                    class="text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-red-500 transition-colors">
+                                Remove
+                            </button>
+                        </li>
+                    }
+                </ul>
+            }
+            <div class="flex flex-wrap items-end gap-2">
+                <select @bind="_selectedMemberId" class="@FieldStyles.Input max-w-xs">
+                    <option value="">Add an existing user…</option>
+                    @foreach (var u in AssignableUsers())
+                    {
+                        <option value="@u.Id">@DisplayName(u) — @u.Email</option>
+                    }
+                </select>
+                <button type="button" @onclick="AddMemberAsync" disabled="@string.IsNullOrEmpty(_selectedMemberId)"
+                        class="rounded-xl bg-accent text-white px-3.5 py-2 text-xs font-semibold disabled:opacity-40 transition-colors">
+                    Add
+                </button>
+                <button type="button" @onclick="() => OpenInvite(false)"
+                        class="rounded-xl bg-accent/10 hover:bg-accent/20 text-accent px-3.5 py-2 text-xs font-semibold transition-colors">
+                    Invite by email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<Modal IsOpen="_showInvite" OnBackdropClick="() => _showInvite = false">
+    <div class="space-y-4">
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+            @(_inviteAsPrimary ? "Invite primary client" : "Invite collaborator")
+        </h3>
+        <AlertBanner Message="@_inviteError" Variant="error" />
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">First name</label>
+                <input type="text" @bind="_inviteFirstName" class="@FieldStyles.Input" />
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Last name</label>
+                <input type="text" @bind="_inviteLastName" class="@FieldStyles.Input" />
+            </div>
+        </div>
+        <div>
+            <label class="block text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider mb-1.5">Email</label>
+            <input type="email" @bind="_inviteEmail" class="@FieldStyles.Input" />
+        </div>
+        <div class="flex items-center justify-end gap-3 pt-2">
+            <button type="button" @onclick="() => _showInvite = false"
+                    class="text-sm font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">Cancel</button>
+            <button type="button" @onclick="SendInviteAsync" disabled="@_sendingInvite"
+                    class="rounded-xl bg-accent text-white px-4 py-2 text-sm font-semibold disabled:opacity-40 transition-colors">
+                @(_sendingInvite ? "Sending…" : "Send invitation")
+            </button>
+        </div>
+    </div>
+</Modal>

@@ -26,6 +26,13 @@ public partial class PortalPreview : ComponentBase
             return;
         }
 
+        // No primary client to emulate — nothing to preview; return to the project.
+        if (project.ClientId is null)
+        {
+            NavigationManager.NavigateTo($"/Admin/Projects/{project.Id}");
+            return;
+        }
+
         PreviewState.Enter(project.ClientId, ResolveClientName(project), project.Id);
         NavigationManager.NavigateTo("/Portal");
     }

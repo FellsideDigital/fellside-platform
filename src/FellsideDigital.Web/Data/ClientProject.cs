@@ -21,8 +21,12 @@ public class ClientProject
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public string ClientId { get; set; } = "";
+    // Primary client (billed). Optional: a project can exist before its client
+    // is known; the primary can be set later. Additional people are Members.
+    public string? ClientId { get; set; }
     public ApplicationUser? Client { get; set; }
+
+    public ICollection<ProjectMember> Members { get; set; } = [];
 
     public string CreatedByAdminId { get; set; } = "";
     public ApplicationUser? CreatedByAdmin { get; set; }

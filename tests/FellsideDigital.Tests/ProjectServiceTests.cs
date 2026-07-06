@@ -8,12 +8,13 @@ namespace FellsideDigital.Tests;
 [Collection(PostgresCollection.Name)]
 public class ProjectServiceTests(PostgresFixture fx)
 {
-    private static ClientProject NewProject(ProjectStatus status = ProjectStatus.Pending) => new()
+    private static ClientProject NewProject(string adminId, ProjectStatus status = ProjectStatus.Pending) => new()
     {
         Name = "Acme Site",
         Description = "A website.",
         Status = status,
         Type = ProjectType.Website,
+        CreatedByAdminId = adminId,
     };
 
     [Fact]
@@ -23,11 +24,16 @@ public class ProjectServiceTests(PostgresFixture fx)
         // Service only touches the DbContext for the count; other deps are unused here.
         var sut = new ProjectService(db, storage: null!, timeline: null!);
 
+        // CreatedByAdminId is a required (Restrict) FK, so the project needs a real admin.
+        var admin = new ApplicationUser { UserName = $"a{Guid.NewGuid():N}@x.io", Email = "a@x.io" };
+        db.Users.Add(admin);
+        await db.SaveChangesAsync();
+
         var baseline = await sut.GetProjectCountAsync();
 
-        db.ClientProjects.Add(NewProject(ProjectStatus.Pending));
-        db.ClientProjects.Add(NewProject(ProjectStatus.InProgress));
-        db.ClientProjects.Add(NewProject(ProjectStatus.Completed));
+        db.ClientProjects.Add(NewProject(admin.Id, ProjectStatus.Pending));
+        db.ClientProjects.Add(NewProject(admin.Id, ProjectStatus.InProgress));
+        db.ClientProjects.Add(NewProject(admin.Id, ProjectStatus.Completed));
         await db.SaveChangesAsync();
 
         var after = await sut.GetProjectCountAsync();
