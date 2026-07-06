@@ -33,7 +33,11 @@ public partial class ProjectDetail : ComponentBase
 
         // Client-safe load: only client-visible timeline events are included, never internal ones.
         _project = await ProjectService.GetByIdForClientAsync(Id);
-        if (_project is null || _project.ClientId != clientId)
+
+        // Access = the primary client OR any collaborator on the project.
+        var hasAccess = _project is not null
+            && (_project.ClientId == clientId || _project.Members.Any(m => m.UserId == clientId));
+        if (!hasAccess)
         {
             _notFound = true;
             _project = null;
