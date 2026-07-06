@@ -169,7 +169,7 @@ This section is the single source of truth for how work is done and the security
 - Account lockout is active: 5 failed attempts → 15-minute lockout. Keep it on.
 - Password policy: 12-char minimum, requires upper/lower/digit/non-alphanumeric. Don't weaken it.
 - 2FA is supported (`LoginWith2fa`, recovery codes) — don't break it.
-- **All email — identity and transactional — goes through `IEmailService` (`EmailService`, Microsoft Graph).** Requires `Email:TenantId/ClientId/ClientSecret/FromAddress`; unconfigured + Production throws, unconfigured + Development logs and skips.
+- **All email — identity and transactional — goes through `IEmailService` (`EmailService`, Microsoft Graph).** Requires `Email:TenantId/ClientId/ClientSecret/FromAddress`. Production validates these at startup and fails fast if unconfigured (`ConfigureEmailService` gates `.ValidateDataAnnotations().ValidateOnStart()` to non-Development); Development boots unconfigured and `EmailService` logs + skips the send at runtime instead.
 
 ### Database (PostgreSQL via EF Core)
 
