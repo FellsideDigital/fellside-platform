@@ -13,4 +13,7 @@ public interface IProjectService
     Task UpdateAsync(ClientProject project, string? actorId = null);
     Task DeleteAsync(Guid id);
     Task SavePhasesAsync(Guid projectId, List<ProjectPlanPhase> phases, string? actorId = null);
+    Task SetPrimaryClientAsync(Guid projectId, string? userId, string actorId);
+    Task AddMemberAsync(Guid projectId, string userId, string actorId);
+    Task RemoveMemberAsync(Guid projectId, string userId);
 }

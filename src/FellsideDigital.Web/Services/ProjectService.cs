@@ -39,6 +39,7 @@ public class ProjectService(
     public async Task<ClientProject?> GetByIdAsync(Guid id)
         => await db.ClientProjects
             .Include(p => p.Client)
+            .Include(p => p.Members).ThenInclude(m => m.User)
             .Include(p => p.Invoices)
             .Include(p => p.Notes.OrderByDescending(n => n.CreatedAt))
             .Include(p => p.TimelineEvents.OrderByDescending(e => e.OccurredAt))
@@ -50,6 +51,7 @@ public class ProjectService(
     public async Task<ClientProject?> GetByIdForClientAsync(Guid id)
         => await db.ClientProjects
             .Include(p => p.Client)
+            .Include(p => p.Members)
             .Include(p => p.Invoices)
             .Include(p => p.TimelineEvents
                 .Where(e => e.Visibility == TimelineVisibility.ClientVisible)
@@ -77,7 +79,8 @@ public class ProjectService(
                 .Where(e => e.Visibility == TimelineVisibility.ClientVisible)
                 .OrderByDescending(e => e.OccurredAt))
                 .ThenInclude(e => e.Note)
-            .Where(p => p.ClientId == clientId)
+            // "On the project" = the primary client OR any collaborator.
+            .Where(p => p.ClientId == clientId || p.Members.Any(m => m.UserId == clientId))
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
 
@@ -181,5 +184,56 @@ public class ProjectService(
 
             await timeline.RecordAsync(projectId, type, summary, TimelineVisibility.ClientVisible, actorId);
         }
+    }
+
+    public async Task SetPrimaryClientAsync(Guid projectId, string? userId, string actorId)
+    {
+        var project = await db.ClientProjects
+            .Include(p => p.Members)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+        if (project is null) return;
+
+        // Promoting an existing collaborator to primary: drop the now-redundant member row.
+        if (userId is not null)
+        {
+            var existing = project.Members.FirstOrDefault(m => m.UserId == userId);
+            if (existing is not null) db.ProjectMembers.Remove(existing);
+        }
+
+        project.ClientId = userId;
+        project.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+    }
+
+    public async Task AddMemberAsync(Guid projectId, string userId, string actorId)
+    {
+        var project = await db.ClientProjects
+            .Include(p => p.Members)
+            .FirstOrDefaultAsync(p => p.Id == projectId);
+        if (project is null) return;
+
+        // Idempotent: no-op if already the primary client or already a member.
+        if (project.ClientId == userId) return;
+        if (project.Members.Any(m => m.UserId == userId)) return;
+
+        db.ProjectMembers.Add(new ProjectMember
+        {
+            Id = Guid.NewGuid(),
+            ProjectId = projectId,
+            UserId = userId,
+            Role = ProjectMemberRole.Collaborator,
+            AddedAt = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync();
+    }
+
+    public async Task RemoveMemberAsync(Guid projectId, string userId)
+    {
+        var member = await db.ProjectMembers
+            .FirstOrDefaultAsync(m => m.ProjectId == projectId && m.UserId == userId);
+        if (member is null) return;
+
+        db.ProjectMembers.Remove(member);
+        await db.SaveChangesAsync();
     }
 }
