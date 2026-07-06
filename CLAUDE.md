@@ -64,7 +64,7 @@ The solution is split into three projects under `src/`:
 `Program.cs` is intentionally thin — it wires data-protection key persistence, then delegates service registration to `AddFellsideDigitalPlatform()`, startup tasks to `ApplyStartupTasksAsync()`, and the middleware pipeline to `UseFellsideDigitalPlatform()`. Everything else lives in `Extensions/`:
 
 - `StartupCompositionExtensions.cs` — orchestrates the other extensions; also contains `ApplyStartupTasksAsync()` (runs migrations + admin seeding) and `UseFellsideDigitalPlatform()` (middleware pipeline)
-- `AuthenticationExtensions.cs` — ASP.NET Identity config, cookie settings, registers `IdentityNoOpEmailSender`
+- `AuthenticationExtensions.cs` — ASP.NET Identity config, cookie settings, wires `EmailService` as the `IEmailSender<ApplicationUser>`
 - `DatabaseExtensions.cs` — PostgreSQL via Npgsql; parses Railway's `DATABASE_URL` env var format
 - `ServiceConfigurationExtensions.cs` — HTTP context, form options (50 MB body limit), data protection, session, logging
 
@@ -73,7 +73,7 @@ New services should be added as extension methods in this `Extensions/` folder a
 ### Authentication & Roles
 
 - Two roles: `SiteAdmin` and `AuctionAdmin`, created automatically by `AdminUserSeeder` at startup when `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars are present.
-- `RequireConfirmedAccount = true` is set, but `IdentityNoOpEmailSender` is registered — **no emails are actually sent**. In development, `RegisterConfirmation.razor` renders a clickable confirmation link directly on screen.
+- `RequireConfirmedAccount = true`; identity emails (confirmation, password reset) are sent for real via `EmailService` (Microsoft Graph). When email is unconfigured (typical local dev), `EmailService` no-ops in Development and `RegisterConfirmation.razor` renders the confirmation link on screen.
 - Cookie auth: 14-day sliding expiration, `SameSite=Lax`, always `Secure`. API routes (`/api/*`) return 401/403 JSON instead of redirecting.
 - Security stamps are revalidated every 30 minutes via `IdentityRevalidatingAuthenticationStateProvider`.
 
@@ -169,7 +169,7 @@ This section is the single source of truth for how work is done and the security
 - Account lockout is active: 5 failed attempts → 15-minute lockout. Keep it on.
 - Password policy: 12-char minimum, requires upper/lower/digit/non-alphanumeric. Don't weaken it.
 - 2FA is supported (`LoginWith2fa`, recovery codes) — don't break it.
-- **Email is no-op in normal operation:** identity confirmation / password-reset go through `IdentityNoOpEmailSender`, so those emails are **not delivered** (dev renders the confirmation link on screen). A separate transactional `EmailService` exists for app emails. If you build a flow that depends on a delivered identity email, wire a real `IEmailSender` first — don't assume reset/confirm emails currently send.
+- **All email — identity and transactional — goes through `IEmailService` (`EmailService`, Microsoft Graph).** Requires `Email:TenantId/ClientId/ClientSecret/FromAddress`. Production validates these at startup and fails fast if unconfigured (`ConfigureEmailService` gates `.ValidateDataAnnotations().ValidateOnStart()` to non-Development); Development boots unconfigured and `EmailService` logs + skips the send at runtime instead.
 
 ### Database (PostgreSQL via EF Core)
 

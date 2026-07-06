@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.DataProtection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure app platform (services + auth)
-builder.Services.AddFellsideDigitalPlatform(builder.Configuration);
+builder.Services.AddFellsideDigitalPlatform(builder.Configuration, builder.Environment);
 
 // Persist data protection keys to survive container restarts
 var keysFolder = "/app/keys";

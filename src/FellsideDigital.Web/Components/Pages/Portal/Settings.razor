@@ -21,16 +21,14 @@
             <EditForm Model="ProfileInput" OnValidSubmit="SaveProfileAsync">
                 <DataAnnotationsValidator />
                 <div class="grid grid-cols-1 gap-5 sm:grid-cols-6 sm:max-w-xl">
-                    <div class="sm:col-span-3">
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">First name</label>
-                        <InputText @bind-Value="ProfileInput.FirstName" class="@InputClass" />
-                        <ValidationMessage For="() => ProfileInput.FirstName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                    </div>
-                    <div class="sm:col-span-3">
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Last name</label>
-                        <InputText @bind-Value="ProfileInput.LastName" class="@InputClass" />
-                        <ValidationMessage For="() => ProfileInput.LastName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                    </div>
+                    <FormField Label="First name" Class="sm:col-span-3">
+                        <InputText @bind-Value="ProfileInput.FirstName" class="@FieldStyles.Input" />
+                        <ValidationMessage For="() => ProfileInput.FirstName" class="@FieldStyles.Error" />
+                    </FormField>
+                    <FormField Label="Last name" Class="sm:col-span-3">
+                        <InputText @bind-Value="ProfileInput.LastName" class="@FieldStyles.Input" />
+                        <ValidationMessage For="() => ProfileInput.LastName" class="@FieldStyles.Error" />
+                    </FormField>
                     <div class="col-span-full">
                         <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Email address</label>
                         <input type="email" value="@_email" disabled
@@ -55,21 +53,18 @@
             <EditForm Model="PasswordInput" OnValidSubmit="ChangePasswordAsync">
                 <DataAnnotationsValidator />
                 <div class="space-y-5 sm:max-w-md">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Current password</label>
-                        <InputText type="password" @bind-Value="PasswordInput.CurrentPassword" class="@InputClass" />
-                        <ValidationMessage For="() => PasswordInput.CurrentPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">New password</label>
-                        <InputText type="password" @bind-Value="PasswordInput.NewPassword" class="@InputClass" />
-                        <ValidationMessage For="() => PasswordInput.NewPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">Confirm new password</label>
-                        <InputText type="password" @bind-Value="PasswordInput.ConfirmPassword" class="@InputClass" />
-                        <ValidationMessage For="() => PasswordInput.ConfirmPassword" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                    </div>
+                    <FormField Label="Current password">
+                        <InputText type="password" @bind-Value="PasswordInput.CurrentPassword" class="@FieldStyles.Input" />
+                        <ValidationMessage For="() => PasswordInput.CurrentPassword" class="@FieldStyles.Error" />
+                    </FormField>
+                    <FormField Label="New password">
+                        <InputText type="password" @bind-Value="PasswordInput.NewPassword" class="@FieldStyles.Input" />
+                        <ValidationMessage For="() => PasswordInput.NewPassword" class="@FieldStyles.Error" />
+                    </FormField>
+                    <FormField Label="Confirm new password">
+                        <InputText type="password" @bind-Value="PasswordInput.ConfirmPassword" class="@FieldStyles.Input" />
+                        <ValidationMessage For="() => PasswordInput.ConfirmPassword" class="@FieldStyles.Error" />
+                    </FormField>
                 </div>
                 <div class="mt-6">
                     <SpinnerButton IsLoading="@_changingPassword" LoadingText="Updating…">

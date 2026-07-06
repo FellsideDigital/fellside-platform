@@ -13,7 +13,7 @@ public class ProjectDocumentService(
     IStorageService storage,
     IOptions<StorageSettings> storageOptions,
     IProjectTimelineService timeline,
-    EmailService email,
+    IEmailService email,
     NavigationManager nav,
     ILogger<ProjectDocumentService> logger) : IProjectDocumentService
 {

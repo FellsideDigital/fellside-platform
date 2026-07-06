@@ -12,7 +12,7 @@ namespace FellsideDigital.Web.Extensions;
 
 public static class StartupCompositionExtensions
 {
-    public static IServiceCollection AddFellsideDigitalPlatform(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddFellsideDigitalPlatform(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
     {
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
@@ -22,7 +22,7 @@ public static class StartupCompositionExtensions
             .ConfigureAuthentication()
             .ConfigureHttp()
             .ConfigureFormOptions()
-            .ConfigureEmailService(configuration)
+            .ConfigureEmailService(configuration, environment)
             .ConfigureStorageService(configuration)
             .ConfigureInvitationServices()
             .ConfigurePortalServices();

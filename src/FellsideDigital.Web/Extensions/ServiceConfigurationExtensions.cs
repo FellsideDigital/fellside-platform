@@ -64,13 +64,21 @@ public static class ServiceConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection ConfigureEmailService(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection ConfigureEmailService(this IServiceCollection services, IConfiguration config, IWebHostEnvironment environment)
     {
-        services.AddOptions<EmailSettings>()
-            .Bind(config.GetSection("Email"))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        var optionsBuilder = services.AddOptions<EmailSettings>()
+            .Bind(config.GetSection("Email"));
+
+        // Production must fail fast if Graph email isn't configured. Development boots
+        // unconfigured — EmailService no-ops sends and RegisterConfirmation shows the
+        // confirmation link on screen instead (see EmailSettings.IsConfigured).
+        if (!environment.IsDevelopment())
+        {
+            optionsBuilder.ValidateDataAnnotations().ValidateOnStart();
+        }
+
         services.AddSingleton<EmailService>();
+        services.AddSingleton<IEmailService>(sp => sp.GetRequiredService<EmailService>());
         return services;
     }
 

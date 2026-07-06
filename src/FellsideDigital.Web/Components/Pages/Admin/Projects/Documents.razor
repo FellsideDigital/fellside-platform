@@ -42,10 +42,7 @@ else
                 </p>
             </div>
             <div class="p-5 space-y-4">
-                @if (_error is not null)
-                {
-                    <p class="text-sm text-red-500">@_error</p>
-                }
+                <AlertBanner Message="@_error" Variant="error" />
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1.5">Title <span class="text-red-500">*</span></label>
                     <input @bind="_newTitle" placeholder="e.g. Project proposal" class="@InputClass" />

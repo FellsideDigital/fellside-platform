@@ -36,7 +36,7 @@
                        value="@username" 
                        id="username" 
                        disabled
-                       class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 disabled:cursor-not-allowed disabled:text-gray-500 sm:text-sm/6 dark:bg-white/5 dark:text-neutral-400 dark:outline-white/10" />
+                       class="@FieldStyles.Extend("disabled:cursor-not-allowed disabled:text-gray-500")" />
                 <p class="mt-1 text-xs text-slate-500 dark:text-neutral-500">
                     Your username cannot be changed
                 </p>
@@ -51,8 +51,8 @@
                 <InputText @bind-Value="Input.PhoneNumber" 
                            id="Input.PhoneNumber" 
                            placeholder="Enter your phone number"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-accent sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500" />
-                <ValidationMessage For="() => Input.PhoneNumber" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                           class="@FieldStyles.Input" />
+                <ValidationMessage For="() => Input.PhoneNumber" class="@FieldStyles.Error" />
             </div>
         </div>
 

@@ -26,8 +26,6 @@ public partial class Settings : ComponentBase
     private string? _profileError;
     private string? _passwordError;
 
-    private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState.GetAuthenticationStateAsync();

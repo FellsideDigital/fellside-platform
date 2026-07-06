@@ -133,21 +133,19 @@
             }
             else
             {
+                <div class="overflow-x-auto">
                 <table class="w-full border-collapse">
                     <thead>
                         <tr>
-                            <th class="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em]
-                                       text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-white/5">
+                            <Th Class="!px-5 !py-3 !text-[11px] !tracking-[0.14em] !text-gray-400 dark:!text-neutral-500 border-b border-gray-100 dark:border-white/5">
                                 Invoice
-                            </th>
-                            <th class="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em]
-                                       text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-white/5">
+                            </Th>
+                            <Th Class="!px-5 !py-3 !text-[11px] !tracking-[0.14em] !text-gray-400 dark:!text-neutral-500 border-b border-gray-100 dark:border-white/5">
                                 Amount
-                            </th>
-                            <th class="text-left px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.14em]
-                                       text-gray-400 dark:text-neutral-500 border-b border-gray-100 dark:border-white/5">
+                            </Th>
+                            <Th Class="!px-5 !py-3 !text-[11px] !tracking-[0.14em] !text-gray-400 dark:!text-neutral-500 border-b border-gray-100 dark:border-white/5">
                                 Status
-                            </th>
+                            </Th>
                         </tr>
                     </thead>
                     <tbody>
@@ -155,20 +153,21 @@
                         {
                             <tr class="border-b border-gray-50 dark:border-white/[0.04] last:border-0
                                        hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors cursor-pointer">
-                                <td class="px-5 py-3.5 font-mono text-sm text-gray-900 dark:text-white">
+                                <Td Class="!px-5 !py-3.5 font-mono text-sm text-gray-900 dark:text-white">
                                     @inv.Title
-                                </td>
-                                <td class="px-5 py-3.5 text-sm text-gray-900 dark:text-white font-medium">
+                                </Td>
+                                <Td Class="!px-5 !py-3.5 text-sm text-gray-900 dark:text-white font-medium">
                                     £@inv.Amount.ToString("N0")
-                                </td>
-                                <td class="px-5 py-3.5">
+                                </Td>
+                                <Td Class="!px-5 !py-3.5">
                                     <StatusBadge CssClasses="@BadgeHelpers.InvoiceStatusBadge(inv.Status)"
                                                  Label="@inv.Status.ToString()" />
-                                </td>
+                                </Td>
                             </tr>
                         }
                     </tbody>
                 </table>
+                </div>
             }
         </div>
     </div>

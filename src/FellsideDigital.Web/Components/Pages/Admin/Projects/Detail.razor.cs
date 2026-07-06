@@ -18,7 +18,7 @@ public partial class Detail : ComponentBase
     [Inject] private ToastService Toasts { get; set; } = default!;
     [Inject] private ILogger<Detail> Logger { get; set; } = default!;
     [Inject] private ITestimonialService Testimonials { get; set; } = default!;
-    [Inject] private EmailService Email { get; set; } = default!;
+    [Inject] private IEmailService Email { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private ClientProject? _project;

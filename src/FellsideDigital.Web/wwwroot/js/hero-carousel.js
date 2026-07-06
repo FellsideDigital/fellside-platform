@@ -1,53 +1,47 @@
 window.heroCarousel = {
-    // Attempt to load an iframe; fall back to the screenshot/mockup element if
-    // the site refuses framing (X-Frame-Options / CSP frame-ancestors) or never loads.
+    // Preview keys (project ids) whose iframe has successfully fired `load`.
+    _loaded: new Set(),
+
+    // Wired via the iframe's inline onload attribute, so it is registered
+    // before the iframe can possibly finish loading — no race with Blazor's
+    // OnAfterRenderAsync interop, which may run after `load` has fired.
+    onIframeLoad(iframe) {
+        const key = iframe.dataset.previewKey || iframe.id;
+        this._loaded.add(key);
+        this._swap(iframe, document.getElementById(iframe.dataset.fallbackId), true);
+    },
+
+    // Called from Blazor after each render. Idempotent: if this preview
+    // already loaded (now or on an earlier visit to this slide), show it
+    // immediately; otherwise leave the fallback up and give the site 6s.
     tryLoadIframe(iframeId, fallbackId) {
         const iframe = document.getElementById(iframeId);
         const fallback = document.getElementById(fallbackId);
         if (!iframe) return;
 
-        // Show the fallback immediately so there's no blank gap while loading.
-        if (fallback) fallback.style.display = 'flex';
-        iframe.style.display = 'none';
+        const key = iframe.dataset.previewKey || iframeId;
 
-        // If no src set, stay on the fallback.
-        if (!iframe.src || iframe.src === window.location.href) return;
-
-        // Give the site up to 6s to load; if `load` never fires (commonly how a
-        // framing refusal manifests), keep the fallback.
-        const deadline = setTimeout(showFallback, 6000);
-
-        iframe.addEventListener('load', () => {
-            clearTimeout(deadline);
-            try {
-                // Same-origin pages: we can introspect, so verify they actually rendered.
-                const doc = iframe.contentDocument || iframe.contentWindow?.document;
-                if (doc && (!doc.body || doc.body.innerHTML.trim() === '')) {
-                    showFallback();
-                    return;
-                }
-                // doc readable + non-empty → success (falls through to showIframe).
-            } catch {
-                // Cross-origin (the normal case for an external client site): the
-                // browser blocks introspection, but `load` firing means the frame
-                // embedded successfully. Treat as success.
-            }
-            showIframe();
-        }, { once: true });
-
-        iframe.addEventListener('error', () => {
-            clearTimeout(deadline);
-            showFallback();
-        }, { once: true });
-
-        function showIframe() {
-            iframe.style.display = 'block';
-            if (fallback) fallback.style.display = 'none';
+        if (this._loaded.has(key)) {
+            this._swap(iframe, fallback, true);
+            return;
         }
 
-        function showFallback() {
-            iframe.style.display = 'none';
-            if (fallback) fallback.style.display = 'flex';
-        }
+        this._swap(iframe, fallback, false);
+
+        // Framing refusals (X-Frame-Options / CSP) usually never fire `load`:
+        // keep the fallback if nothing arrives in time. Re-resolve the node
+        // and key at fire time rather than trusting this closure — Blazor may
+        // have reused/repurposed these DOM nodes for a different slide by
+        // the time this timer fires.
+        setTimeout(() => {
+            const el = document.getElementById(iframeId);
+            if (!el || el.dataset.previewKey !== key) return; // slide changed — stale timer
+            if (!this._loaded.has(key)) this._swap(el, document.getElementById(el.dataset.fallbackId), false);
+        }, 6000);
+    },
+
+    _swap(iframe, fallback, showIframe) {
+        iframe.style.display = showIframe ? 'block' : 'none';
+        if (fallback) fallback.style.display = showIframe ? 'none' : 'flex';
     }
 };

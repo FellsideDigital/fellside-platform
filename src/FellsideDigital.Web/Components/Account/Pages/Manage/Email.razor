@@ -46,7 +46,7 @@
                                value="@email" 
                                id="email" 
                                disabled
-                               class="block w-full rounded-md bg-gray-50 px-3 py-1.5 pr-12 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 sm:text-sm/6 dark:bg-white/5 dark:text-neutral-400 dark:outline-white/10" />
+                               class="@FieldStyles.Extend("pr-12 disabled:cursor-not-allowed disabled:text-gray-500")" />
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                             <svg class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
@@ -63,7 +63,7 @@
                            value="@email" 
                            id="email"
                            disabled
-                           class="block w-full rounded-md bg-gray-50 px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 disabled:cursor-not-allowed disabled:text-gray-500 sm:text-sm/6 dark:bg-white/5 dark:text-neutral-400 dark:outline-white/10" />
+                           class="@FieldStyles.Extend("disabled:cursor-not-allowed disabled:text-gray-500")" />
                     <div class="mt-2">
                         <button type="submit" 
                                 form="send-verification-form"
@@ -85,8 +85,8 @@
                            autocomplete="email" 
                            aria-required="true" 
                            placeholder="Enter a new email"
-                           class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-slate-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-accent sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500" />
-                <ValidationMessage For="() => Input.NewEmail" class="mt-1 text-xs text-red-600 dark:text-red-400" />
+                           class="@FieldStyles.Input" />
+                <ValidationMessage For="() => Input.NewEmail" class="@FieldStyles.Error" />
             </div>
         </div>
 

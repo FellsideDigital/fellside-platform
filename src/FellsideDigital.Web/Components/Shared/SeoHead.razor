@@ -8,18 +8,12 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="@CanonicalUrl" />
     <meta property="og:site_name" content="Fellside Digital" />
-    @if (!string.IsNullOrEmpty(OgImage))
-    {
-        <meta property="og:image" content="@OgImage" />
-    }
+    <meta property="og:image" content="@ResolvedOgImage" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="@(OgTitle ?? Title)" />
     <meta name="twitter:description" content="@Description" />
-    @if (!string.IsNullOrEmpty(OgImage))
-    {
-        <meta name="twitter:image" content="@OgImage" />
-    }
+    <meta name="twitter:image" content="@ResolvedOgImage" />
 </HeadContent>
 
 @code {
@@ -28,4 +22,9 @@
     [Parameter, EditorRequired] public string CanonicalUrl { get; set; } = "";
     [Parameter] public string? OgTitle { get; set; }
     [Parameter] public string? OgImage { get; set; }
+
+    private string ResolvedOgImage =>
+        string.IsNullOrEmpty(OgImage)
+            ? "https://fellsidedigital.co.uk/web-app-manifest-512x512.png"
+            : OgImage;
 }

@@ -8,7 +8,7 @@ namespace FellsideDigital.Web.Services;
 
 public class InvitationService(
     FellsideDigitalDbContext db,
-    EmailService emailService,
+    IEmailService emailService,
     NavigationManager navigationManager,
     ILogger<InvitationService> logger) : IInvitationService
 {

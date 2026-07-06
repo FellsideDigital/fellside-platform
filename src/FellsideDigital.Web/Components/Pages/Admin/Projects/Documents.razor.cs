@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -14,6 +15,8 @@ public partial class Documents : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IProjectDocumentService DocumentService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Documents> Logger { get; set; } = default!;
 
     private ClientProject? _project;
     private List<ProjectDocument> _documents = [];
@@ -24,10 +27,7 @@ public partial class Documents : ComponentBase
     private bool _saving;
     private string? _error;
 
-    private const string InputClass =
-        "block w-full rounded-xl bg-gray-50 dark:bg-white/5 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white " +
-        "ring-1 ring-inset ring-gray-200 dark:ring-white/10 placeholder:text-gray-400 dark:placeholder:text-neutral-500 " +
-        "focus:ring-2 focus:ring-inset focus:ring-accent transition-shadow outline-none";
+    private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
 
     protected override async Task OnInitializedAsync() => await LoadAsync();
 
@@ -70,9 +70,14 @@ public partial class Documents : ComponentBase
             _newTitle = "";
             _selectedFile = null;
         }
+        catch (InvalidOperationException ex)
+        {
+            // Deliberate, user-facing validation message from the service.
+            _error = ex.Message;
+        }
         catch (Exception ex)
         {
-            _error = ex.Message;
+            _error = ErrorHandling.LogAndDescribe(Logger, ex, "uploading the document");
         }
         finally
         {
@@ -83,7 +88,15 @@ public partial class Documents : ComponentBase
 
     private async Task DeleteAsync(Guid documentId)
     {
-        await DocumentService.DeleteAsync(documentId);
-        await LoadAsync();
+        try
+        {
+            await DocumentService.DeleteAsync(documentId);
+            await LoadAsync();
+            Toasts.Success("Document deleted.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the document"));
+        }
     }
 }
