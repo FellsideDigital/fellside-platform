@@ -21,12 +21,13 @@
       "publisher": { "@@id": "https://fellsidedigital.co.uk/#business" }
     }
     </script>
-    @* LOCAL SEO — to fully match your Google Business Profile and strengthen the Maps/local-pack signal,
-       add the following keys to the ProfessionalService object below (values must match GBP exactly):
-         "address": add  "streetAddress": "<your street>",  "postalCode": "<your postcode>"
-         "hasMap": "<your Google Maps place URL>"
-         "sameAs": [ "<LinkedIn>", "<Facebook/Instagram>", "<Google Business Profile URL>" ]
-       Keep Name + Address + Phone (NAP) identical across the site, GBP, and any directories. *@
+    @* LOCAL SEO — Service Area Business: street address is intentionally omitted (clients served
+       across Cumbria/UK, no walk-in location). areaServed + locality + postcode district carry the
+       local signal. Once the Google Business Profile is verified, add to the ProfessionalService
+       object below (values must match the GBP exactly):
+         "hasMap": "<Google Maps place URL>"
+         "sameAs": [ "<Google Business Profile URL>", ...any social profiles ]
+       Keep Name + Phone (NAP) identical across the site, GBP, and any directories. *@
     <script type="application/ld+json">
     {
       "@@context": "https://schema.org",
@@ -43,6 +44,7 @@
         "@@type": "PostalAddress",
         "addressLocality": "Keswick",
         "addressRegion": "Cumbria",
+        "postalCode": "CA12",
         "addressCountry": "GB"
       },
       "geo": {
