@@ -109,8 +109,8 @@ public partial class Detail : ComponentBase
     private async Task LoadAsync()
     {
         _project = await ProjectService.GetByIdAsync(Id);
-        _clientHasTestimonial = _project is not null
-            && await Testimonials.GetForUserAsync(_project.ClientId) is not null;
+        _clientHasTestimonial = _project?.ClientId is { } cid
+            && await Testimonials.GetForUserAsync(cid) is not null;
         _downloadUrls = [];
 
         if (_project?.Invoices is not null)
