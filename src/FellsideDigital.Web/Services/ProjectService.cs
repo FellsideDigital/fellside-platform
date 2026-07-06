@@ -46,6 +46,9 @@ public class ProjectService(
                 .ThenInclude(e => e.Note)
             .Include(p => p.PlanPhases.OrderBy(ph => ph.Order))
             .Include(p => p.Documents.OrderByDescending(d => d.CreatedAt))
+            .Include(p => p.Metrics.OrderBy(m => m.DisplayOrder))
+            .Include(p => p.PipelineSteps.OrderBy(s => s.DisplayOrder))
+            .Include(p => p.Integrations.OrderBy(i => i.DisplayOrder))
             .FirstOrDefaultAsync(p => p.Id == id);
 
     public async Task<ClientProject?> GetByIdForClientAsync(Guid id)
