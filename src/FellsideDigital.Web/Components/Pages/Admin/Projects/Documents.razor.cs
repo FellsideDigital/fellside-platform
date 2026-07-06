@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -14,6 +15,8 @@ public partial class Documents : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IProjectDocumentService DocumentService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Documents> Logger { get; set; } = default!;
 
     private ClientProject? _project;
     private List<ProjectDocument> _documents = [];
@@ -67,9 +70,14 @@ public partial class Documents : ComponentBase
             _newTitle = "";
             _selectedFile = null;
         }
+        catch (InvalidOperationException ex)
+        {
+            // Deliberate, user-facing validation message from the service.
+            _error = ex.Message;
+        }
         catch (Exception ex)
         {
-            _error = ex.Message;
+            _error = ErrorHandling.LogAndDescribe(Logger, ex, "uploading the document");
         }
         finally
         {
@@ -80,7 +88,15 @@ public partial class Documents : ComponentBase
 
     private async Task DeleteAsync(Guid documentId)
     {
-        await DocumentService.DeleteAsync(documentId);
-        await LoadAsync();
+        try
+        {
+            await DocumentService.DeleteAsync(documentId);
+            await LoadAsync();
+            Toasts.Success("Document deleted.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the document"));
+        }
     }
 }

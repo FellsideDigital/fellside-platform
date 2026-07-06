@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FellsideDigital.Domain.Enums;
+using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -14,6 +15,8 @@ public partial class Notes : ComponentBase
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private IProjectNoteService NoteService { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
+    [Inject] private ToastService Toasts { get; set; } = default!;
+    [Inject] private ILogger<Notes> Logger { get; set; } = default!;
 
     private ClientProject? _project;
     private List<ProjectNote> _notes = [];
@@ -51,11 +54,21 @@ public partial class Notes : ComponentBase
         if (actorId is null) return;
 
         _saving = true;
-        await NoteService.AddAsync(Id, _newBody, _newVisibility, actorId);
-        _newBody = "";
-        _newVisibility = TimelineVisibility.Internal;
-        _saving = false;
-        await LoadAsync();
+        try
+        {
+            await NoteService.AddAsync(Id, _newBody, _newVisibility, actorId);
+            _newBody = "";
+            _newVisibility = TimelineVisibility.Internal;
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "adding the note"));
+        }
+        finally
+        {
+            _saving = false;
+        }
     }
 
     private void StartEdit(ProjectNote note)
@@ -74,15 +87,30 @@ public partial class Notes : ComponentBase
     private async Task SaveEditAsync()
     {
         if (_editingId is not { } id || string.IsNullOrWhiteSpace(_editBody)) return;
-        await NoteService.UpdateAsync(id, _editBody, _editVisibility);
-        CancelEdit();
-        await LoadAsync();
+        try
+        {
+            await NoteService.UpdateAsync(id, _editBody, _editVisibility);
+            CancelEdit();
+            await LoadAsync();
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "updating the note"));
+        }
     }
 
     private async Task DeleteNoteAsync(Guid noteId)
     {
-        await NoteService.DeleteAsync(noteId);
-        if (_editingId == noteId) CancelEdit();
-        await LoadAsync();
+        try
+        {
+            await NoteService.DeleteAsync(noteId);
+            if (_editingId == noteId) CancelEdit();
+            await LoadAsync();
+            Toasts.Success("Note deleted.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the note"));
+        }
     }
 }
