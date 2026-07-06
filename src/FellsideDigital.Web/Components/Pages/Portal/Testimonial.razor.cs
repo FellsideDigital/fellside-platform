@@ -26,8 +26,6 @@ public partial class Testimonial : ComponentBase
 
     private TestimonialModel Input { get; set; } = new();
 
-    private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthState.GetAuthenticationStateAsync();

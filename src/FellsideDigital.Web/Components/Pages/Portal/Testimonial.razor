@@ -63,31 +63,22 @@
                         </div>
                     </div>
 
-                    <div class="mb-5">
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                            Your testimonial <span class="text-red-500">*</span>
-                        </label>
+                    <FormField Label="Your testimonial" Required Class="mb-5">
                         <InputTextArea @bind-Value="Input.Quote" rows="5"
                                        placeholder="Tell us what it was like working with Fellside Digital…"
-                                       class="@InputClass" />
-                        <ValidationMessage For="() => Input.Quote" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                    </div>
+                                       class="@FieldStyles.Input" />
+                        <ValidationMessage For="() => Input.Quote" class="@FieldStyles.Error" />
+                    </FormField>
 
                     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                                Your name <span class="text-red-500">*</span>
-                            </label>
-                            <InputText @bind-Value="Input.AuthorName" placeholder="Jane Cooper" class="@InputClass" />
-                            <ValidationMessage For="() => Input.AuthorName" class="mt-1 text-xs text-red-600 dark:text-red-400" />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-1.5">
-                                Company name
-                            </label>
-                            <InputText @bind-Value="Input.AuthorRole" placeholder="Director, Acme Ltd" class="@InputClass" />
+                        <FormField Label="Your name" Required>
+                            <InputText @bind-Value="Input.AuthorName" placeholder="Jane Cooper" class="@FieldStyles.Input" />
+                            <ValidationMessage For="() => Input.AuthorName" class="@FieldStyles.Error" />
+                        </FormField>
+                        <FormField Label="Company name">
+                            <InputText @bind-Value="Input.AuthorRole" placeholder="Director, Acme Ltd" class="@FieldStyles.Input" />
                             <p class="mt-1 text-xs text-gray-400 dark:text-neutral-500">Shown beneath your name on the site.</p>
-                        </div>
+                        </FormField>
                     </div>
 
                     <div class="mt-6">
