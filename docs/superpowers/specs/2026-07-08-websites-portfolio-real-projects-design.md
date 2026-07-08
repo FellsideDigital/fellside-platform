@@ -61,12 +61,20 @@ Layout: `grid md:grid-cols-2 gap-12 py-16 items-center`, with the visual panel
 given `md:order-last` on odd rows.
 
 **Visual panel — adapts to `Project.Type`:**
-- `Website`: browser-chrome frame (traffic-light dots + URL bar) showing
-  `Project.ScreenshotPath` via `<img>` when set; otherwise a clean wireframe
-  placeholder (same fallback shape the carousel uses).
+- `Website`: browser-chrome frame (traffic-light dots + URL bar) containing a
+  **live iframe** of `Project.PreviewUrl`, exactly as the hero carousel does —
+  reusing the shared `heroCarousel.tryLoadIframe` / `onIframeLoad` JS (loaded
+  globally in `App.razor`). The iframe starts hidden behind a fallback
+  (`Project.ScreenshotPath` `<img>`, or a wireframe placeholder) and swaps in
+  once it loads; if the site refuses framing (X-Frame-Options/CSP) the fallback
+  stays. Each row uses project-id-keyed iframe/fallback element ids so multiple
+  live previews coexist on the page.
 - `Automation`: compact pipeline diagram built from
   `Project.PipelineSteps` (ordered by `DisplayOrder`) plus an integrations row
   from `Project.Integrations`.
+
+Both the page and this component render `InteractiveServer` (global render mode
+in `App.razor`), so `OnAfterRenderAsync` JS interop runs.
 
 **Content panel:**
 - Type badge (🌐 Website / ⚡ Automation) with the same colour treatment as the
