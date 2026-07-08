@@ -2,13 +2,6 @@ namespace FellsideDigital.Web.Components.Pages.Marketing;
 
 // ─── Record types ─────────────────────────────────────────────────────────────
 
-public record Project(
-    string Title,
-    string Description,
-    string[] Tags,
-    string MockupImage,
-    string Link);
-
 public record Service(
     string Title,
     string Description,
@@ -22,37 +15,6 @@ public record Faq(
 
 public static class HomeData
 {
-    public static readonly IReadOnlyList<Project> Projects = new[]
-    {
-        new Project(
-            "Client Portal",
-            "A bespoke project-tracking portal giving clients real-time visibility into milestones, tasks, and updates.",
-            new[] { "Blazor", "Real-time", "Auth" },
-            "/images/mockup-portal.png",
-            "/work/portal"),
-
-        new Project(
-            "E-Commerce Platform",
-            "A custom storefront with integrated payments, inventory management, and an admin dashboard built from the ground up.",
-            new[] { "E-Commerce", "Stripe", "Dashboard" },
-            "/images/mockup-ecommerce.png",
-            "/work/ecommerce"),
-
-        new Project(
-            "Booking & Scheduling System",
-            "Automated booking with calendar sync, Stripe payments, and email/SMS notifications for a hospitality business.",
-            new[] { "Bookings", "Payments", "Notifications" },
-            "/images/mockup-booking.png",
-            "/work/booking"),
-
-        new Project(
-            "Internal Operations Dashboard",
-            "A data-rich internal tool connecting multiple APIs and surfacing live KPIs and alerts for a growing SME.",
-            new[] { "Dashboard", "APIs", "Reporting" },
-            "/images/mockup-dashboard.png",
-            "/work/dashboard"),
-    };
-
     public static readonly List<Service> Services =
     [
         new(
