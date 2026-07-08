@@ -1,4 +1,5 @@
 @page "/websites"
+@using FellsideDigital.Domain.Enums
 @using FellsideDigital.Web.Components.Pages
 @using FellsideDigital.Web.Data
 @using FellsideDigital.Web.Services
@@ -487,7 +488,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await HeroProjectService.GetHeroProjectsAsync();
+        // This is the website-design page, so only showcase website projects —
+        // automation work lives on the automation page.
+        _projects = (await HeroProjectService.GetHeroProjectsAsync())
+            .Where(p => p.Type == ProjectType.Website)
+            .ToList();
     }
 
     private static readonly (bool on, string opacity)[] _dotPattern =

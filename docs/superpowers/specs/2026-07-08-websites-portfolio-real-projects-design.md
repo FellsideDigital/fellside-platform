@@ -43,7 +43,9 @@ changes.
 ### Portfolio section (rewired)
 
 - Inject `@inject IHeroProjectService HeroProjectService` on `Websites.razor`
-  and load projects in `OnInitializedAsync` into a `List<ClientProject>` field.
+  and load projects in `OnInitializedAsync` into a `List<ClientProject>` field,
+  **filtered to `ProjectType.Website`** — this is the website-design page, so
+  automation projects are excluded (they belong on the automation page).
 - If the list is empty, render the shared `EmptyState`
   (`UI.Components.Feedback`) — "No featured projects yet" — matching the
   homepage testimonials empty-state pattern. Otherwise render one
@@ -53,6 +55,8 @@ changes.
 
 Location: `src/FellsideDigital.Web/Components/Pages/Marketing/ProjectShowcaseRow.razor`
 
+The component is **website-only** (this page shows only website projects).
+
 Parameters:
 - `ClientProject Project` (EditorRequired)
 - `int Index` (EditorRequired) — drives the alternating side via `Index % 2 != 0`.
@@ -60,18 +64,18 @@ Parameters:
 Layout: `grid md:grid-cols-2 gap-12 py-16 items-center`, with the visual panel
 given `md:order-last` on odd rows.
 
-**Visual panel — adapts to `Project.Type`:**
-- `Website`: browser-chrome frame (traffic-light dots + URL bar) containing a
-  **live iframe** of `Project.PreviewUrl`, exactly as the hero carousel does —
-  reusing the shared `heroCarousel.tryLoadIframe` / `onIframeLoad` JS (loaded
-  globally in `App.razor`). The iframe starts hidden behind a fallback
-  (`Project.ScreenshotPath` `<img>`, or a wireframe placeholder) and swaps in
-  once it loads; if the site refuses framing (X-Frame-Options/CSP) the fallback
-  stays. Each row uses project-id-keyed iframe/fallback element ids so multiple
-  live previews coexist on the page.
-- `Automation`: compact pipeline diagram built from
-  `Project.PipelineSteps` (ordered by `DisplayOrder`) plus an integrations row
-  from `Project.Integrations`.
+**Visual panel:** browser-chrome frame (traffic-light dots + URL bar) containing a
+**live iframe** of `Project.PreviewUrl`, exactly as the hero carousel does —
+reusing the shared `heroCarousel.tryLoadIframe` / `onIframeLoad` JS (loaded
+globally in `App.razor`). The iframe starts hidden behind a fallback
+(`Project.ScreenshotPath` `<img>`, or a wireframe placeholder) and swaps in once
+it loads; if the site refuses framing (X-Frame-Options/CSP) the fallback stays.
+Each row uses project-id-keyed iframe/fallback element ids so multiple live
+previews coexist on the page.
+
+**Content panel:** name, tagline, up to three metric pills, tech tags from
+`Integrations`, and a "View site →" link. No type badge — every row is a website,
+so a "Website" badge would be redundant.
 
 Both the page and this component render `InteractiveServer` (global render mode
 in `App.razor`), so `OnAfterRenderAsync` JS interop runs.
