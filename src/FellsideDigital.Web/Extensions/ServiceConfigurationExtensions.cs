@@ -106,6 +106,7 @@ public static class ServiceConfigurationExtensions
         services.AddScoped<ITestimonialService, TestimonialService>();
         services.AddScoped<IEnquiryService, EnquiryService>();
         services.AddScoped<IQrLeadService, QrLeadService>();
+        services.AddSingleton<IQuoteEstimatorService, QuoteEstimatorService>();
         services.AddScoped<LayoutStateService>();
         services.AddScoped<PortalPreviewState>();
         services.AddScoped<FellsideDigital.UI.Components.Feedback.ToastService>();

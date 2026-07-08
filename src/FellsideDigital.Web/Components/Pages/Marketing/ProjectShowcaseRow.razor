@@ -1,0 +1,198 @@
+@using FellsideDigital.UI.Components.Icons
+@using FellsideDigital.UI.Enums
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Domain.Enums
+@inject IJSRuntime JS
+
+@{
+    bool reverse = Index % 2 != 0;
+    var metrics = Project.Metrics.OrderBy(m => m.DisplayOrder).Take(3).ToList();
+    var integrations = Project.Integrations.OrderBy(i => i.DisplayOrder).ToList();
+    var tagline = !string.IsNullOrWhiteSpace(Project.HeroTagline) ? Project.HeroTagline : Project.Description;
+    var link = !string.IsNullOrWhiteSpace(Project.HeroShowcaseUrl) ? Project.HeroShowcaseUrl : Project.ProjectUrl;
+}
+
+<div class="grid md:grid-cols-2 gap-12 py-16 items-center">
+
+    <!-- ── Visual panel: browser frame with live iframe (screenshot / wireframe fallback) ── -->
+    <div class="@(reverse ? "md:order-last" : "")">
+        <div class="rounded-2xl overflow-hidden ring-1 ring-slate-200 dark:ring-white/10
+                    bg-white dark:bg-neutral-900 shadow-xl">
+            <div class="bg-slate-100 dark:bg-neutral-800 px-4 py-3 flex items-center gap-2">
+                <span class="size-2.5 rounded-full bg-red-400"></span>
+                <span class="size-2.5 rounded-full bg-amber-400"></span>
+                <span class="size-2.5 rounded-full bg-emerald-400"></span>
+                <div class="flex-1 ml-3 h-5 rounded bg-white dark:bg-neutral-700 flex items-center px-3 min-w-0">
+                    <span class="text-xs text-slate-400 dark:text-neutral-500 truncate">@DisplayUrl</span>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Project.HeroShowcaseUrl))
+                {
+                    <a href="@Project.HeroShowcaseUrl" target="_blank" rel="noopener noreferrer"
+                       class="flex-shrink-0 text-slate-400 hover:text-slate-700 dark:text-neutral-500 dark:hover:text-neutral-300 transition-colors"
+                       aria-label="Open @Project.Name in a new tab">
+                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                    </a>
+                }
+            </div>
+
+            <!-- Preview viewport: live iframe with screenshot/wireframe fallback -->
+            <div class="relative aspect-[16/10] bg-white dark:bg-neutral-900 overflow-hidden">
+                @if (!string.IsNullOrWhiteSpace(Project.PreviewUrl))
+                {
+                    <iframe id="@IframeId"
+                            src="@Project.PreviewUrl"
+                            data-preview-key="@Project.Id"
+                            data-fallback-id="@FallbackId"
+                            onload="heroCarousel.onIframeLoad(this)"
+                            sandbox="allow-scripts allow-same-origin"
+                            title="@Project.Name preview"
+                            loading="lazy"
+                            class="absolute inset-0 w-full h-full border-0 bg-white dark:bg-neutral-900"
+                            style="display:none;">
+                    </iframe>
+                }
+
+                <div id="@FallbackId"
+                     class="absolute inset-0 flex items-center justify-center bg-white dark:bg-neutral-900">
+                    @if (!string.IsNullOrWhiteSpace(Project.ScreenshotPath))
+                    {
+                        <img src="@Project.ScreenshotPath" alt="@Project.Name screenshot"
+                             loading="lazy"
+                             class="w-full h-full object-cover object-top" />
+                    }
+                    else
+                    {
+                        <!-- Generic wireframe placeholder -->
+                        <div class="w-full h-full p-5 flex flex-col gap-3.5">
+                            <div class="h-9 rounded-lg bg-accent flex items-center px-3.5 gap-2">
+                                <div class="h-2.5 w-20 rounded bg-white/70"></div>
+                                <div class="flex gap-2 ml-auto">
+                                    <div class="h-2 w-7 rounded bg-white/40"></div>
+                                    <div class="h-2 w-7 rounded bg-white/40"></div>
+                                    <div class="h-2 w-7 rounded bg-white/40"></div>
+                                </div>
+                            </div>
+                            <div class="flex-1 rounded-lg bg-slate-100 dark:bg-neutral-800/60 flex items-center px-6 gap-5">
+                                <div class="flex flex-col gap-2.5">
+                                    <div class="h-3.5 w-36 rounded bg-slate-300 dark:bg-white/40"></div>
+                                    <div class="h-2.5 w-24 rounded bg-slate-200 dark:bg-white/20"></div>
+                                    <div class="mt-2 h-8 w-24 rounded-lg bg-accent"></div>
+                                </div>
+                                <div class="ml-auto h-24 w-32 rounded-xl bg-slate-200 dark:bg-white/10"></div>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3.5">
+                                <div class="h-14 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"></div>
+                                <div class="h-14 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"></div>
+                                <div class="h-14 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Content panel ── -->
+    <div class="flex flex-col gap-4">
+        <h3 class="text-2xl font-semibold text-slate-900 dark:text-neutral-100">@Project.Name</h3>
+
+        @if (!string.IsNullOrWhiteSpace(tagline))
+        {
+            <p class="text-base leading-relaxed text-slate-500 dark:text-neutral-400">@tagline</p>
+        }
+
+        @if (metrics.Count > 0)
+        {
+            <div class="flex flex-wrap gap-2.5 mt-1">
+                @foreach (var metric in metrics)
+                {
+                    <div class="inline-flex items-center gap-2 rounded-xl px-3.5 py-2
+                                bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-slate-700/60">
+                        <Icon Name="@MetricIcon(metric.Style)" Size="IconSize.Small" Class="@MetricIconClass(metric.Style)" />
+                        <span class="text-base font-bold leading-none @MetricValueClass(metric.Style)">@metric.Value</span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">@metric.Label</span>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (integrations.Count > 0)
+        {
+            <div class="flex flex-wrap gap-2 mt-1">
+                @foreach (var intg in integrations)
+                {
+                    <span class="rounded-full px-3 py-1 text-xs font-medium
+                                 bg-slate-100 text-slate-600 dark:bg-neutral-800 dark:text-neutral-300">@intg.Name</span>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(link))
+        {
+            <a href="@link" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent
+                      hover:gap-3 transition-all duration-200 w-fit mt-1">
+                View site
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+            </a>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public ClientProject Project { get; set; } = null!;
+    [Parameter, EditorRequired] public int Index { get; set; }
+
+    private string IframeId => $"portfolio-iframe-{Project.Id}";
+    private string FallbackId => $"portfolio-fallback-{Project.Id}";
+
+    // Attempt to swap the fallback for the live iframe once it loads. Reuses the
+    // shared hero-carousel JS (loaded globally in App.razor); it's idempotent and
+    // keeps the fallback if the site refuses framing (X-Frame-Options / CSP).
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!string.IsNullOrWhiteSpace(Project.PreviewUrl))
+        {
+            await JS.InvokeVoidAsync("heroCarousel.tryLoadIframe", IframeId, FallbackId);
+        }
+    }
+
+    // Friendly URL for the browser-chrome address bar (host only, no scheme/path).
+    private string DisplayUrl
+    {
+        get
+        {
+            var raw = Project.HeroShowcaseUrl ?? Project.PreviewUrl ?? Project.ProjectUrl;
+            if (string.IsNullOrWhiteSpace(raw)) return "—";
+            return Uri.TryCreate(raw, UriKind.Absolute, out var uri) ? uri.Host : raw;
+        }
+    }
+
+    private static IconName MetricIcon(MetricStyle style) => style switch
+    {
+        MetricStyle.Up    => IconName.ArrowTrendingUp,
+        MetricStyle.Speed => IconName.Bolt,
+        MetricStyle.Warm  => IconName.Clock,
+        _                 => IconName.CheckCircle
+    };
+
+    private static string MetricIconClass(MetricStyle style) => style switch
+    {
+        MetricStyle.Up    => "text-green-500 dark:text-green-400",
+        MetricStyle.Speed => "text-blue-500 dark:text-blue-400",
+        MetricStyle.Warm  => "text-orange-500 dark:text-orange-400",
+        _                 => "text-slate-400 dark:text-slate-500"
+    };
+
+    private static string MetricValueClass(MetricStyle style) => style switch
+    {
+        MetricStyle.Up    => "text-green-600 dark:text-green-400",
+        MetricStyle.Speed => "text-blue-600 dark:text-blue-400",
+        MetricStyle.Warm  => "text-orange-600 dark:text-orange-400",
+        _                 => "text-slate-900 dark:text-white"
+    };
+}

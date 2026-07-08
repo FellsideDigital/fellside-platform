@@ -1,0 +1,196 @@
+@page "/quote"
+@using FellsideDigital.Domain.Enums
+
+<PageTitle>Get an Instant Website & Automation Quote | Fellside Digital</PageTitle>
+
+<SeoHead Title="Get an Instant Website & Automation Quote | Fellside Digital"
+         Description="Build your project and get an instant estimated price for a bespoke website or automation from Fellside Digital, Cumbria. No obligation — final fixed price confirmed after a quick chat."
+         CanonicalUrl="https://fellsidedigital.co.uk/quote" />
+
+<HeadContent>
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "ContactPage",
+      "name": "Get a Quote — Fellside Digital",
+      "description": "Instant estimated pricing for bespoke websites and automation from Fellside Digital, Cumbria.",
+      "url": "https://fellsidedigital.co.uk/quote",
+      "mainEntity": { "@@id": "https://fellsidedigital.co.uk/#business" }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@@type": "ListItem", "position": 1, "name": "Home", "item": "https://fellsidedigital.co.uk/" },
+        { "@@type": "ListItem", "position": 2, "name": "Get a quote", "item": "https://fellsidedigital.co.uk/quote" }
+      ]
+    }
+    </script>
+</HeadContent>
+
+<div class="bg-white dark:bg-neutral-950 text-slate-900 dark:text-white transition-colors duration-300">
+
+    <!-- HERO -->
+    <section class="relative overflow-hidden py-24 sm:py-32 px-6 text-center">
+        <div class="hero-aura" aria-hidden="true"><div class="hero-aura-blob"></div></div>
+        <div class="max-w-2xl mx-auto space-y-5">
+            <p class="text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">Get a quote</p>
+            <h1 class="text-4xl sm:text-5xl font-semibold leading-tight">Build your project, see the price.</h1>
+            <p class="text-base sm:text-lg text-slate-500 dark:text-neutral-400">
+                Answer a few quick questions and get an instant estimate. No obligation —
+                your final fixed price is confirmed after a quick chat.
+            </p>
+        </div>
+    </section>
+
+    @if (!_submitted)
+    {
+        <section class="pb-28 px-6">
+            <div class="max-w-5xl mx-auto grid lg:grid-cols-[1fr_20rem] gap-8 items-start">
+
+                <!-- LEFT: builder -->
+                <div class="space-y-10">
+
+                    <!-- Website -->
+                    <div class="space-y-5">
+                        <button type="button" @onclick="ToggleWebsite" class="@ToggleClass(_needsWebsite) w-full sm:w-auto font-semibold">
+                            @(_needsWebsite ? "✓ " : "")I need a website
+                        </button>
+
+                        @if (_needsWebsite)
+                        {
+                            <div class="space-y-4 pl-1">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest mb-2 text-slate-400 dark:text-neutral-500">What kind of site?</label>
+                                    <div class="grid sm:grid-cols-3 gap-2">
+                                        @foreach (var o in WebsiteTypeOptions)
+                                        {
+                                            <button type="button" @onclick="() => SelectWebsiteType(o.Type)" class="@ToggleClass(_websiteType == o.Type)">
+                                                <span class="block font-medium">@o.Label</span>
+                                                <span class="block text-xs opacity-70 mt-0.5">from @o.Price</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest mb-2 text-slate-400 dark:text-neutral-500">Add-ons</label>
+                                    <div class="grid sm:grid-cols-2 gap-2">
+                                        @foreach (var o in AddOnOptions)
+                                        {
+                                            <button type="button" @onclick="() => ToggleAddOn(o.AddOn)" class="@ToggleClass(_addOns.Contains(o.AddOn))">
+                                                @o.Label <span class="opacity-70">@o.Price</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest mb-2 text-slate-400 dark:text-neutral-500">Ongoing care?</label>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        @foreach (var o in CareOptions)
+                                        {
+                                            <button type="button" @onclick="() => SelectCare(o.Level)" class="@ToggleClass(_care == o.Level)">@o.Label</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Automation -->
+                    <div class="space-y-5">
+                        <button type="button" @onclick="ToggleAutomation" class="@ToggleClass(_needsAutomation) w-full sm:w-auto font-semibold">
+                            @(_needsAutomation ? "✓ " : "")I need automation
+                        </button>
+
+                        @if (_needsAutomation)
+                        {
+                            <div class="space-y-4 pl-1">
+                                <div>
+                                    <label class="block text-xs font-semibold uppercase tracking-widest mb-2 text-slate-400 dark:text-neutral-500">What scale?</label>
+                                    <div class="grid sm:grid-cols-3 gap-2">
+                                        @foreach (var o in AutomationOptions)
+                                        {
+                                            <button type="button" @onclick="() => SelectAutomationScale(o.Scale)" class="@ToggleClass(_automationScale == o.Scale)">
+                                                <span class="block font-medium">@o.Label</span>
+                                                <span class="block text-xs opacity-70 mt-0.5">from @o.Price</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                                <button type="button" @onclick="ToggleSupport" class="@ToggleClass(_automationSupport)">
+                                    @(_automationSupport ? "✓ " : "")Add ongoing support (from £10/mo)
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Capture -->
+                    <div class="space-y-4 border-t border-slate-100 dark:border-white/5 pt-8">
+                        <h2 class="text-lg font-semibold">Where should we send your detailed quote?</h2>
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <input @bind="_lead.Name" @bind:event="oninput" type="text" placeholder="Your name *" class="@FieldStyles.MarketingInput" />
+                            <input @bind="_lead.Email" @bind:event="oninput" type="email" placeholder="Email *" class="@FieldStyles.MarketingInput" />
+                        </div>
+                        <input @bind="_lead.Phone" type="tel" placeholder="Phone (optional)" class="@FieldStyles.MarketingInput" />
+                        <textarea @bind="_lead.Note" rows="3" placeholder="Anything else we should know? (optional)" class="@FieldStyles.MarketingInput resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- RIGHT: live estimate -->
+                <div class="lg:sticky lg:top-24 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-6 space-y-4">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 dark:text-neutral-500">Estimated project cost</p>
+
+                    @{ var est = Estimate; }
+                    @if (est.HasEstimate)
+                    {
+                        <p class="text-3xl font-bold text-slate-900 dark:text-white">@Money(est.OneOffLow) – @Money(est.OneOffHigh)</p>
+                        <p class="text-xs text-slate-400 dark:text-neutral-500">one-off</p>
+                        @if (est.MonthlyFrom > 0)
+                        {
+                            <p class="text-sm font-medium text-accent">+ from @Money(est.MonthlyFrom)/mo</p>
+                        }
+                        <p class="text-xs text-slate-500 dark:text-neutral-400 leading-relaxed border-t border-slate-200 dark:border-white/10 pt-3">
+                            An indicative estimate — your final fixed price is confirmed after a quick chat.
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="text-sm text-slate-500 dark:text-neutral-400">Pick what you need to see your estimate.</p>
+                    }
+
+                    <button type="button" @onclick="SubmitAsync" disabled="@(!CanSubmit || _sending)"
+                            class="w-full rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed">
+                        @(_sending ? "Sending…" : "Get my detailed quote →")
+                    </button>
+                    <p class="text-center text-xs text-slate-400 dark:text-neutral-500">
+                        Prefer to talk? <a href="tel:+447484323505" class="text-accent hover:underline">Call</a>
+                        or <a href="https://wa.me/447484323505" target="_blank" class="text-accent hover:underline">WhatsApp</a>.
+                    </p>
+                </div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="pb-32 px-6">
+            <div class="max-w-xl mx-auto rounded-2xl border border-green-200 dark:border-green-500/20 bg-green-50 dark:bg-green-500/5 p-8 text-center space-y-3">
+                <div class="flex justify-center mb-2">
+                    <div class="size-12 rounded-full bg-green-100 dark:bg-green-500/10 flex items-center justify-center">
+                        <svg class="size-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                        </svg>
+                    </div>
+                </div>
+                <h2 class="text-xl font-bold">Thanks — that's on its way to me.</h2>
+                <p class="text-sm text-slate-500 dark:text-neutral-400">
+                    I'll come back within one working day with your detailed quote. Your estimate was
+                    <strong class="text-slate-900 dark:text-white">@Money(Estimate.OneOffLow) – @Money(Estimate.OneOffHigh)</strong>.
+                </p>
+            </div>
+        </section>
+    }
+</div>

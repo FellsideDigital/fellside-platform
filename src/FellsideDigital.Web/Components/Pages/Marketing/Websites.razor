@@ -1,5 +1,9 @@
 @page "/websites"
+@using FellsideDigital.Domain.Enums
 @using FellsideDigital.Web.Components.Pages
+@using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Services
+@inject IHeroProjectService HeroProjectService
 
 <PageTitle>Website Design Cumbria &amp; Lake District | Fellside Digital</PageTitle>
 
@@ -128,56 +132,142 @@
         <div class="max-w-7xl mx-auto">
             <SectionHeader Label="Our work"
                            Heading="What we've built."
-                           Description="A selection of projects we've delivered for clients across the UK." />
+                           Description="A selection of real projects we've delivered for clients across the UK." />
 
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-                @foreach (var project in HomeData.Projects)
+            @if (_projects.Count == 0)
+            {
+                <div class="mt-12 max-w-xl mx-auto">
+                    <EmptyState Padding="p-12"
+                                IconContainerClass="size-12 rounded-2xl mb-4"
+                                Title="Portfolio coming soon"
+                                Subtitle="We're preparing a selection of recent projects to showcase here. In the meantime, get in touch to see examples of our work.">
+                        <Icon>
+                            <svg class="size-6 text-gray-400 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            </svg>
+                        </Icon>
+                    </EmptyState>
+                </div>
+            }
+            else
+            {
+                <div class="mt-4 flex flex-col divide-y divide-slate-200 dark:divide-white/5">
+                    @foreach (var (project, index) in _projects.Select((p, i) => (p, i)))
+                    {
+                        <ProjectShowcaseRow Project="project" Index="index" />
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- ── PRICING ────────────────────────────────────────────────────────── -->
+    <section id="pricing" class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto">
+            <SectionHeader Label="Pricing"
+                           Heading="Simple, fixed-price packages."
+                           Description="Every project is quoted up front — no hourly surprises. The prices below are starting points; we'll confirm a fixed price once we've scoped your project together." />
+
+            <!-- Setup tiers -->
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                @foreach (var tier in _websiteTiers)
                 {
-                    <div class="group rounded-2xl bg-white dark:bg-neutral-900
-                                ring-1 ring-slate-200 dark:ring-white/5
-                                hover:ring-accent/40
-                                hover:shadow-lg transition-all duration-200 overflow-hidden">
-                        <!-- Mockup area -->
-                        <div class="bg-slate-100 dark:bg-neutral-800 h-44 flex items-center justify-center px-8">
-                            <div class="w-full max-w-xs rounded-xl ring-1 ring-slate-200 dark:ring-white/10 bg-white dark:bg-neutral-900 overflow-hidden shadow-md">
-                                <div class="bg-slate-200 dark:bg-neutral-700 h-5 flex items-center px-3 gap-1.5">
-                                    <div class="w-2 h-2 rounded-full bg-red-400/70"></div>
-                                    <div class="w-2 h-2 rounded-full bg-amber-400/70"></div>
-                                    <div class="w-2 h-2 rounded-full bg-emerald-400/70"></div>
-                                </div>
-                                <div class="p-3 space-y-1.5">
-                                    <div class="h-2 w-1/2 rounded bg-accent/50"></div>
-                                    <div class="h-2 w-full rounded bg-slate-200 dark:bg-neutral-700"></div>
-                                    <div class="h-2 w-4/5 rounded bg-slate-200 dark:bg-neutral-700"></div>
-                                </div>
+                    <div class="relative group rounded-2xl bg-white dark:bg-neutral-900 flex flex-col
+                                ring-1 @(tier.Featured
+                                    ? "ring-2 ring-accent shadow-lg"
+                                    : "ring-slate-200 dark:ring-white/5 hover:ring-accent/40 hover:shadow-lg")
+                                transition-all duration-200">
+                        @if (tier.Featured)
+                        {
+                            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full
+                                         bg-accent px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                                Most popular
+                            </span>
+                        }
+                        <div class="p-6 flex flex-col flex-1">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-neutral-100">@tier.Name</h3>
+                            <p class="mt-1 text-sm text-slate-500 dark:text-neutral-400">@tier.BestFor</p>
+                            <div class="mt-5 flex items-baseline gap-1.5">
+                                <span class="text-xs font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">From</span>
+                                <span class="text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">@tier.Price</span>
                             </div>
-                        </div>
-                        <div class="p-6">
-                            <!-- Tags -->
-                            <div class="flex flex-wrap gap-1.5 mb-3">
-                                @foreach (var tag in project.Tags)
+                            <p class="mt-1 text-xs text-slate-400 dark:text-neutral-500">@tier.PriceCaption</p>
+                            <ul class="mt-6 space-y-2.5 flex-1">
+                                @foreach (var feature in tier.Features)
                                 {
-                                    <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
-                                                 bg-slate-100 text-slate-600
-                                                 dark:bg-neutral-800 dark:text-neutral-400">@tag</span>
+                                    <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
+                                        <span class="mt-0.5 font-bold text-accent">✓</span>
+                                        @feature
+                                    </li>
                                 }
-                            </div>
-                            <h3 class="text-base font-semibold text-slate-900 dark:text-neutral-100
-                                       group-hover:text-accent transition-colors mb-1">
-                                @project.Title
-                            </h3>
-                            <p class="text-sm text-slate-500 dark:text-neutral-400 leading-relaxed">
-                                @project.Description
-                            </p>
+                            </ul>
+                            <a href="/quote"
+                               class="mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold text-center transition-all
+                                      @(tier.Featured
+                                        ? "bg-accent text-white shadow-sm hover:opacity-90"
+                                        : "text-slate-700 dark:text-neutral-200 ring-1 ring-slate-200 dark:ring-white/10 hover:bg-slate-50 dark:hover:bg-white/5")">
+                                Get a quote
+                            </a>
                         </div>
                     </div>
                 }
+            </div>
+
+            <!-- Care plans -->
+            <div class="mt-16">
+                <div class="flex items-end justify-between flex-wrap gap-3 mb-6">
+                    <div>
+                        <p class="text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">Hosting &amp; support</p>
+                        <h3 class="mt-1 text-2xl font-semibold text-slate-900 dark:text-neutral-100">Ongoing care plans</h3>
+                    </div>
+                    <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-sm">
+                        Optional monthly plans that keep your site fast, secure, and up to date — we manage everything for you.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    @foreach (var plan in _carePlans)
+                    {
+                        <div class="rounded-2xl bg-slate-50 dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 p-6 flex flex-col">
+                            <div class="flex items-baseline justify-between gap-2">
+                                <h4 class="text-base font-semibold text-slate-900 dark:text-neutral-100">@plan.Name</h4>
+                                <span class="text-lg font-semibold text-accent whitespace-nowrap">@plan.Price</span>
+                            </div>
+                            <ul class="mt-4 space-y-2">
+                                @foreach (var feature in plan.Features)
+                                {
+                                    <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
+                                        <span class="mt-0.5 font-bold text-accent">✓</span>
+                                        @feature
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Flagship bundle -->
+            <div class="mt-10 rounded-2xl ring-1 ring-accent/30 bg-accent/5 dark:bg-accent/10 p-8
+                        flex flex-col md:flex-row md:items-center gap-6">
+                <div class="flex-1">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-accent">Flagship bundle</p>
+                    <h3 class="mt-2 text-xl font-semibold text-slate-900 dark:text-neutral-100">The Digital Setup Package</h3>
+                    <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-neutral-400 max-w-xl">
+                        Any website package with a starter automation included and hosting as an optional add-on — your
+                        website and systems fully set up so your business runs more efficiently and generates more enquiries.
+                    </p>
+                </div>
+                <a href="/quote"
+                   class="flex-shrink-0 rounded-xl bg-accent px-6 py-3 text-sm font-semibold
+                          text-white shadow-sm hover:opacity-90 transition-all text-center">
+                    Build my package
+                </a>
             </div>
         </div>
     </section>
 
     <!-- ── BENTO: CAPABILITIES ────────────────────────────────────────────── -->
-    <section class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
+    <section class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
         <div class="max-w-7xl mx-auto">
             <SectionHeader Label="About us"
                            Heading="Design-led, and built to last."
@@ -292,7 +382,7 @@
     </section>
 
     <!-- ── WEBSITE SERVICES ───────────────────────────────────────────────── -->
-    <section class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
+    <section class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
         <div class="max-w-7xl mx-auto">
             <SectionHeader Label="Services"
                            Heading="Everything a website project needs."
@@ -340,111 +430,6 @@
         </div>
     </section>
 
-    <!-- ── PRICING ────────────────────────────────────────────────────────── -->
-    <section id="pricing" class="py-20 px-6 bg-white dark:bg-neutral-950 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto">
-            <SectionHeader Label="Pricing"
-                           Heading="Simple, fixed-price packages."
-                           Description="Every project is quoted up front — no hourly surprises. The prices below are starting points; we'll confirm a fixed price once we've scoped your project together." />
-
-            <!-- Setup tiers -->
-            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                @foreach (var tier in _websiteTiers)
-                {
-                    <div class="relative group rounded-2xl bg-white dark:bg-neutral-900 flex flex-col
-                                ring-1 @(tier.Featured
-                                    ? "ring-2 ring-accent shadow-lg"
-                                    : "ring-slate-200 dark:ring-white/5 hover:ring-accent/40 hover:shadow-lg")
-                                transition-all duration-200">
-                        @if (tier.Featured)
-                        {
-                            <span class="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full
-                                         bg-accent px-3 py-1 text-xs font-semibold text-white shadow-sm">
-                                Most popular
-                            </span>
-                        }
-                        <div class="p-6 flex flex-col flex-1">
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-neutral-100">@tier.Name</h3>
-                            <p class="mt-1 text-sm text-slate-500 dark:text-neutral-400">@tier.BestFor</p>
-                            <div class="mt-5 flex items-baseline gap-1.5">
-                                <span class="text-xs font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">From</span>
-                                <span class="text-4xl font-semibold tracking-tight text-slate-900 dark:text-white">@tier.Price</span>
-                            </div>
-                            <p class="mt-1 text-xs text-slate-400 dark:text-neutral-500">@tier.PriceCaption</p>
-                            <ul class="mt-6 space-y-2.5 flex-1">
-                                @foreach (var feature in tier.Features)
-                                {
-                                    <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
-                                        <span class="mt-0.5 font-bold text-accent">✓</span>
-                                        @feature
-                                    </li>
-                                }
-                            </ul>
-                            <a href="/contact"
-                               class="mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold text-center transition-all
-                                      @(tier.Featured
-                                        ? "bg-accent text-white shadow-sm hover:opacity-90"
-                                        : "text-slate-700 dark:text-neutral-200 ring-1 ring-slate-200 dark:ring-white/10 hover:bg-slate-50 dark:hover:bg-white/5")">
-                                Get a quote
-                            </a>
-                        </div>
-                    </div>
-                }
-            </div>
-
-            <!-- Care plans -->
-            <div class="mt-16">
-                <div class="flex items-end justify-between flex-wrap gap-3 mb-6">
-                    <div>
-                        <p class="text-sm font-medium uppercase tracking-widest text-slate-400 dark:text-neutral-500">Hosting &amp; support</p>
-                        <h3 class="mt-1 text-2xl font-semibold text-slate-900 dark:text-neutral-100">Ongoing care plans</h3>
-                    </div>
-                    <p class="text-sm text-slate-500 dark:text-neutral-400 max-w-sm">
-                        Optional monthly plans that keep your site fast, secure, and up to date — we manage everything for you.
-                    </p>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    @foreach (var plan in _carePlans)
-                    {
-                        <div class="rounded-2xl bg-slate-50 dark:bg-neutral-900 ring-1 ring-slate-200 dark:ring-white/5 p-6 flex flex-col">
-                            <div class="flex items-baseline justify-between gap-2">
-                                <h4 class="text-base font-semibold text-slate-900 dark:text-neutral-100">@plan.Name</h4>
-                                <span class="text-lg font-semibold text-accent whitespace-nowrap">@plan.Price</span>
-                            </div>
-                            <ul class="mt-4 space-y-2">
-                                @foreach (var feature in plan.Features)
-                                {
-                                    <li class="flex items-start gap-2 text-sm text-slate-500 dark:text-neutral-400">
-                                        <span class="mt-0.5 font-bold text-accent">✓</span>
-                                        @feature
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Flagship bundle -->
-            <div class="mt-10 rounded-2xl ring-1 ring-accent/30 bg-accent/5 dark:bg-accent/10 p-8
-                        flex flex-col md:flex-row md:items-center gap-6">
-                <div class="flex-1">
-                    <p class="text-xs font-semibold uppercase tracking-widest text-accent">Flagship bundle</p>
-                    <h3 class="mt-2 text-xl font-semibold text-slate-900 dark:text-neutral-100">The Digital Setup Package</h3>
-                    <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-neutral-400 max-w-xl">
-                        Any website package with a starter automation included and hosting as an optional add-on — your
-                        website and systems fully set up so your business runs more efficiently and generates more enquiries.
-                    </p>
-                </div>
-                <a href="/contact"
-                   class="flex-shrink-0 rounded-xl bg-accent px-6 py-3 text-sm font-semibold
-                          text-white shadow-sm hover:opacity-90 transition-all text-center">
-                    Build my package
-                </a>
-            </div>
-        </div>
-    </section>
-
     <!-- ── AREAS WE SERVE ─────────────────────────────────────────────────── -->
     <section class="py-20 px-6 bg-slate-50 dark:bg-neutral-900 transition-colors duration-300">
         <div class="max-w-5xl mx-auto">
@@ -482,7 +467,7 @@
                 Tell us about your project and we'll come back with a clear plan and fixed price.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                <a href="/contact"
+                <a href="/quote"
                    class="rounded-xl bg-accent px-7 py-3 text-sm font-semibold
                           text-white shadow-lg hover:opacity-90 transition-all">
                     Get a quote
@@ -499,6 +484,17 @@
 </div>
 
 @code {
+    private List<ClientProject> _projects = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        // This is the website-design page, so only showcase website projects —
+        // automation work lives on the automation page.
+        _projects = (await HeroProjectService.GetHeroProjectsAsync())
+            .Where(p => p.Type == ProjectType.Website)
+            .ToList();
+    }
+
     private static readonly (bool on, string opacity)[] _dotPattern =
     [
         (true,"100"),(false,""),(true,"100"),(false,""),(true,"40"),(false,""),(true,"100"),
