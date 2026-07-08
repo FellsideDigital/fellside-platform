@@ -1,12 +1,18 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FellsideDigital.Web.Data
 {
-    public class FellsideDigitalDbContext(DbContextOptions<FellsideDigitalDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+    public class FellsideDigitalDbContext(DbContextOptions<FellsideDigitalDbContext> options)
+        : IdentityDbContext<ApplicationUser>(options), IDataProtectionKeyContext
     {
         DbSet<ApplicationUser> Customers { get; set; }
+
+        // Persists the data-protection keys that encrypt auth cookies so they survive
+        // container/deploy restarts (otherwise every deploy signs all users out).
+        public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
         public DbSet<ClientInvitation> ClientInvitations => Set<ClientInvitation>();
         public DbSet<ClientProject> ClientProjects => Set<ClientProject>();
         public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();

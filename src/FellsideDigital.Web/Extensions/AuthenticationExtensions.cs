@@ -50,7 +50,7 @@ public static class AuthenticationExtensions
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             options.Cookie.SameSite = SameSiteMode.Lax;
             options.Cookie.IsEssential = true;
-            options.ExpireTimeSpan = TimeSpan.FromDays(14);
+            options.ExpireTimeSpan = TimeSpan.FromDays(180);
             options.SlidingExpiration = true;
 
             options.LoginPath = "/Account/Login";
