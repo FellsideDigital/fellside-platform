@@ -12,6 +12,7 @@ public partial class Screen : ComponentBase, IDisposable
     private readonly List<LiveParticipant> _feed = new();
     private int _count;
     private bool _running;
+    private int _generation;
 
     private LiveParticipant? _current;
     private int _activeStage = -1;
@@ -39,6 +40,7 @@ public partial class Screen : ComponentBase, IDisposable
 
     private void OnReset() => _ = InvokeAsync(() =>
     {
+        _generation++;
         _count = 0;
         _feed.Clear();
         _queue.Clear();
@@ -57,37 +59,47 @@ public partial class Screen : ComponentBase, IDisposable
     {
         if (_running) return;
         _running = true;
+        var gen = _generation;
 
-        while (_queue.Count > 0)
+        try
         {
-            var p = _queue.Dequeue();
-            _current = p;
-            _stages =
-            [
-                "Lead captured",
-                $"Enriching {(string.IsNullOrEmpty(p.Company) ? "profile" : p.Company)}…",
-                "CRM record created",
-                "✉ Welcome email sent",
-                "✓ Done",
-            ];
-
-            for (var i = 0; i < _stages.Length; i++)
+            while (_queue.Count > 0)
             {
-                _activeStage = i;
-                _stageComplete = false;
-                StateHasChanged();
-                await Task.Delay(900);
-                _stageComplete = true;
+                if (gen != _generation) return; // a Reset superseded this run
+
+                var p = _queue.Dequeue();
+                _current = p;
+                _stages =
+                [
+                    "Lead captured",
+                    $"Enriching {(string.IsNullOrEmpty(p.Company) ? "profile" : p.Company)}…",
+                    "CRM record created",
+                    "✉ Welcome email sent",
+                    "✓ Done",
+                ];
+
+                for (var i = 0; i < _stages.Length; i++)
+                {
+                    _activeStage = i;
+                    _stageComplete = false;
+                    StateHasChanged();
+                    await Task.Delay(900);
+                    if (gen != _generation) return;
+                    _stageComplete = true;
+                    StateHasChanged();
+                }
+
+                await Task.Delay(1200);
+                if (gen != _generation) return;
+                _current = null;
+                _activeStage = -1;
                 StateHasChanged();
             }
-
-            await Task.Delay(1200);
-            _current = null;
-            _activeStage = -1;
-            StateHasChanged();
         }
-
-        _running = false;
+        finally
+        {
+            _running = false;
+        }
     }
 
     private static string StageRowClass(bool active, bool done) =>
