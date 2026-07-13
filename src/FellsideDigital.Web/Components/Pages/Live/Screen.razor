@@ -1,0 +1,81 @@
+@page "/live"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "SiteAdmin")]
+@implements IDisposable
+@using Microsoft.AspNetCore.Authorization
+
+<PageTitle>Live Automation — Fellside Digital</PageTitle>
+
+<div class="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-white px-8 py-10">
+    <header class="flex items-center justify-between mb-10">
+        <div class="text-2xl font-bold text-accent">Fellside Digital</div>
+        <div class="flex items-center gap-4">
+            <span class="text-sm font-medium text-slate-400 uppercase tracking-widest">Live Automation Demo</span>
+            <button @onclick="ResetAsync"
+                    class="rounded-lg border border-slate-200 dark:border-white/10 px-3 py-1.5 text-xs text-slate-500 dark:text-neutral-400 hover:border-slate-300 dark:hover:border-white/20 transition">
+                Reset
+            </button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div class="lg:col-span-1 flex flex-col items-center text-center">
+            <h1 class="text-3xl font-bold mb-2">Scan to see it live</h1>
+            <p class="text-slate-500 dark:text-neutral-400 mb-6">Point your camera here and watch this screen react in real time.</p>
+            <div class="p-5 rounded-3xl border-4 border-accent shadow-xl bg-white">
+                <img src="/api/live/qr.svg" alt="Scan to join" class="w-64 h-64" />
+            </div>
+            <div class="mt-6 text-6xl font-black text-accent tabular-nums">@_count</div>
+            <div class="text-slate-400 uppercase tracking-widest text-xs">people joined</div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="rounded-3xl border border-slate-200 dark:border-white/10 shadow-lg p-8 min-h-[360px] flex flex-col justify-center">
+                @if (_current is null)
+                {
+                    <div class="text-center text-slate-400">
+                        <div class="text-2xl font-semibold">Waiting for the next lead…</div>
+                        <div class="mt-2">Scan the QR code to trigger a live automation.</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center mb-8">
+                        <div class="text-sm uppercase tracking-widest text-slate-400">Now processing</div>
+                        <div class="text-4xl font-bold">@_current.Name</div>
+                    </div>
+                    <div class="space-y-3">
+                        @for (var i = 0; i < _stages.Length; i++)
+                        {
+                            var done = i < _activeStage || (i == _activeStage && _stageComplete);
+                            var active = i == _activeStage;
+                            <div class="@StageRowClass(active, done)">
+                                <span class="@StageDotClass(active, done)"></span>
+                                <span class="font-medium">@_stages[i]</span>
+                                <span class="ml-auto font-bold text-accent @(done ? "opacity-100" : "opacity-0") transition-opacity">✓</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="mt-8">
+                <div class="text-xs uppercase tracking-widest text-slate-400 mb-3">Live feed</div>
+                <ul class="space-y-2">
+                    @foreach (var p in _feed)
+                    {
+                        <li class="flex items-center gap-3 text-slate-600 dark:text-neutral-300">
+                            <span class="w-2 h-2 rounded-full bg-accent"></span>
+                            <span class="font-semibold text-slate-900 dark:text-white">@p.Name</span>
+                            @if (!string.IsNullOrEmpty(p.Company))
+                            {
+                                <span class="text-slate-400">· @p.Company</span>
+                            }
+                            <span class="text-slate-300 dark:text-neutral-600 text-sm ml-auto">just now</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
