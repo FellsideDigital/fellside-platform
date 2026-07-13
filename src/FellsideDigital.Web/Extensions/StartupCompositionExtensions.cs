@@ -1,6 +1,7 @@
 using FellsideDigital.Web.Components;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Data.Seeding;
+using FellsideDigital.Web.Endpoints;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
@@ -83,6 +84,7 @@ public static class StartupCompositionExtensions
         app.UseAntiforgery();
 
         app.MapQrRedirects();
+        app.MapLiveShowcase();
         app.MapScreenshotMedia();
 
         app.MapStaticAssets();
