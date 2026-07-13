@@ -16,6 +16,7 @@ public interface IEmailService : IEmailSender<ApplicationUser>
     Task SendContactEnquiryAsync(ContactEnquiry enquiry);
     Task SendQrLeadNotificationAsync(QrLead lead);
     Task SendQrLeadDiscountAsync(QrLead lead);
+    Task SendLiveAutomationWelcomeAsync(QrLead lead);
     Task SendDocumentAddedAsync(ApplicationUser client, ClientProject project, string documentTitle, string portalUrl);
     Task SendInvoiceAddedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl);
     Task SendInvoiceUpdatedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl);

@@ -74,6 +74,12 @@ public class EmailService : IEmailService
             "Your exclusive Fellside Digital offer — LAUNCH26",
             EmailTemplates.QrLeadDiscount(lead));
 
+    public Task SendLiveAutomationWelcomeAsync(QrLead lead) =>
+        SendAsync(
+            lead.Email,
+            "You just triggered a live automation ⚡",
+            EmailTemplates.LiveAutomationWelcome(lead));
+
     // ── Portal activity notifications (client, admin BCC'd as a receipt) ────────
 
     public Task SendDocumentAddedAsync(ApplicationUser client, ClientProject project, string documentTitle, string portalUrl) =>
