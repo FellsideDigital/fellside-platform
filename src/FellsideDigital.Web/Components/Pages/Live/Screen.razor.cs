@@ -99,6 +99,7 @@ public partial class Screen : ComponentBase, IDisposable
         finally
         {
             _running = false;
+            if (_queue.Count > 0) _ = DrainAsync();
         }
     }
 
