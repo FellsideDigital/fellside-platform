@@ -106,6 +106,7 @@ public static class ServiceConfigurationExtensions
         services.AddScoped<ITestimonialService, TestimonialService>();
         services.AddScoped<IEnquiryService, EnquiryService>();
         services.AddScoped<IQrLeadService, QrLeadService>();
+        services.AddSingleton<LiveShowcaseState>();
         services.AddSingleton<IQuoteEstimatorService, QuoteEstimatorService>();
         services.AddScoped<LayoutStateService>();
         services.AddScoped<PortalPreviewState>();
