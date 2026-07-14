@@ -1,4 +1,5 @@
 using FellsideDigital.Web.Services;
+using FellsideDigital.Web.Services.Live;
 using Microsoft.AspNetCore.Components;
 
 namespace FellsideDigital.Web.Components.Pages.Live;
@@ -18,6 +19,11 @@ public partial class Screen : ComponentBase, IDisposable
     private int _activeStage = -1;
     private bool _stageComplete;
     private string[] _stages = [];
+
+    // Results dashboard state
+    private bool _stopped;
+    private bool _reveal;
+    private LiveMetrics _metrics = LiveMetrics.Empty;
 
     protected override void OnInitialized()
     {
@@ -46,6 +52,9 @@ public partial class Screen : ComponentBase, IDisposable
         _queue.Clear();
         _current = null;
         _activeStage = -1;
+        _stopped = false;
+        _reveal = false;
+        _metrics = LiveMetrics.Empty;
         StateHasChanged();
     });
 
@@ -53,6 +62,26 @@ public partial class Screen : ComponentBase, IDisposable
     {
         Live.Reset(); // raises ResetRequested → OnReset marshals the UI update
         await Task.CompletedTask;
+    }
+
+    private async Task StopAsync()
+    {
+        _metrics = LiveMetricsBuilder.Build(Live.SessionParticipants());
+        _stopped = true;
+        _reveal = false;
+        StateHasChanged();
+
+        // Second pass flips _reveal so the charts animate in from zero.
+        await Task.Delay(60);
+        _reveal = true;
+        StateHasChanged();
+    }
+
+    private void Resume()
+    {
+        _stopped = false;
+        _reveal = false;
+        StateHasChanged();
     }
 
     private async Task DrainAsync()
@@ -104,13 +133,53 @@ public partial class Screen : ComponentBase, IDisposable
     }
 
     private static string StageRowClass(bool active, bool done) =>
-        "flex items-center gap-4 rounded-xl px-4 py-3 border transition-all duration-300 " +
+        "flex items-center gap-5 rounded-2xl px-6 py-5 border transition-all duration-300 " +
         (active || done
             ? "text-slate-900 dark:text-white border-accent bg-accent/5"
             : "text-slate-400 border-slate-100 dark:border-white/5");
 
     private static string StageDotClass(bool active, bool done) =>
-        "w-3 h-3 rounded-full transition-colors " + (active || done ? "bg-accent" : "bg-slate-300");
+        "w-4 h-4 rounded-full transition-colors " + (active || done ? "bg-accent" : "bg-slate-300");
+
+    // ---- Results dashboard helpers ----
+
+    private const double DonutR = 84;
+    private static double DonutCircumference => 2 * Math.PI * DonutR;
+
+    private record DonutSeg(string Label, int Count, double Percent, double Length, double Offset, string Color);
+
+    private IReadOnlyList<DonutSeg> DonutSegments()
+    {
+        var total = _metrics.Total;
+        if (total == 0) return [];
+
+        var c = DonutCircumference;
+        double cumulative = 0;
+        var segs = new List<DonutSeg>(_metrics.Devices.Count);
+        foreach (var d in _metrics.Devices)
+        {
+            var frac = (double)d.Count / total;
+            var len = frac * c;
+            segs.Add(new DonutSeg(d.Label, d.Count, frac * 100, len, -cumulative, DeviceColor(d.Label)));
+            cumulative += len;
+        }
+        return segs;
+    }
+
+    private static string DeviceColor(string label) => label switch
+    {
+        DeviceDetector.IOS => "var(--color-accent)",
+        DeviceDetector.Android => "#22c55e",
+        DeviceDetector.Desktop => "#a855f7",
+        _ => "#94a3b8",
+    };
+
+    private static int Percent(int count, int total) =>
+        total == 0 ? 0 : (int)Math.Round(100.0 * count / total);
+
+    // Invariant formatting so SVG numeric attributes never emit a comma decimal.
+    private static string Fmt(double d) =>
+        d.ToString("0.###", global::System.Globalization.CultureInfo.InvariantCulture);
 
     public void Dispose()
     {

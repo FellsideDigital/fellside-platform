@@ -1,6 +1,8 @@
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
+using FellsideDigital.Web.Services.Live;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace FellsideDigital.Web.Components.Pages.Live;
 
@@ -9,14 +11,30 @@ public partial class Join : ComponentBase
     [Inject] private IQrLeadService QrLeadService { get; set; } = default!;
     [Inject] private IEmailService EmailService { get; set; } = default!;
     [Inject] private LiveShowcaseState Live { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
     [Inject] private ILogger<Join> Logger { get; set; } = default!;
 
     private string _name = "";
     private string _email = "";
     private string _error = "";
+    private string? _userAgent;
     private bool _saving;
     private bool _submitted;
     private string _successMessage = "Look up at the big screen — that's you.";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _userAgent is not null) return;
+        try
+        {
+            _userAgent = await JS.InvokeAsync<string>("fellsideDevice.userAgent");
+        }
+        catch (Exception ex)
+        {
+            // Non-fatal: device stays "Other" in the metrics if this fails.
+            Logger.LogWarning(ex, "Could not read user-agent for live device metrics");
+        }
+    }
 
     private async Task SubmitAsync()
     {
@@ -53,7 +71,9 @@ public partial class Join : ComponentBase
             return;
         }
 
-        Live.Publish(new LiveParticipant(name, company, DateTimeOffset.UtcNow));
+        var device = DeviceDetector.Classify(_userAgent);
+        var domain = email.Contains('@') ? email[(email.LastIndexOf('@') + 1)..].ToLowerInvariant() : null;
+        Live.Publish(new LiveParticipant(name, company, DateTimeOffset.UtcNow, device, domain));
 
         var emailed = true;
         try

@@ -33,6 +33,21 @@ public class LiveShowcaseStateTests
     }
 
     [Fact]
+    public void SessionParticipants_accumulates_all_uncapped_and_reset_clears()
+    {
+        var state = new LiveShowcaseState();
+        for (var i = 0; i < 12; i++) state.Publish(P($"P{i}"));
+
+        var session = state.SessionParticipants();
+        Assert.Equal(12, session.Count);            // not capped like Recent
+        Assert.Equal("P0", session[0].Name);        // oldest-first
+        Assert.Equal("P11", session[^1].Name);
+
+        state.Reset();
+        Assert.Empty(state.SessionParticipants());
+    }
+
+    [Fact]
     public void Reset_clears_state_and_raises_event()
     {
         var state = new LiveShowcaseState();
