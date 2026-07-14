@@ -1,0 +1,37 @@
+@using FellsideDigital.Web.Services
+
+<div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 p-5">
+    <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500 mb-4">@Title</p>
+
+    @if (Rows.Count == 0)
+    {
+        <p class="text-sm text-gray-400 dark:text-neutral-500">@EmptyLabel</p>
+    }
+    else
+    {
+        <div class="space-y-3">
+            @foreach (var row in Rows)
+            {
+                var pct = Total > 0 ? (int)Math.Round(row.Count * 100.0 / Total) : 0;
+                <div>
+                    <div class="flex items-center justify-between gap-3 mb-1">
+                        <span class="text-sm text-gray-700 dark:text-neutral-300 truncate" title="@row.Label">@row.Label</span>
+                        <span class="text-xs font-medium text-gray-400 dark:text-neutral-500 whitespace-nowrap tabular-nums">
+                            @row.Count · @pct%
+                        </span>
+                    </div>
+                    <div class="h-1.5 rounded-full bg-gray-100 dark:bg-white/5 overflow-hidden">
+                        <div class="h-full rounded-full bg-accent" style="width:@(pct)%"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public IReadOnlyList<CountRow> Rows { get; set; } = [];
+    [Parameter] public int Total { get; set; }
+    [Parameter] public string EmptyLabel { get; set; } = "No data yet";
+}

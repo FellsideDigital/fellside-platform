@@ -28,6 +28,7 @@ namespace FellsideDigital.Web.Data
         public DbSet<ProjectPipelineStep> ProjectPipelineSteps => Set<ProjectPipelineStep>();
         public DbSet<ProjectIntegration> ProjectIntegrations => Set<ProjectIntegration>();
         public DbSet<ClientTestimonial> ClientTestimonials => Set<ClientTestimonial>();
+        public DbSet<VisitorEvent> VisitorEvents => Set<VisitorEvent>();
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
@@ -71,6 +72,9 @@ namespace FellsideDigital.Web.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // Analytics reads are always time-ranged (WHERE OccurredAt >= since).
+            builder.Entity<VisitorEvent>(e => e.HasIndex(v => v.OccurredAt));
 
             var utcDateTimeConverter = new ValueConverter<DateTime, DateTime>(
                 v => NormalizeToUtc(v),

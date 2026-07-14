@@ -86,6 +86,7 @@ public static class StartupCompositionExtensions
         app.MapQrRedirects();
         app.MapLiveShowcase();
         app.MapScreenshotMedia();
+        app.MapVisitorAnalytics();
 
         app.MapStaticAssets();
 
