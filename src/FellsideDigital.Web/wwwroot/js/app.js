@@ -168,5 +168,12 @@ window.fellsideTheme = {
 
 window.fellsideTheme.init();
 
+/* Live showcase — expose the raw user-agent for server-side device classification */
+window.fellsideDevice = {
+    userAgent() {
+        return navigator.userAgent || '';
+    }
+};
+
 /* Glow cards — global listener, works on all pages */
 fellsideScroll.initGlowCards();

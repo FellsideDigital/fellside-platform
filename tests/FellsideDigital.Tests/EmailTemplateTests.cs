@@ -87,6 +87,10 @@ public class EmailTemplateTests
         {
             Name = "Ada", Email = "ada@example.com", Source = "shirt", Interest = "Both",
         })];
+        yield return [EmailTemplates.LiveAutomationWelcome(new QrLead
+        {
+            Name = "Ada", Email = "ada@example.com", Source = "live", Interest = "Automation",
+        })];
         yield return [EmailTemplates.DocumentAdded(Client(), Project(), "Contract.pdf", url)];
         yield return [EmailTemplates.InvoiceAdded(Client(), Project(), SampleInvoice(), url)];
         yield return [EmailTemplates.InvoiceUpdated(Client(), Project(), SampleInvoice(), url)];
@@ -186,5 +190,19 @@ public class EmailTemplateTests
         var html = EmailTemplates.DocumentAdded(client, Project(), "x", "https://x");
 
         Assert.Contains("Hi there", html);
+    }
+
+    [Fact]
+    public void LiveAutomationWelcome_is_branded_and_personalised()
+    {
+        var html = EmailTemplates.LiveAutomationWelcome(new QrLead
+        {
+            Source = "live", Name = "Sam", Email = "sam@acme.com", Interest = "Automation",
+        });
+
+        AssertNoBannedColours(html);
+        Assert.Contains("Sam", html);
+        Assert.Contains("15%", html);
+        Assert.Contains("cid:fellside-logo", html); // inline logo from EmailTheme.Layout
     }
 }

@@ -75,4 +75,20 @@ public class QrLeadServiceTests(PostgresFixture fx)
         Assert.True(stats.CardScans >= 1);
         Assert.True(stats.TotalLeads >= 1);
     }
+
+    [Fact]
+    public async Task Live_source_lead_persists_and_appears_in_leads_list()
+    {
+        await using var db = fx.CreateContext();
+        var sut = new QrLeadService(db);
+
+        var lead = await sut.CreateLeadAsync(new QrLead
+        {
+            Source = "live", Name = "Live Sam", Email = "sam@acme.com",
+            Company = "Acme", Interest = "Automation",
+        });
+
+        var all = await sut.GetLeadsAsync();
+        Assert.Contains(all, l => l.Id == lead.Id && l.Source == "live");
+    }
 }

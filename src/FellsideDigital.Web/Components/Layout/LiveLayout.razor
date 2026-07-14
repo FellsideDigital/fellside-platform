@@ -1,0 +1,11 @@
+@inherits LayoutComponentBase
+
+@* Chromeless layout for the live showcase: no navbar, no footer — the big
+   screen and the phone join page fill the whole viewport. *@
+<div class="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-white">
+    <ErrorBoundary>
+        <ChildContent>@Body</ChildContent>
+        <ErrorContent><ErrorFallback /></ErrorContent>
+    </ErrorBoundary>
+    <ToastHost />
+</div>

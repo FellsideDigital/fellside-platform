@@ -1,0 +1,42 @@
+@page "/live/join"
+@rendermode InteractiveServer
+@layout FellsideDigital.Web.Components.Layout.LiveLayout
+@using FellsideDigital.UI.Components.Forms
+
+<PageTitle>Trigger a live automation — Fellside Digital</PageTitle>
+
+<div class="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-white flex items-center justify-center px-6">
+    <div class="w-full max-w-sm">
+        @if (!_submitted)
+        {
+            <div class="text-center mb-8">
+                <div class="text-xl font-bold text-accent">Fellside Digital</div>
+                <h1 class="text-2xl font-bold mt-3">Trigger a live automation</h1>
+                <p class="text-slate-500 dark:text-neutral-400 mt-2">Enter your details, hit go, then look up at the screen.</p>
+            </div>
+
+            <div class="space-y-4">
+                <input @bind="_name" type="text" placeholder="Your name" class="@FieldStyles.MarketingInput" />
+                <input @bind="_email" type="email" placeholder="you@company.com" class="@FieldStyles.MarketingInput" />
+
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <p class="text-sm text-red-500 dark:text-red-400">@_error</p>
+                }
+
+                <button type="button" @onclick="SubmitAsync" disabled="@_saving"
+                        class="w-full rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-50">
+                    @(_saving ? "Triggering…" : "Trigger it →")
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <div class="text-6xl mb-4">⚡</div>
+                <h2 class="text-2xl font-bold">You're live!</h2>
+                <p class="text-slate-500 dark:text-neutral-400 mt-2">@_successMessage</p>
+            </div>
+        }
+    </div>
+</div>

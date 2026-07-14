@@ -1,0 +1,71 @@
+@page "/Admin/Analytics"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Services
+@using FellsideDigital.Web.Components.Layout
+@using FellsideDigital.UI.Layout
+
+<PageTitle>Visitor Analytics — Fellside Digital Admin</PageTitle>
+
+<PageHeader Eyebrow="Admin" Title="Visitor Analytics"
+            Description="Anonymous, consent-based insight into who visits the site and how they got here." />
+
+@if (_summary is null)
+{
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        @for (int i = 0; i < 4; i++)
+        {
+            <div class="animate-pulse h-20 rounded-xl bg-gray-100 dark:bg-white/5"></div>
+        }
+    </div>
+}
+else if (_summary.TotalVisits == 0)
+{
+    <EmptyState Padding="p-14"
+                IconContainerClass="size-12 rounded-2xl mb-4"
+                Title="No visits recorded yet"
+                Subtitle="Visits appear here once visitors accept the cookie banner on the public site.">
+        <Icon>
+            <svg class="size-6 text-gray-400 dark:text-neutral-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+            </svg>
+        </Icon>
+    </EmptyState>
+}
+else
+{
+    <!-- Headline stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 p-5">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Visits</p>
+            <p class="mt-1.5 text-3xl font-bold text-gray-900 dark:text-white">@_summary.TotalVisits</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 p-5">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Unique visitors</p>
+            <p class="mt-1.5 text-3xl font-bold text-gray-900 dark:text-white">@_summary.UniqueVisitors</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 p-5">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Avg. engagement</p>
+            <p class="mt-1.5 text-3xl font-bold text-gray-900 dark:text-white">@_summary.AvgEngagementSeconds<span class="text-lg font-medium text-gray-400">s</span></p>
+        </div>
+        <div class="rounded-xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 p-5">
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-neutral-500">Range</p>
+            <p class="mt-1.5 text-3xl font-bold text-gray-900 dark:text-white">@_summary.RangeDays<span class="text-lg font-medium text-gray-400">d</span></p>
+        </div>
+    </div>
+
+    <!-- Breakdown cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <BreakdownCard Title="Platforms" Rows="_summary.Platforms" Total="_summary.TotalVisits" />
+        <BreakdownCard Title="Browsers" Rows="_summary.Browsers" Total="_summary.TotalVisits" />
+        <BreakdownCard Title="Countries" Rows="_summary.Countries" Total="_summary.TotalVisits" />
+        <BreakdownCard Title="Top referrers" Rows="_summary.Referrers" Total="_summary.TotalVisits" />
+        <BreakdownCard Title="Campaigns (UTM)" Rows="_summary.Campaigns" Total="_summary.TotalVisits"
+                       EmptyLabel="No campaign-tagged visits yet" />
+        <div class="md:col-span-2">
+            <BreakdownCard Title="Top pages" Rows="_summary.TopPages" Total="_summary.TotalVisits" />
+        </div>
+    </div>
+}

@@ -178,6 +178,14 @@ internal static class EmailTemplates
         </td></tr>
         """;
 
+    public static string LiveAutomationWelcome(QrLead lead) => EmailTheme.Layout($"""
+        {H2($"Hi {lead.Name}, that was live. ⚡")}
+        {P("You just triggered a real automation from our talk — your details were captured, "
+           + "enriched and this email sent, in seconds. This is exactly the kind of thing we build for our clients.")}
+        {P("Interested in a project? Mention the live demo and get <strong>15% off</strong> your first piece of work with us.")}
+        <div style="margin:0 0 8px;">{EmailTheme.Button("https://fellsidedigital.co.uk/scan?from=live", "Claim your 15% off →")}</div>
+        """);
+
     // ── Portal activity notifications ───────────────────────────────────────
 
     public static string DocumentAdded(ApplicationUser client, ClientProject project, string documentTitle, string portalUrl) =>
