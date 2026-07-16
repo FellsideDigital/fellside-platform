@@ -180,12 +180,13 @@
                            Heading="Two practices, one partner."
                            Description="Premium websites and intelligent automation, both done properly." />
 
-            <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div id="practices-grid" class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                 <!-- Websites card — force-light pins --accent to indigo for all children -->
-                <div class="card card-cool group force-light
-                            rounded-2xl bg-white dark:bg-neutral-900
-                            ring-1 ring-slate-200 dark:ring-white/5">
+                <a href="/websites"
+                   class="card card-cool group force-light block
+                          rounded-2xl bg-white dark:bg-neutral-900
+                          ring-1 ring-slate-200 dark:ring-white/5">
                     <div class="p-8 sm:p-10 flex flex-col h-full">
                         <div class="flex size-11 items-center justify-center rounded-xl
                                     bg-accent/10 mb-6">
@@ -216,22 +217,22 @@
                                 </li>
                             }
                         </ul>
-                        <a href="/websites"
-                           class="inline-flex items-center gap-1.5 text-sm font-semibold
-                                  text-accent
-                                  group-hover:gap-3 transition-all duration-200">
+                        <span class="inline-flex items-center gap-1.5 text-sm font-semibold
+                                     text-accent
+                                     group-hover:gap-3 transition-all duration-200">
                             Explore website services
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </a>
+                        </span>
                     </div>
-                </div>
+                </a>
 
                 <!-- Automation card — force-dark pins --accent to orange for all children -->
-                <div class="card card-warm group force-dark
-                            rounded-2xl bg-white dark:bg-neutral-900
-                            ring-1 ring-slate-200 dark:ring-white/5">
+                <a href="/automation"
+                   class="card card-warm group force-dark block
+                          rounded-2xl bg-white dark:bg-neutral-900
+                          ring-1 ring-slate-200 dark:ring-white/5">
                     <div class="p-8 sm:p-10 flex flex-col h-full">
                         <div class="flex size-11 items-center justify-center rounded-xl
                                     bg-accent/10 mb-6">
@@ -262,17 +263,16 @@
                                 </li>
                             }
                         </ul>
-                        <a href="/automation"
-                           class="inline-flex items-center gap-1.5 text-sm font-semibold
-                                  text-accent
-                                  group-hover:gap-3 transition-all duration-200">
+                        <span class="inline-flex items-center gap-1.5 text-sm font-semibold
+                                     text-accent
+                                     group-hover:gap-3 transition-all duration-200">
                             Explore automation services
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                             </svg>
-                        </a>
+                        </span>
                     </div>
-                </div>
+                </a>
 
             </div>
         </div>

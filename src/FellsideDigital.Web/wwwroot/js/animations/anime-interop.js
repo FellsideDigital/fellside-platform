@@ -272,6 +272,24 @@ window.fellsideAnime = {
         });
     },
 
+    // 12b. ELASTIC POP (LOCKED), same as elasticPop but disables pointer-events on targets
+    //      until the animation completes — use for clickable cards that shouldn't be
+    //      activated mid-entrance.
+    elasticPopLocked(selector, options = {}) {
+        const els = document.querySelectorAll(selector);
+        els.forEach(el => { el.style.pointerEvents = 'none'; });
+        anime.set(selector, { opacity: 0, scale: 0 });
+        anime({
+            targets: selector,
+            scale: [0, 1],
+            opacity: [0, 1],
+            duration: options.duration ?? 900,
+            delay: anime.stagger(options.stagger ?? 80, { start: options.startDelay ?? 0 }),
+            easing: options.easing ?? 'spring(1, 80, 10, 0)',
+            complete: () => { els.forEach(el => { el.style.pointerEvents = ''; }); },
+        });
+    },
+
     // 13. SLIDE FROM RIGHT, element(s) enter from off-screen right
     slideFromRight(selector, options = {}) {
         anime.set(selector, { opacity: 0, translateX: options.distance ?? 60 });
@@ -436,6 +454,7 @@ window.fellsideAnime = {
     fadeUpOnScroll(selector, options = {}) { this.onVisible(selector, () => this.fadeUp(selector, options)); },
     zoomInOnScroll(selector, options = {}) { this.onVisible(selector, () => this.zoomIn(selector, options)); },
     elasticPopOnScroll(selector, options = {}) { this.onVisible(selector, () => this.elasticPop(selector, options)); },
+    elasticPopLockedOnScroll(selector, options = {}) { this.onVisible(selector, () => this.elasticPopLocked(selector, options)); },
     slideFromRightOnScroll(selector, options = {}) { this.onVisible(selector, () => this.slideFromRight(selector, options)); },
     slideFromLeftOnScroll(selector, options = {}) { this.onVisible(selector, () => this.slideFromLeft(selector, options)); },
     staggeredRevealOnScroll(selector, options = {}) { this.onVisible(selector, () => this.staggeredReveal(selector, options)); },

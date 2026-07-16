@@ -1,4 +1,4 @@
-<div class="card rounded-2xl p-6 space-y-5 cursor-pointer
+<div class="card rounded-2xl p-6 space-y-5
             bg-white dark:bg-neutral-900
             ring-1 ring-slate-200 dark:ring-white/5">
     <div class="flex gap-0.5 text-accent">
@@ -11,7 +11,21 @@
         }
     </div>
     <p class="text-sm leading-relaxed text-slate-600 dark:text-neutral-300">
-        "@Quote"
+        "@_displayedQuote"
+        @if (_isTruncated && !_expanded)
+        {
+            <button @onclick="() => _expanded = true"
+                    class="ml-1 font-medium text-accent hover:underline focus:outline-none">
+                Read more
+            </button>
+        }
+        @if (_expanded && _isTruncated)
+        {
+            <button @onclick="() => _expanded = false"
+                    class="ml-2 font-medium text-accent hover:underline focus:outline-none">
+                Show less
+            </button>
+        }
     </p>
     <div class="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/5">
         <div class="flex size-9 shrink-0 items-center justify-center rounded-full
@@ -30,9 +44,13 @@
     [Parameter] public string Quote { get; set; } = "";
     [Parameter] public string Name { get; set; } = "";
     [Parameter] public string Role { get; set; } = "";
-
-    /// <summary>Number of filled stars (1–5). Defaults to a full 5.</summary>
     [Parameter] public int Rating { get; set; } = 5;
+    [Parameter] public int MaxLength { get; set; } = 180;
 
+    private bool _expanded;
+    private bool _isTruncated => Quote.Length > MaxLength;
+    private string _displayedQuote => _isTruncated && !_expanded
+        ? Quote[..MaxLength].TrimEnd() + "..."
+        : Quote;
     private string _initial => Name.Length > 0 ? Name[0].ToString() : "?";
 }

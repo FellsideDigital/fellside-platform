@@ -45,7 +45,7 @@ public partial class Home : ComponentBase
 
         await JS.InvokeVoidAsync("fellsideAnime.flipInWordsOnScroll", "#services-heading",
             new { duration = 700, stagger = 120 });
-        await JS.InvokeVoidAsync("fellsideAnime.elasticPopOnScroll", "#services-grid > div",
+        await JS.InvokeVoidAsync("fellsideAnime.elasticPopLockedOnScroll", "#practices-grid > a",
             new { stagger = 100, startDelay = 50 });
 
         await JS.InvokeVoidAsync("fellsideAnime.fadeUp", "#about-heading",
