@@ -82,7 +82,7 @@ window.fellsideScroll = (() => {
 
     function initGlowCards() {
         document.addEventListener("mousemove", e => {
-            const card = e.target.closest(".card:not(.scroll-card)");
+            const card = e.target.closest(".card:not(.scroll-card):not(.no-card-fx)");
             if (!card) return;
             const rect = card.getBoundingClientRect();
             card.style.setProperty("--x", `${e.clientX - rect.left}px`);

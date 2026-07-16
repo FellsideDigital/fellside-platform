@@ -105,6 +105,16 @@ html, body {
     box-shadow: 0 0 0 3px rgba(81, 162, 255, 0.6);
 }
 
+/* Opt-out: suppress hover lift and cursor glow on plain display cards */
+.card.no-card-fx:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: transparent;
+}
+.card.no-card-fx::after {
+    display: none;
+}
+
 /* Disable scroll animation on mobile */
 @media (max-width: 768px) {
     .scroll-card {
