@@ -18,8 +18,8 @@ public partial class Quote : ComponentBase
     // ── Option lists (label + display price) ──────────────────────────────
     private static readonly (WebsiteType Type, string Label, string Price)[] WebsiteTypeOptions =
     [
-        (WebsiteType.Brochure, "A few pages about my business", "£495"),
-        (WebsiteType.Business, "Bookings, integrations, dynamic content", "£495"),
+        (WebsiteType.Brochure, "Simple online presence, just a few pages", "£295"),
+        (WebsiteType.Business, "Business site with SEO and contact form", "£495"),
         (WebsiteType.Advanced, "Custom system / web-app", "£1,750"),
     ];
 
