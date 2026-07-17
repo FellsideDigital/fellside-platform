@@ -52,7 +52,7 @@ public static class LocationData
                     "Yes. Fellside Digital is based in Keswick, Cumbria — not a national agency with a postcode. You deal directly with the developer building your site, and for Keswick projects we can meet face to face."),
                 new LocationFaq(
                     "How much does a website for a Keswick business cost?",
-                    "A simple starter website starts from £295, and a business site with SEO and contact form from £495. Sites with bookings or custom features are scoped individually — you always get a clear fixed price before work begins."),
+                    "A simple starter website starts from £350, and a business site with SEO and contact form from £495. Sites with bookings or custom features are scoped individually — you always get a clear fixed price before work begins."),
                 new LocationFaq(
                     "Can you help my guest house or holiday let take bookings online?",
                     "Yes. We build booking and availability systems with online payments and automated email confirmations, which is a common need for accommodation businesses across the Keswick and Borrowdale area."),
@@ -109,7 +109,7 @@ public static class LocationData
                     "Yes. As well as marketing sites we build full web applications — client portals, dashboards, booking and e-commerce systems — which suits Kendal's manufacturing and professional-services businesses that need software, not just a website."),
                 new LocationFaq(
                     "What does a Kendal website project cost?",
-                    "Starter websites begin from £295, and full business sites with SEO and contact forms from £495. Web applications and online stores are scoped individually — you always receive a fixed, no-obligation quote before any work starts."),
+                    "Starter websites begin from £350, and full business sites with SEO and contact forms from £495. Web applications and online stores are scoped individually — you always receive a fixed, no-obligation quote before any work starts."),
             }),
 
         new Location(
@@ -191,9 +191,9 @@ public static class LocationData
             ["priceSpecification"] = new Dictionary<string, object?>
             {
                 ["@type"] = "UnitPriceSpecification",
-                ["price"] = "295",
+                ["price"] = "350",
                 ["priceCurrency"] = "GBP",
-                ["minPrice"] = "295",
+                ["minPrice"] = "350",
             },
         },
     });

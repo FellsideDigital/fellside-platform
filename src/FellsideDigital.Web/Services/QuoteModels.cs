@@ -27,7 +27,7 @@ public static class QuotePricing
 
     public static decimal WebsiteBase(WebsiteType t) => t switch
     {
-        WebsiteType.Brochure => 295m,
+        WebsiteType.Brochure => 350m,
         WebsiteType.Business => 495m,
         WebsiteType.Advanced => 1750m,
         _ => 0m,

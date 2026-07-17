@@ -145,7 +145,7 @@ public static class HomeData
 
         new Faq(
             "How much does a project cost?",
-            "A simple starter website starts from £295, and a full business site with SEO and contact form from £495. Bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins."),
+            "A simple starter website starts from £350, and a full business site with SEO and contact form from £495. Bespoke systems are scoped individually. We always provide a clear, fixed quote before any work begins."),
 
         new Faq(
             "How long does a project take?",
