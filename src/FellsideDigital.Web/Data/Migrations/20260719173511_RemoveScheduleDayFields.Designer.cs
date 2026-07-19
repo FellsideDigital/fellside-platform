@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FellsideDigital.Web.Data.Migrations
 {
     [DbContext(typeof(FellsideDigitalDbContext))]
-    [Migration("20260719173314_AddRecurringInvoices")]
-    partial class AddRecurringInvoices
+    [Migration("20260719173511_RemoveScheduleDayFields")]
+    partial class RemoveScheduleDayFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
