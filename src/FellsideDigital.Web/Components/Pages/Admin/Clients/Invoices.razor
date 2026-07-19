@@ -6,7 +6,6 @@
 @using FellsideDigital.Domain.Extensions
 @using Microsoft.AspNetCore.Authorization
 @using FellsideDigital.Web.Components.Layout
-@using FellsideDigital.Web.Components.Shared
 @using Microsoft.AspNetCore.Components.Forms
 
 <PageTitle>Invoices — Fellside Digital Admin</PageTitle>
@@ -117,6 +116,129 @@ else
             </table>
             </div>
         }
+    </CardSection>
+
+    <!-- Recurring invoices -->
+    <CardSection Title="Recurring invoices" Class="mb-5">
+        @if (_schedules.Count > 0)
+        {
+            <div class="overflow-x-auto">
+            <table class="@TableStyles.Table">
+                <thead>
+                    <tr class="@TableStyles.HeadRow">
+                        <Th>Schedule</Th>
+                        <Th Class="hidden md:table-cell">Project</Th>
+                        <Th>Amount</Th>
+                        <Th Class="hidden sm:table-cell">Next issue</Th>
+                        <Th>Status</Th>
+                        <Th Right>Actions</Th>
+                    </tr>
+                </thead>
+                <tbody class="@TableStyles.Body">
+                    @foreach (var s in _schedules)
+                    {
+                        <tr class="@TableStyles.Row">
+                            <Td>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white">@s.Title</p>
+                                <p class="text-xs text-gray-500 dark:text-neutral-400">Issued on day @s.DayOfMonth · due @s.DueDays days later</p>
+                            </Td>
+                            <Td Class="hidden md:table-cell">
+                                <span class="text-sm text-gray-700 dark:text-neutral-300">@s.Project?.Name</span>
+                            </Td>
+                            <Td>
+                                <span class="text-sm text-gray-900 dark:text-white">@s.Currency @s.Amount.ToString("N2")<span class="text-xs text-gray-500 dark:text-neutral-400">/mo</span></span>
+                            </Td>
+                            <Td Class="hidden sm:table-cell">
+                                <span class="text-sm text-gray-700 dark:text-neutral-300">@(s.IsActive ? s.NextIssueDate.ToString("d MMM yyyy") : "—")</span>
+                            </Td>
+                            <Td>
+                                <StatusBadge CssClasses="@(s.IsActive ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400" : "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400")"
+                                             Dot="@(s.IsActive ? "bg-emerald-400" : "bg-gray-400")"
+                                             Label="@(s.IsActive ? "Active" : "Paused")" />
+                            </Td>
+                            <Td>
+                                <div class="flex items-center justify-end gap-3">
+                                    <button @onclick="() => OpenScheduleEdit(s)"
+                                            class="text-xs font-medium text-accent hover:underline transition-colors">
+                                        Edit
+                                    </button>
+                                    <button @onclick="() => ToggleScheduleAsync(s)"
+                                            class="text-xs font-medium text-gray-600 dark:text-neutral-300 hover:underline transition-colors">
+                                        @(s.IsActive ? "Pause" : "Resume")
+                                    </button>
+                                    <button @onclick="() => DeleteScheduleAsync(s.Id)"
+                                            class="text-xs font-medium text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors">
+                                        Delete
+                                    </button>
+                                </div>
+                            </Td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        }
+        <div class="px-6 py-5 @(_schedules.Count > 0 ? "border-t border-gray-100 dark:border-white/5" : "")">
+            <AlertBanner Message="@_recError" Variant="error" Class="mb-3" />
+            @if (_projects.Count == 0)
+            {
+                <p class="text-sm text-gray-400 dark:text-neutral-500">This client has no projects to attach a recurring invoice to.</p>
+            }
+            else
+            {
+                <p class="text-xs text-gray-500 dark:text-neutral-400 mb-3">
+                    An invoice is issued automatically each month on the chosen day, the client is emailed,
+                    and unpaid invoices get up to three friendly reminders.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Project *</label>
+                        <select @bind="_recProjectId" class="@InputClass">
+                            <option value="">— Select project —</option>
+                            @foreach (var p in _projects)
+                            {
+                                <option value="@p.Id">@p.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Title *</label>
+                        <input @bind="_recTitle" placeholder="e.g. Monthly retainer" class="@InputClass" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Amount *</label>
+                        <input @bind="_recAmount" type="number" step="0.01" min="0" placeholder="0.00" class="@InputClass" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Currency</label>
+                        <select @bind="_recCurrency" class="@InputClass">
+                            <option value="GBP">GBP £</option>
+                            <option value="USD">USD $</option>
+                            <option value="EUR">EUR €</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Issue day (1–31)</label>
+                        <input @bind="_recDayOfMonth" type="number" min="1" max="31" class="@InputClass" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Days until due</label>
+                        <input @bind="_recDueDays" type="number" min="0" max="90" class="@InputClass" />
+                    </div>
+                    <div class="sm:col-span-4 flex justify-end">
+                        <SpinnerButton IsLoading="@_recSaving"
+                                       LoadingText="Saving…"
+                                       Disabled="@(string.IsNullOrWhiteSpace(_recProjectId) || string.IsNullOrWhiteSpace(_recTitle))"
+                                       OnClick="AddScheduleAsync">
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                            <span>Add recurring invoice</span>
+                        </SpinnerButton>
+                    </div>
+                </div>
+            }
+        </div>
     </CardSection>
 
     <!-- Add invoice -->
@@ -256,6 +378,69 @@ else
                            LoadingText="Saving…"
                            Disabled="@string.IsNullOrWhiteSpace(_editTitle)"
                            OnClick="SaveEditAsync">
+                <span>Save changes</span>
+            </SpinnerButton>
+        </div>
+    }
+</Modal>
+
+<Modal IsOpen="@(_editingSchedule is not null)" MaxWidth="max-w-lg" OnBackdropClick="CloseScheduleEdit">
+    @if (_editingSchedule is not null)
+    {
+        <div class="flex items-start justify-between mb-4">
+            <div>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">Edit recurring invoice</h3>
+                <p class="text-xs text-gray-500 dark:text-neutral-400">@_editingSchedule.Project?.Name</p>
+            </div>
+            <button @onclick="CloseScheduleEdit" class="text-gray-400 hover:text-gray-600 dark:hover:text-neutral-200 transition-colors">
+                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <AlertBanner Message="@_editScheduleError" Variant="error" Class="mb-3" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Title *</label>
+                <input @bind="_editScheduleTitle" placeholder="e.g. Monthly retainer" class="@InputClass" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Amount *</label>
+                <input @bind="_editScheduleAmount" type="number" step="0.01" min="0" placeholder="0.00" class="@InputClass" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Currency</label>
+                <select @bind="_editScheduleCurrency" class="@InputClass">
+                    <option value="GBP">GBP £</option>
+                    <option value="USD">USD $</option>
+                    <option value="EUR">EUR €</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Issue day (1–31)</label>
+                <input @bind="_editScheduleDayOfMonth" type="number" min="1" max="31" class="@InputClass" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Days until due</label>
+                <input @bind="_editScheduleDueDays" type="number" min="0" max="90" class="@InputClass" />
+            </div>
+        </div>
+
+        <p class="mt-3 text-xs text-gray-400 dark:text-neutral-500">
+            Changes apply from the next invoice — invoices already issued are not affected.
+        </p>
+
+        <div class="mt-5 flex justify-end gap-2">
+            <button @onclick="CloseScheduleEdit"
+                    class="px-4 py-2 text-xs font-medium text-gray-600 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                Cancel
+            </button>
+            <SpinnerButton IsLoading="@_savingSchedule"
+                           LoadingText="Saving…"
+                           Disabled="@string.IsNullOrWhiteSpace(_editScheduleTitle)"
+                           OnClick="SaveScheduleEditAsync">
                 <span>Save changes</span>
             </SpinnerButton>
         </div>

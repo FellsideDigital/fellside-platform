@@ -18,6 +18,9 @@ public static class StartupCompositionExtensions
         services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
+        // Absolute-URL base for links built outside a request (background emails).
+        services.Configure<Models.SiteSettings>(configuration.GetSection("Site"));
+
         services
             .ConfigureDatabase(configuration)
             .ConfigureAuthentication()

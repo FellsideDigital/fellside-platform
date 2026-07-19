@@ -101,6 +101,9 @@ public static class ServiceConfigurationExtensions
         services.AddScoped<IProjectTimelineService, ProjectTimelineService>();
         services.AddScoped<IProjectNoteService, ProjectNoteService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IRecurringInvoiceService, RecurringInvoiceService>();
+        services.AddScoped<IInvoiceReminderService, InvoiceReminderService>();
+        services.AddHostedService<InvoiceAutomationWorker>();
         services.AddScoped<IProjectDocumentService, ProjectDocumentService>();
         services.AddScoped<IHeroProjectService, HeroProjectService>();
         services.AddScoped<ITestimonialService, TestimonialService>();

@@ -1,3 +1,4 @@
+using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services.Email;
 using Microsoft.AspNetCore.Identity;
@@ -108,6 +109,18 @@ public class EmailService : IEmailService
             client.Email!,
             $"Invoice update for your {project.Name} project",
             EmailTemplates.InvoiceStatusChanged(client, project, invoice, portalUrl),
+            bccAdmin: true);
+
+    public Task SendInvoiceReminderAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl, InvoiceReminderKind kind) =>
+        SendAsync(
+            client.Email!,
+            kind switch
+            {
+                InvoiceReminderKind.Upcoming => $"Reminder: invoice due soon for your {project.Name} project",
+                InvoiceReminderKind.Overdue  => $"Invoice overdue for your {project.Name} project",
+                _                            => $"Final reminder: invoice outstanding for your {project.Name} project",
+            },
+            EmailTemplates.InvoiceReminder(client, project, invoice, portalUrl, kind),
             bccAdmin: true);
 
     public Task SendTestimonialRequestAsync(ApplicationUser client, ClientProject project, string testimonialUrl) =>

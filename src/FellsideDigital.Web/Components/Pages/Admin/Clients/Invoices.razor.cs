@@ -14,6 +14,7 @@ public partial class Invoices : ComponentBase
     [SupplyParameterFromQuery] public Guid? From { get; set; }
 
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
+    [Inject] private IRecurringInvoiceService RecurringService { get; set; } = default!;
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private ILogger<Invoices> Logger { get; set; } = default!;
@@ -34,6 +35,27 @@ public partial class Invoices : ComponentBase
     private IBrowserFile? _selectedFile;
     private bool _uploading;
     private string? _error;
+
+    // Recurring schedules
+    private List<RecurringInvoiceSchedule> _schedules = [];
+    private string _recProjectId = "";
+    private string _recTitle = "";
+    private decimal _recAmount;
+    private string _recCurrency = "GBP";
+    private int _recDayOfMonth = 1;
+    private int _recDueDays = 14;
+    private bool _recSaving;
+    private string? _recError;
+
+    // Edit-schedule modal
+    private RecurringInvoiceSchedule? _editingSchedule;
+    private string _editScheduleTitle = "";
+    private decimal _editScheduleAmount;
+    private string _editScheduleCurrency = "GBP";
+    private int _editScheduleDayOfMonth = 1;
+    private int _editScheduleDueDays = 14;
+    private bool _savingSchedule;
+    private string? _editScheduleError;
 
     // Edit-invoice modal
     private Invoice? _editing;
@@ -83,6 +105,7 @@ public partial class Invoices : ComponentBase
         _client = await UserManager.FindByIdAsync(ClientId);
         _projects = await ProjectService.GetForClientAsync(ClientId);
         _invoices = await InvoiceService.GetForClientAsync(ClientId);
+        _schedules = await RecurringService.GetForClientAsync(ClientId);
 
         _downloadUrls.Clear();
         foreach (var inv in _invoices.Where(i => i.FilePath is not null))
@@ -180,6 +203,109 @@ public partial class Invoices : ComponentBase
         catch (Exception ex)
         {
             Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "updating the invoice status"));
+        }
+    }
+
+    private async Task AddScheduleAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_recTitle)) return;
+        if (!Guid.TryParse(_recProjectId, out var projectId)) { _recError = "Select a project."; return; }
+
+        _recSaving = true;
+        _recError = null;
+        try
+        {
+            await RecurringService.CreateAsync(projectId, _recTitle.Trim(), null, _recAmount,
+                _recCurrency, _recDayOfMonth, _recDueDays);
+            _recProjectId = "";
+            _recTitle = "";
+            _recAmount = 0;
+            _recDayOfMonth = 1;
+            _recDueDays = 14;
+            await LoadAsync();
+            Toasts.Success("Recurring invoice scheduled.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _recError = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _recError = ErrorHandling.LogAndDescribe(Logger, ex, "creating the recurring invoice");
+        }
+        finally
+        {
+            _recSaving = false;
+        }
+    }
+
+    private void OpenScheduleEdit(RecurringInvoiceSchedule schedule)
+    {
+        _editingSchedule       = schedule;
+        _editScheduleTitle     = schedule.Title;
+        _editScheduleAmount    = schedule.Amount;
+        _editScheduleCurrency  = schedule.Currency;
+        _editScheduleDayOfMonth = schedule.DayOfMonth;
+        _editScheduleDueDays   = schedule.DueDays;
+        _editScheduleError     = null;
+    }
+
+    private void CloseScheduleEdit() => _editingSchedule = null;
+
+    private async Task SaveScheduleEditAsync()
+    {
+        if (_editingSchedule is null || string.IsNullOrWhiteSpace(_editScheduleTitle)) return;
+
+        _savingSchedule = true;
+        _editScheduleError = null;
+        try
+        {
+            await RecurringService.UpdateAsync(_editingSchedule.Id, _editScheduleTitle.Trim(),
+                _editingSchedule.Description, _editScheduleAmount, _editScheduleCurrency,
+                _editScheduleDayOfMonth, _editScheduleDueDays);
+            _editingSchedule = null;
+            await LoadAsync();
+            Toasts.Success("Recurring invoice updated.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _editScheduleError = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _editScheduleError = ErrorHandling.LogAndDescribe(Logger, ex, "updating the recurring invoice");
+        }
+        finally
+        {
+            _savingSchedule = false;
+        }
+    }
+
+    private async Task ToggleScheduleAsync(RecurringInvoiceSchedule schedule)
+    {
+        try
+        {
+            await RecurringService.SetActiveAsync(schedule.Id, !schedule.IsActive);
+            await LoadAsync();
+            Toasts.Success(schedule.IsActive ? "Recurring invoice paused." : "Recurring invoice resumed.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "updating the recurring invoice"));
+        }
+    }
+
+    private async Task DeleteScheduleAsync(Guid scheduleId)
+    {
+        try
+        {
+            await RecurringService.DeleteAsync(scheduleId);
+            await LoadAsync();
+            Toasts.Success("Recurring invoice deleted. Invoices already issued are kept.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "deleting the recurring invoice"));
         }
     }
 

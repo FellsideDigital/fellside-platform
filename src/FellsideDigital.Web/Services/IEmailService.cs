@@ -1,3 +1,4 @@
+using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using Microsoft.AspNetCore.Identity;
 
@@ -21,5 +22,6 @@ public interface IEmailService : IEmailSender<ApplicationUser>
     Task SendInvoiceAddedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl);
     Task SendInvoiceUpdatedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl);
     Task SendInvoiceStatusChangedAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl);
+    Task SendInvoiceReminderAsync(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl, InvoiceReminderKind kind);
     Task SendTestimonialRequestAsync(ApplicationUser client, ClientProject project, string testimonialUrl);
 }

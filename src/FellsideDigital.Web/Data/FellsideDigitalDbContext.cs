@@ -28,6 +28,7 @@ namespace FellsideDigital.Web.Data
         public DbSet<ProjectPipelineStep> ProjectPipelineSteps => Set<ProjectPipelineStep>();
         public DbSet<ProjectIntegration> ProjectIntegrations => Set<ProjectIntegration>();
         public DbSet<ClientTestimonial> ClientTestimonials => Set<ClientTestimonial>();
+        public DbSet<RecurringInvoiceSchedule> RecurringInvoiceSchedules => Set<RecurringInvoiceSchedule>();
         public DbSet<VisitorEvent> VisitorEvents => Set<VisitorEvent>();
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -162,6 +163,29 @@ namespace FellsideDigital.Web.Data
 
                 e.Property(i => i.Amount)
                     .HasColumnType("decimal(18,2)");
+
+                e.HasOne(i => i.Schedule)
+                    .WithMany()
+                    .HasForeignKey(i => i.ScheduleId)
+                    .IsRequired(false)
+                    .OnDelete(DeleteBehavior.SetNull);
+
+                // The reminder worker scans by status + due date daily.
+                e.HasIndex(i => new { i.Status, i.DueAt });
+            });
+
+            builder.Entity<RecurringInvoiceSchedule>(e =>
+            {
+                e.HasOne(s => s.Project)
+                    .WithMany()
+                    .HasForeignKey(s => s.ProjectId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.Property(s => s.Amount)
+                    .HasColumnType("decimal(18,2)");
+
+                // The generation worker scans for active schedules that are due.
+                e.HasIndex(s => new { s.IsActive, s.NextIssueDate });
             });
 
             builder.Entity<ProjectNote>(e =>

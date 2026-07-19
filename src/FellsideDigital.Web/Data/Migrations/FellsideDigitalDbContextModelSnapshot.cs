@@ -384,10 +384,19 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.Property<DateTime>("IssuedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("LastReminderAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime?>("PaidAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ReminderStage")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("ScheduleId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Status")
@@ -400,6 +409,10 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("ScheduleId");
+
+                    b.HasIndex("Status", "DueAt");
 
                     b.ToTable("Invoices");
                 });
@@ -763,6 +776,56 @@ namespace FellsideDigital.Web.Data.Migrations
                     b.ToTable("QrScans");
                 });
 
+            modelBuilder.Entity("FellsideDigital.Web.Data.RecurringInvoiceSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DayOfMonth")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DueDays")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastIssuedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("NextIssueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("IsActive", "NextIssueDate");
+
+                    b.ToTable("RecurringInvoiceSchedules");
+                });
+
             modelBuilder.Entity("FellsideDigital.Web.Data.VisitorEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1052,7 +1115,14 @@ namespace FellsideDigital.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FellsideDigital.Web.Data.RecurringInvoiceSchedule", "Schedule")
+                        .WithMany()
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Project");
+
+                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("FellsideDigital.Web.Data.ProjectDocument", b =>
@@ -1180,6 +1250,17 @@ namespace FellsideDigital.Web.Data.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("QrScan");
+                });
+
+            modelBuilder.Entity("FellsideDigital.Web.Data.RecurringInvoiceSchedule", b =>
+                {
+                    b.HasOne("FellsideDigital.Web.Data.ClientProject", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

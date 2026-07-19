@@ -241,6 +241,27 @@ internal static class EmailTemplates
             """);
     }
 
+    public static string InvoiceReminder(ApplicationUser client, ClientProject project, Invoice invoice, string portalUrl, InvoiceReminderKind kind)
+    {
+        var (heading, intro) = kind switch
+        {
+            InvoiceReminderKind.Upcoming => ("A friendly reminder — invoice due soon",
+                $"just a quick note that the invoice below for your <strong>{project.Name}</strong> project is due"
+                + (invoice.DueAt is { } d ? $" on <strong>{d:d MMMM yyyy}</strong>." : " soon.")),
+            InvoiceReminderKind.Overdue => ("An invoice is now overdue",
+                $"the invoice below for your <strong>{project.Name}</strong> project has passed its due date. If you've already made payment, please ignore this — otherwise we'd appreciate it being settled soon."),
+            _ => ("Final reminder — invoice outstanding",
+                $"this is a final automated reminder that the invoice below for your <strong>{project.Name}</strong> project remains outstanding. If anything is unclear or you'd like to discuss it, just reply to this email."),
+        };
+
+        return EmailTheme.Layout($"""
+            {H2(heading)}
+            {P($"{Greeting(client.FirstName)} {intro}")}
+            {EmailTheme.InfoTable(InvoiceRows(project, invoice))}
+            <div style="margin:0 0 4px;">{EmailTheme.Button(portalUrl, "View invoice →")}</div>
+            """);
+    }
+
     private static List<(string, string)> InvoiceRows(ClientProject project, Invoice invoice)
     {
         var rows = new List<(string, string)>
