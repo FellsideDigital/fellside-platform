@@ -21,6 +21,9 @@ public static class StartupCompositionExtensions
         // Absolute-URL base for links built outside a request (background emails).
         services.Configure<Models.SiteSettings>(configuration.GetSection("Site"));
 
+        // The one payment-collection day shared by all customers' recurring invoices.
+        services.Configure<Models.BillingSettings>(configuration.GetSection("Billing"));
+
         services
             .ConfigureDatabase(configuration)
             .ConfigureAuthentication()

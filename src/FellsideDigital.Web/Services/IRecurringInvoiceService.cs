@@ -6,11 +6,10 @@ public interface IRecurringInvoiceService
 {
     Task<RecurringInvoiceSchedule> CreateAsync(
         Guid projectId, string title, string? description, decimal amount, string currency,
-        int dayOfMonth, int dueDays, string? actorId = null);
+        string? actorId = null);
 
     Task<RecurringInvoiceSchedule> UpdateAsync(
-        Guid id, string title, string? description, decimal amount, string currency,
-        int dayOfMonth, int dueDays);
+        Guid id, string title, string? description, decimal amount, string currency);
 
     Task SetActiveAsync(Guid id, bool isActive);
     Task DeleteAsync(Guid id);
@@ -18,8 +17,10 @@ public interface IRecurringInvoiceService
 
     /// <summary>
     /// Issues an invoice for every active schedule whose <c>NextIssueDate</c> has been
-    /// reached, advancing each schedule one month per invoice. Idempotent — re-running
-    /// on the same day generates nothing further. Returns the number issued.
+    /// reached, advancing each schedule one month per invoice. Generated invoices are
+    /// issued and due on the global payment day (<c>Billing:PaymentDayOfMonth</c>).
+    /// Idempotent — re-running on the same day generates nothing further. Returns the
+    /// number issued.
     /// </summary>
     Task<int> GenerateDueInvoicesAsync(DateTime utcNow);
 }

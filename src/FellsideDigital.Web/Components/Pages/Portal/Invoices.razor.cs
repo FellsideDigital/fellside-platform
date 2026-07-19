@@ -1,19 +1,29 @@
 using FellsideDigital.Web.Data;
+using FellsideDigital.Web.Models;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace FellsideDigital.Web.Components.Pages.Portal;
 
 public partial class Invoices : ComponentBase
 {
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
+    [Inject] private IRecurringInvoiceService RecurringService { get; set; } = default!;
+    [Inject] private IOptions<BillingSettings> BillingOptions { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
 
     private List<Invoice>? _invoices;
+    private List<RecurringInvoiceSchedule> _schedules = [];
+
+    private int _paymentDay => BillingOptions.Value.PaymentDayOfMonth;
+
+    /// <summary>The client's combined recurring bill each month (active schedules only).</summary>
+    private decimal _monthlyTotal => _schedules.Sum(s => s.Amount);
 
     protected override async Task OnInitializedAsync()
     {
@@ -22,5 +32,8 @@ public partial class Invoices : ComponentBase
         if (user is null) return;
         var clientId = PreviewState.ResolveClientId(user.Id, authState.User.IsInRole("SiteAdmin"));
         _invoices = await InvoiceService.GetForClientAsync(clientId);
+        _schedules = (await RecurringService.GetForClientAsync(clientId))
+            .Where(s => s.IsActive)
+            .ToList();
     }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FellsideDigital.Web.Data.Migrations
 {
     [DbContext(typeof(FellsideDigitalDbContext))]
-    [Migration("20260719170841_AddRecurringInvoices")]
+    [Migration("20260719173314_AddRecurringInvoices")]
     partial class AddRecurringInvoices
     {
         /// <inheritdoc />
@@ -795,14 +795,8 @@ namespace FellsideDigital.Web.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("DayOfMonth")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<int>("DueDays")
-                        .HasColumnType("integer");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");

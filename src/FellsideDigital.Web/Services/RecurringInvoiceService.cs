@@ -11,13 +11,16 @@ public class RecurringInvoiceService(
     IProjectTimelineService timeline,
     IEmailService email,
     IOptions<SiteSettings> siteOptions,
+    IOptions<BillingSettings> billingOptions,
     ILogger<RecurringInvoiceService> logger) : IRecurringInvoiceService
 {
+    private int PaymentDay => billingOptions.Value.PaymentDayOfMonth;
+
     public async Task<RecurringInvoiceSchedule> CreateAsync(
         Guid projectId, string title, string? description, decimal amount, string currency,
-        int dayOfMonth, int dueDays, string? actorId = null)
+        string? actorId = null)
     {
-        Validate(title, amount, dayOfMonth, dueDays);
+        Validate(title, amount);
 
         var schedule = new RecurringInvoiceSchedule
         {
@@ -27,10 +30,8 @@ public class RecurringInvoiceService(
             Description   = description,
             Amount        = amount,
             Currency      = currency,
-            DayOfMonth    = dayOfMonth,
-            DueDays       = dueDays,
             IsActive      = true,
-            NextIssueDate = FirstIssueDate(DateTime.UtcNow, dayOfMonth),
+            NextIssueDate = FirstIssueDate(DateTime.UtcNow, PaymentDay),
             CreatedAt     = DateTime.UtcNow,
         };
 
@@ -46,25 +47,17 @@ public class RecurringInvoiceService(
     }
 
     public async Task<RecurringInvoiceSchedule> UpdateAsync(
-        Guid id, string title, string? description, decimal amount, string currency,
-        int dayOfMonth, int dueDays)
+        Guid id, string title, string? description, decimal amount, string currency)
     {
-        Validate(title, amount, dayOfMonth, dueDays);
+        Validate(title, amount);
 
         var schedule = await db.RecurringInvoiceSchedules.FindAsync(id)
             ?? throw new InvalidOperationException("That recurring invoice no longer exists.");
-
-        // If the issue day changed, re-anchor the next issue to the new day so the
-        // change takes effect from the upcoming cycle rather than the one after.
-        if (schedule.DayOfMonth != dayOfMonth)
-            schedule.NextIssueDate = FirstIssueDate(DateTime.UtcNow, dayOfMonth);
 
         schedule.Title       = title;
         schedule.Description = description;
         schedule.Amount      = amount;
         schedule.Currency    = currency;
-        schedule.DayOfMonth  = dayOfMonth;
-        schedule.DueDays     = dueDays;
 
         await db.SaveChangesAsync();
         return schedule;
@@ -79,7 +72,7 @@ public class RecurringInvoiceService(
 
         // Re-anchor on resume so a long pause doesn't back-issue months of invoices.
         if (isActive)
-            schedule.NextIssueDate = FirstIssueDate(DateTime.UtcNow, schedule.DayOfMonth);
+            schedule.NextIssueDate = FirstIssueDate(DateTime.UtcNow, PaymentDay);
 
         await db.SaveChangesAsync();
     }
@@ -128,12 +121,17 @@ public class RecurringInvoiceService(
                     Currency    = schedule.Currency,
                     IssuedAt    = utcNow,
                     CreatedAt   = utcNow,
-                    DueAt       = DateTime.SpecifyKind(period.Date.AddDays(schedule.DueDays), DateTimeKind.Utc),
-                    Status      = InvoiceStatus.Sent,
+                    // Payment is collected on the issue day itself, so the invoice is
+                    // due the day it appears. The issue email is the client's notice —
+                    // start past the "due soon" reminder stage so the same worker run
+                    // doesn't immediately send a second email.
+                    DueAt         = DateTime.SpecifyKind(period.Date, DateTimeKind.Utc),
+                    Status        = InvoiceStatus.Sent,
+                    ReminderStage = (int)InvoiceReminderKind.Upcoming,
                 };
 
                 db.Invoices.Add(invoice);
-                schedule.NextIssueDate = NextMonthlyDate(period, schedule.DayOfMonth);
+                schedule.NextIssueDate = NextMonthlyDate(period, PaymentDay);
                 schedule.LastIssuedAt  = utcNow;
 
                 // Persist before emailing so a failed send can't cause a duplicate
@@ -168,16 +166,12 @@ public class RecurringInvoiceService(
         }
     }
 
-    private static void Validate(string title, decimal amount, int dayOfMonth, int dueDays)
+    private static void Validate(string title, decimal amount)
     {
         if (string.IsNullOrWhiteSpace(title))
             throw new InvalidOperationException("Give the recurring invoice a title.");
         if (amount <= 0)
             throw new InvalidOperationException("The amount must be greater than zero.");
-        if (dayOfMonth is < 1 or > 31)
-            throw new InvalidOperationException("The issue day must be between 1 and 31.");
-        if (dueDays is < 0 or > 90)
-            throw new InvalidOperationException("Days until due must be between 0 and 90.");
     }
 
     /// <summary>The first occurrence of <paramref name="dayOfMonth"/> on or after today (UTC).</summary>
@@ -188,7 +182,7 @@ public class RecurringInvoiceService(
         return thisMonth >= today ? thisMonth : NextMonthlyDate(thisMonth, dayOfMonth);
     }
 
-    /// <summary>The schedule's day in the month after <paramref name="from"/>, clamped to shorter months.</summary>
+    /// <summary>The payment day in the month after <paramref name="from"/>, clamped to shorter months.</summary>
     internal static DateTime NextMonthlyDate(DateTime from, int dayOfMonth)
     {
         var firstOfNext = new DateTime(from.Year, from.Month, 1, 0, 0, 0, DateTimeKind.Utc).AddMonths(1);

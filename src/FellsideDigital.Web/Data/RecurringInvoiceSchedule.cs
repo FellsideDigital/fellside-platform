@@ -14,15 +14,13 @@ public class RecurringInvoiceSchedule
     public decimal Amount { get; set; }
     public string Currency { get; set; } = "GBP";
 
-    /// <summary>Preferred issue day (1–31); clamped to the last day of shorter months.</summary>
-    public int DayOfMonth { get; set; } = 1;
-
-    /// <summary>Days after issue that the generated invoice falls due.</summary>
-    public int DueDays { get; set; } = 14;
-
     public bool IsActive { get; set; } = true;
 
-    /// <summary>UTC date the next invoice should be issued on (time component ignored).</summary>
+    /// <summary>
+    /// UTC date the next invoice is issued and payment is collected (time component
+    /// ignored). Always falls on the global <c>Billing:PaymentDayOfMonth</c> — the
+    /// same day for every customer.
+    /// </summary>
     public DateTime NextIssueDate { get; set; }
 
     public DateTime? LastIssuedAt { get; set; }

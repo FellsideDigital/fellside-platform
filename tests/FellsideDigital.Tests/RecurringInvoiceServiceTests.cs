@@ -12,12 +12,15 @@ namespace FellsideDigital.Tests;
 [Collection(PostgresCollection.Name)]
 public class RecurringInvoiceServiceTests(PostgresFixture fx)
 {
+    private const int PaymentDay = 1;
+
     private static (RecurringInvoiceService Sut, FakeEmailService Email) MakeSut(FellsideDigitalDbContext db)
     {
         var email = new FakeEmailService();
         var sut = new RecurringInvoiceService(
             db, new ProjectTimelineService(db), email,
             Options.Create(new SiteSettings()),
+            Options.Create(new BillingSettings { PaymentDayOfMonth = PaymentDay }),
             NullLogger<RecurringInvoiceService>.Instance);
         return (sut, email);
     }
@@ -46,13 +49,26 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
     }
 
     [Fact]
-    public async Task Generate_IssuesInvoice_AdvancesSchedule_AndEmailsClient()
+    public async Task Create_AnchorsNextIssue_ToGlobalPaymentDay()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP");
+
+        Assert.Equal(PaymentDay, schedule.NextIssueDate.Day);
+        Assert.True(schedule.NextIssueDate.Date >= DateTime.UtcNow.Date);
+    }
+
+    [Fact]
+    public async Task Generate_IssuesInvoice_DueOnCollectionDay_AdvancesSchedule_AndEmailsClient()
     {
         await using var db = fx.CreateContext();
         var projectId = await SeedProjectAsync(db);
         var (sut, email) = MakeSut(db);
 
-        var schedule = await sut.CreateAsync(projectId, "Hosting retainer", "Monthly hosting", 99.50m, "GBP", dayOfMonth: 15, dueDays: 14);
+        var schedule = await sut.CreateAsync(projectId, "Hosting retainer", "Monthly hosting", 99.50m, "GBP");
         var period = schedule.NextIssueDate;
         var runAt = period.AddHours(9);
 
@@ -63,11 +79,16 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         Assert.Equal($"Hosting retainer — {period:MMMM yyyy}", invoice.Title);
         Assert.Equal(99.50m, invoice.Amount);
         Assert.Equal(InvoiceStatus.Sent, invoice.Status);
-        Assert.Equal(invoice.IssuedAt.Date.AddDays(14), invoice.DueAt!.Value.Date);
+
+        // Payment is collected on the issue day — due date is the same day, and the
+        // issue email doubles as the "due soon" notice (no extra reminder email).
+        Assert.Equal(period.Date, invoice.DueAt!.Value.Date);
+        Assert.Equal((int)InvoiceReminderKind.Upcoming, invoice.ReminderStage);
         Assert.Contains(invoice.Id, email.InvoiceAdded);
 
         var updated = await db.RecurringInvoiceSchedules.SingleAsync(s => s.Id == schedule.Id);
         Assert.True(updated.NextIssueDate.Date > runAt.Date);
+        Assert.Equal(PaymentDay, updated.NextIssueDate.Day);
         Assert.NotNull(updated.LastIssuedAt);
     }
 
@@ -78,7 +99,7 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var projectId = await SeedProjectAsync(db);
         var (sut, _) = MakeSut(db);
 
-        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 200m, "GBP", 1, 14);
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 200m, "GBP");
         var runAt = schedule.NextIssueDate.AddHours(9);
 
         Assert.Equal(1, await sut.GenerateDueInvoicesAsync(runAt));
@@ -93,7 +114,7 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var projectId = await SeedProjectAsync(db);
         var (sut, _) = MakeSut(db);
 
-        var schedule = await sut.CreateAsync(projectId, "Paused retainer", null, 50m, "GBP", 1, 7);
+        var schedule = await sut.CreateAsync(projectId, "Paused retainer", null, 50m, "GBP");
         await sut.SetActiveAsync(schedule.Id, false);
 
         Assert.Equal(0, await sut.GenerateDueInvoicesAsync(schedule.NextIssueDate.AddDays(1)));
@@ -106,7 +127,7 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var projectId = await SeedProjectAsync(db);
         var (sut, _) = MakeSut(db);
 
-        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", 1, 14);
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP");
 
         // Two months and a bit of "downtime" after the first issue date.
         var issued = await sut.GenerateDueInvoicesAsync(schedule.NextIssueDate.AddMonths(2).AddDays(3));
@@ -122,7 +143,7 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var projectId = await SeedProjectAsync(db, withClient: false);
         var (sut, email) = MakeSut(db);
 
-        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 75m, "GBP", 1, 14);
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 75m, "GBP");
         var issued = await sut.GenerateDueInvoicesAsync(schedule.NextIssueDate.AddHours(9));
 
         Assert.Equal(1, issued);
@@ -136,9 +157,7 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var projectId = await SeedProjectAsync(db);
         var (sut, _) = MakeSut(db);
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "", null, 10m, "GBP", 1, 14));
-        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "T", null, 0m, "GBP", 1, 14));
-        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "T", null, 10m, "GBP", 32, 14));
-        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "T", null, 10m, "GBP", 1, 91));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "", null, 10m, "GBP"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "T", null, 0m, "GBP"));
     }
 }

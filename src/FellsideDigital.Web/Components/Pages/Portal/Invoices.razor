@@ -32,7 +32,7 @@
         <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-64"></div>
     </div>
 }
-else if (!_invoices.Any())
+else if (!_invoices.Any() && _schedules.Count == 0)
 {
     <EmptyState Padding="p-14"
                 IconContainerClass="size-12 rounded-2xl mb-4"
@@ -48,7 +48,19 @@ else if (!_invoices.Any())
 else
 {
     <!-- Stats row -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <StatCard Label="Monthly billing"
+                  ValueSize="text-2xl"
+                  IconBg="bg-sky-50 dark:bg-sky-400/10"
+                  Value="@($"£{_monthlyTotal:N2}")"
+                  Subtext="@($"Collected on day {_paymentDay} each month")">
+            <Icon>
+                <svg class="size-4 text-sky-500 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+            </Icon>
+        </StatCard>
 
         <StatCard Label="Outstanding"
                   ValueSize="text-2xl"
@@ -88,6 +100,53 @@ else
 
     </div>
 
+    @if (_schedules.Count > 0)
+    {
+        <!-- Recurring invoices -->
+        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden mb-6">
+            <div class="px-6 pt-5 pb-3">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Recurring invoices</h2>
+                <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
+                    Billed monthly — payment is collected on day @_paymentDay of each month.
+                </p>
+            </div>
+            <div class="overflow-x-auto">
+            <table class="@TableStyles.Table">
+                <thead>
+                    <tr class="@TableStyles.HeadRow">
+                        <Th>Name</Th>
+                        <Th Class="hidden sm:table-cell">Project</Th>
+                        <Th>Amount</Th>
+                        <Th Right>Next payment</Th>
+                    </tr>
+                </thead>
+                <tbody class="@TableStyles.Body">
+                    @foreach (var s in _schedules)
+                    {
+                        <tr class="@TableStyles.Row">
+                            <Td>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">@s.Title</p>
+                            </Td>
+                            <Td Class="hidden sm:table-cell">
+                                <span class="text-sm text-gray-700 dark:text-neutral-300">@s.Project?.Name</span>
+                            </Td>
+                            <Td>
+                                <span class="text-sm font-semibold text-gray-900 dark:text-white">@s.Currency @s.Amount.ToString("N2")</span>
+                                <span class="text-xs text-gray-500 dark:text-neutral-400">/month</span>
+                            </Td>
+                            <Td Class="text-right">
+                                <span class="text-sm text-gray-500 dark:text-neutral-400">@s.NextIssueDate.ToString("d MMM yyyy")</span>
+                            </Td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </div>
+    }
+
+    @if (_invoices.Any())
+    {
     <!-- Invoice table -->
     <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
@@ -147,4 +206,5 @@ else
         </table>
         </div>
     </div>
+    }
 }

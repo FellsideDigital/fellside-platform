@@ -39,8 +39,6 @@ namespace FellsideDigital.Web.Data.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Amount = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Currency = table.Column<string>(type: "text", nullable: false),
-                    DayOfMonth = table.Column<int>(type: "integer", nullable: false),
-                    DueDays = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     NextIssueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     LastIssuedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

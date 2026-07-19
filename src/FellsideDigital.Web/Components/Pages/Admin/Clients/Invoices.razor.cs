@@ -1,10 +1,12 @@
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.UI.Components.Feedback;
 using FellsideDigital.Web.Data;
+using FellsideDigital.Web.Models;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace FellsideDigital.Web.Components.Pages.Admin.Clients;
 
@@ -15,6 +17,7 @@ public partial class Invoices : ComponentBase
 
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
     [Inject] private IRecurringInvoiceService RecurringService { get; set; } = default!;
+    [Inject] private IOptions<BillingSettings> BillingOptions { get; set; } = default!;
     [Inject] private IProjectService ProjectService { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private ILogger<Invoices> Logger { get; set; } = default!;
@@ -42,18 +45,15 @@ public partial class Invoices : ComponentBase
     private string _recTitle = "";
     private decimal _recAmount;
     private string _recCurrency = "GBP";
-    private int _recDayOfMonth = 1;
-    private int _recDueDays = 14;
     private bool _recSaving;
     private string? _recError;
+    private int _paymentDay => BillingOptions.Value.PaymentDayOfMonth;
 
     // Edit-schedule modal
     private RecurringInvoiceSchedule? _editingSchedule;
     private string _editScheduleTitle = "";
     private decimal _editScheduleAmount;
     private string _editScheduleCurrency = "GBP";
-    private int _editScheduleDayOfMonth = 1;
-    private int _editScheduleDueDays = 14;
     private bool _savingSchedule;
     private string? _editScheduleError;
 
@@ -215,13 +215,10 @@ public partial class Invoices : ComponentBase
         _recError = null;
         try
         {
-            await RecurringService.CreateAsync(projectId, _recTitle.Trim(), null, _recAmount,
-                _recCurrency, _recDayOfMonth, _recDueDays);
+            await RecurringService.CreateAsync(projectId, _recTitle.Trim(), null, _recAmount, _recCurrency);
             _recProjectId = "";
             _recTitle = "";
             _recAmount = 0;
-            _recDayOfMonth = 1;
-            _recDueDays = 14;
             await LoadAsync();
             Toasts.Success("Recurring invoice scheduled.");
         }
@@ -241,13 +238,11 @@ public partial class Invoices : ComponentBase
 
     private void OpenScheduleEdit(RecurringInvoiceSchedule schedule)
     {
-        _editingSchedule       = schedule;
-        _editScheduleTitle     = schedule.Title;
-        _editScheduleAmount    = schedule.Amount;
-        _editScheduleCurrency  = schedule.Currency;
-        _editScheduleDayOfMonth = schedule.DayOfMonth;
-        _editScheduleDueDays   = schedule.DueDays;
-        _editScheduleError     = null;
+        _editingSchedule      = schedule;
+        _editScheduleTitle    = schedule.Title;
+        _editScheduleAmount   = schedule.Amount;
+        _editScheduleCurrency = schedule.Currency;
+        _editScheduleError    = null;
     }
 
     private void CloseScheduleEdit() => _editingSchedule = null;
@@ -261,8 +256,7 @@ public partial class Invoices : ComponentBase
         try
         {
             await RecurringService.UpdateAsync(_editingSchedule.Id, _editScheduleTitle.Trim(),
-                _editingSchedule.Description, _editScheduleAmount, _editScheduleCurrency,
-                _editScheduleDayOfMonth, _editScheduleDueDays);
+                _editingSchedule.Description, _editScheduleAmount, _editScheduleCurrency);
             _editingSchedule = null;
             await LoadAsync();
             Toasts.Success("Recurring invoice updated.");
