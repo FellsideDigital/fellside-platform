@@ -67,8 +67,9 @@ else
         <div class="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-5 items-stretch">
 
             <!-- About / summary -->
-            <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6">
-                <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-6 items-center">
+            <div class="relative overflow-hidden rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6">
+                <div class="portal-hero-aura"></div>
+                <div class="relative grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-6 items-center">
                     <div class="min-w-0">
                         <span class="text-xs font-semibold uppercase tracking-widest text-accent">@TypeLabel</span>
                         @if (!string.IsNullOrWhiteSpace(_project.Description))
@@ -107,7 +108,7 @@ else
                 </div>
 
                 <!-- Key stats (compact, replaces the separate KPI cards) -->
-                <div class="mt-5 pt-5 border-t border-gray-100 dark:border-white/5 grid grid-cols-3 gap-3">
+                <div class="relative mt-5 pt-5 border-t border-gray-100 dark:border-white/5 grid grid-cols-3 gap-3">
                     <div class="min-w-0">
                         <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Current phase</p>
                         <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-white truncate">@CurrentPhaseShort</p>
