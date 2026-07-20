@@ -1,0 +1,45 @@
+@namespace FellsideDigital.UI.Components.Navigation
+
+@* Compact breadcrumb trail. The last item renders as the current (non-link) page. *@
+<nav aria-label="Breadcrumb" class="@($"mb-3 {Class}".Trim())">
+    <ol class="flex flex-wrap items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-neutral-400">
+        @for (var i = 0; i < Items.Count; i++)
+        {
+            var item = Items[i];
+            var isLast = i == Items.Count - 1;
+
+            @if (i > 0)
+            {
+                <li aria-hidden="true" class="text-gray-300 dark:text-neutral-600 select-none">
+                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                    </svg>
+                </li>
+            }
+
+            <li class="min-w-0">
+                @if (!isLast && !string.IsNullOrEmpty(item.Href))
+                {
+                    <a href="@item.Href"
+                       class="hover:text-gray-900 dark:hover:text-white transition-colors truncate">
+                        @item.Label
+                    </a>
+                }
+                else
+                {
+                    <span class="@(isLast ? "text-gray-900 dark:text-white truncate" : "truncate")"
+                          aria-current="@(isLast ? "page" : null)">
+                        @item.Label
+                    </span>
+                }
+            </li>
+        }
+    </ol>
+</nav>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<BreadcrumbItem> Items { get; set; } = [];
+
+    /// <summary>Extra classes for the wrapping <c>nav</c> (defaults to a bottom margin only).</summary>
+    [Parameter] public string? Class { get; set; }
+}

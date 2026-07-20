@@ -1,5 +1,6 @@
 using FellsideDigital.Domain.Enums;
 using FellsideDigital.UI.Components.Feedback;
+using FellsideDigital.UI.Components.Navigation;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Models;
 using FellsideDigital.Web.Services;
@@ -75,6 +76,21 @@ public partial class Invoices : ComponentBase
     private const string InputClass = FellsideDigital.UI.Components.Forms.FieldStyles.Input;
 
     private string _backHref => From.HasValue ? $"/Admin/Projects/{From}" : "/Admin/Projects";
+
+    /// <summary>Breadcrumb trail: Projects › {project, when arrived from one} › Invoices.</summary>
+    private IReadOnlyList<BreadcrumbItem> _crumbs
+    {
+        get
+        {
+            var crumbs = new List<BreadcrumbItem> { new("Projects", "/Admin/Projects") };
+            if (From is { } fromId && _projects.FirstOrDefault(p => p.Id == fromId) is { } project)
+            {
+                crumbs.Add(new BreadcrumbItem(project.Name, $"/Admin/Projects/{fromId}"));
+            }
+            crumbs.Add(new BreadcrumbItem("Invoices"));
+            return crumbs;
+        }
+    }
 
     private string _clientLine
     {

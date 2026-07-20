@@ -14,6 +14,8 @@ public partial class Index : ComponentBase
     private List<ContactEnquiry>? _enquiries;
     private ContactEnquiry? _selected;
 
+    private int _unreadCount => _enquiries?.Count(e => !e.IsRead) ?? 0;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadAsync();

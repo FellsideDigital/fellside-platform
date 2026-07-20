@@ -22,13 +22,12 @@ else
 
         <!-- Header -->
         <div>
-            <a href="@($"/Admin/Projects/{Id}")"
-               class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-3">
-                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
-                Back to project
-            </a>
+            <Breadcrumbs Items="@(new BreadcrumbItem[]
+                         {
+                             new("Projects", "/Admin/Projects"),
+                             new(_project.Name, $"/Admin/Projects/{Id}"),
+                             new("Documents")
+                         })" />
             <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Project documents</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-neutral-400">@_project.Name · @_project.Client?.CompanyName</p>
         </div>
