@@ -42,7 +42,12 @@ public enum IconName
     CircleStack,
     DocumentText,
     CheckCircle,
-    Star
+    Star,
+
+    Pencil,
+    Eye,
+    QrCode,
+    Users
 }
 
 public enum IconVariant

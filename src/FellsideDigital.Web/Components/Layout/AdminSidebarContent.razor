@@ -1,56 +1,117 @@
+@using FellsideDigital.Domain.Enums
+@using FellsideDigital.Domain.Extensions
 @using FellsideDigital.UI.Components.Icons
 @using FellsideDigital.UI.Components.Navigation
+@using FellsideDigital.Web.Components.Shared
 @using Microsoft.AspNetCore.Components.Routing
 
 <nav class="flex flex-col flex-1 py-5 px-3 gap-0.5 overflow-y-auto">
 
-    <!-- Clients section -->
-    <p class="px-2.5 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.15em]
-              text-slate-400 dark:text-neutral-500">
-        Clients
-    </p>
+    @if (Project is not null)
+    {
+        <!-- ── Project context nav ── -->
+        <NavLink href="/Admin/Projects"
+                 class="group flex items-center gap-1.5 px-2.5 mb-3 text-xs font-medium
+                        text-slate-400 dark:text-neutral-500
+                        hover:text-slate-700 dark:hover:text-neutral-300 transition-colors">
+            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+            All projects
+        </NavLink>
 
-    <NavigationButton Href="/Admin/Projects" Match="NavLinkMatch.All" Icon="IconName.Projects">
-        Projects
-    </NavigationButton>
+        <!-- Project heading -->
+        <div class="flex items-start gap-2.5 px-2.5 mb-3">
+            <span class="mt-1.5 size-2 shrink-0 rounded-full @BadgeHelpers.ProjectStatusDotColor(Project.Status)"></span>
+            <div class="min-w-0">
+                <p class="text-sm font-semibold text-slate-900 dark:text-white truncate">@Project.Name</p>
+                <p class="text-xs text-slate-400 dark:text-neutral-500">@Project.Status.DisplayName()</p>
+            </div>
+        </div>
 
-    <NavigationButton Href="/Admin/Invoices" Match="NavLinkMatch.All" Icon="IconName.Invoice">
-        Invoices
-    </NavigationButton>
+        <div class="mb-2 border-t border-slate-200/80 dark:border-white/5"></div>
 
-    <NavigationButton Href="/Admin/Invitations" Match="NavLinkMatch.All" Icon="IconName.UserCircle">
-        Invitations
-    </NavigationButton>
+        <NavigationButton Href="@($"/Admin/Projects/{Project.Id}")" Match="NavLinkMatch.All" Icon="IconName.Dashboard">
+            Overview
+        </NavigationButton>
 
-    <NavigationButton Href="/Admin/Enquiries" Match="NavLinkMatch.All" Icon="IconName.Message">
-        Enquiries
-    </NavigationButton>
+        <NavigationButton Href="@($"/Admin/Projects/{Project.Id}/Edit")" Match="NavLinkMatch.All" Icon="IconName.Pencil">
+            Edit project
+        </NavigationButton>
 
-    <NavigationButton Href="/Admin/Testimonials" Match="NavLinkMatch.All" Icon="IconName.Star">
-        Testimonials
-    </NavigationButton>
+        <NavigationButton Href="@($"/Admin/Projects/{Project.Id}/Documents")" Match="NavLinkMatch.All" Icon="IconName.Files">
+            Documents
+        </NavigationButton>
 
-    <NavigationButton Href="/Admin/QrCampaign" Match="NavLinkMatch.All" Icon="IconName.ArrowTrendingUp">
-        QR Campaign
-    </NavigationButton>
+        <NavigationButton Href="@($"/Admin/Projects/{Project.Id}/Notes")" Match="NavLinkMatch.All" Icon="IconName.Message">
+            Notes &amp; updates
+        </NavigationButton>
 
-    <NavigationButton Href="/Admin/Analytics" Match="NavLinkMatch.All" Icon="IconName.Dashboard">
-        Analytics
-    </NavigationButton>
+        @if (!string.IsNullOrEmpty(Project.ClientId))
+        {
+            <NavigationButton Href="@($"/Admin/Clients/{Project.ClientId}/Invoices?from={Project.Id}")" Icon="IconName.Invoice">
+                Invoices
+            </NavigationButton>
+        }
 
-    <NavigationButton Href="/live" Match="NavLinkMatch.All" Icon="IconName.Bolt">
-        Live Demo
-    </NavigationButton>
+        <NavigationButton Href="@($"/Admin/Projects/{Project.Id}/PortalPreview")" Match="NavLinkMatch.All" Icon="IconName.Eye">
+            Preview as client
+        </NavigationButton>
+    }
+    else
+    {
+        <NavigationButton Href="/Admin" Match="NavLinkMatch.All" Icon="IconName.Home">
+            Overview
+        </NavigationButton>
 
-    <!-- Portal section -->
-    <p class="px-2.5 mt-4 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.15em]
-              text-slate-400 dark:text-neutral-500">
-        Portal
-    </p>
+        <!-- ── Client Delivery ── -->
+        <p class="@SectionLabelClass mt-4">Client Delivery</p>
 
-    <NavigationButton Href="/Portal" Match="NavLinkMatch.All" Icon="IconName.GlobeAlt">
-        View as Client
-    </NavigationButton>
+        <NavigationButton Href="/Admin/Projects" Icon="IconName.Projects">
+            Projects
+        </NavigationButton>
+
+        <NavigationButton Href="/Admin/Invoices" Match="NavLinkMatch.All" Icon="IconName.Invoice">
+            Invoices
+        </NavigationButton>
+
+        <NavigationButton Href="/Admin/Invitations" Icon="IconName.UserCircle">
+            Invitations
+        </NavigationButton>
+
+        <!-- ── Growth ── -->
+        <p class="@SectionLabelClass mt-4">Growth</p>
+
+        <NavigationButton Href="/Admin/Enquiries" Match="NavLinkMatch.All" Icon="IconName.Message">
+            Enquiries
+        </NavigationButton>
+
+        <NavigationButton Href="/Admin/Testimonials" Match="NavLinkMatch.All" Icon="IconName.Star">
+            Testimonials
+        </NavigationButton>
+
+        <NavigationButton Href="/Admin/QrCampaign" Match="NavLinkMatch.All" Icon="IconName.QrCode">
+            QR Campaign
+        </NavigationButton>
+
+        <!-- ── Insights ── -->
+        <p class="@SectionLabelClass mt-4">Insights</p>
+
+        <NavigationButton Href="/Admin/Analytics" Match="NavLinkMatch.All" Icon="IconName.ArrowTrendingUp">
+            Analytics
+        </NavigationButton>
+
+        <!-- ── Tools ── -->
+        <p class="@SectionLabelClass mt-4">Tools</p>
+
+        <NavigationButton Href="/Portal" Match="NavLinkMatch.All" Icon="IconName.GlobeAlt">
+            View as Client
+        </NavigationButton>
+
+        <NavigationButton Href="/live" Match="NavLinkMatch.All" Icon="IconName.Bolt">
+            Live Demo
+        </NavigationButton>
+    }
 
     <!-- User chip -->
     <div class="mt-auto pt-4 border-t border-slate-200/80 dark:border-white/5">
@@ -71,4 +132,10 @@
 @code {
     [Parameter] public string UserName { get; set; } = "";
     [Parameter] public string UserInitials { get; set; } = "";
+
+    /// <summary>When set, the sidebar renders the project-context nav instead of the master nav.</summary>
+    [Parameter] public ProjectNavContext? Project { get; set; }
+
+    private const string SectionLabelClass =
+        "px-2.5 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400 dark:text-neutral-500";
 }
