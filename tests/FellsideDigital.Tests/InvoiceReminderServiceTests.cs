@@ -24,7 +24,7 @@ public class InvoiceReminderServiceTests(PostgresFixture fx)
 
     private static async Task<Invoice> SeedInvoiceAsync(
         FellsideDigitalDbContext db, DateTime dueAt,
-        InvoiceStatus status = InvoiceStatus.Sent, int reminderStage = 0)
+        InvoiceStatus status = InvoiceStatus.Sent, int reminderStage = 0, Guid? scheduleId = null)
     {
         var admin = new ApplicationUser { UserName = $"a{Guid.NewGuid():N}@x.io", Email = "a@x.io" };
         var client = new ApplicationUser { UserName = $"c{Guid.NewGuid():N}@x.io", Email = "c@x.io" };
@@ -44,6 +44,7 @@ public class InvoiceReminderServiceTests(PostgresFixture fx)
             Title = "Test invoice", Amount = 100m, Currency = "GBP",
             Status = status, DueAt = dueAt, ReminderStage = reminderStage,
             IssuedAt = dueAt.AddDays(-14), CreatedAt = dueAt.AddDays(-14),
+            ScheduleId = scheduleId,
         };
         db.Invoices.Add(invoice);
         await db.SaveChangesAsync();
@@ -67,6 +68,22 @@ public class InvoiceReminderServiceTests(PostgresFixture fx)
         var reloaded = await db.Invoices.SingleAsync(i => i.Id == invoice.Id);
         Assert.Equal((int)InvoiceReminderKind.Upcoming, reloaded.ReminderStage);
         Assert.Equal(InvoiceStatus.Sent, reloaded.Status);
+    }
+
+    [Fact]
+    public async Task SkipsRecurringInvoices_TheyAreCollectedByDirectDebit_NotChased()
+    {
+        await using var db = fx.CreateContext();
+        // A schedule-generated (retainer) invoice, long overdue and never marked paid.
+        var invoice = await SeedInvoiceAsync(db, Due, scheduleId: Guid.NewGuid());
+        var (sut, email) = MakeSut(db);
+
+        Assert.Equal(0, await sut.ProcessRemindersAsync(Due.AddDays(30)));
+
+        Assert.Empty(email.Reminders);
+        var reloaded = await db.Invoices.SingleAsync(i => i.Id == invoice.Id);
+        Assert.Equal(InvoiceStatus.Sent, reloaded.Status);      // never flipped to Overdue
+        Assert.Equal(0, reloaded.ReminderStage);                // never advanced
     }
 
     [Fact]

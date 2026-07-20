@@ -9,10 +9,7 @@ namespace FellsideDigital.Web.Services;
 public class RecurringInvoiceService(
     FellsideDigitalDbContext db,
     IProjectTimelineService timeline,
-    IEmailService email,
-    IOptions<SiteSettings> siteOptions,
-    IOptions<BillingSettings> billingOptions,
-    ILogger<RecurringInvoiceService> logger) : IRecurringInvoiceService
+    IOptions<BillingSettings> billingOptions) : IRecurringInvoiceService
 {
     private int PaymentDay => billingOptions.Value.PaymentDayOfMonth;
 
@@ -175,10 +172,10 @@ public class RecurringInvoiceService(
                     Currency    = schedule.Currency,
                     IssuedAt    = utcNow,
                     CreatedAt   = utcNow,
-                    // Payment is collected on the issue day itself, so the invoice is
-                    // due the day it appears. The issue email is the client's notice —
-                    // start past the "due soon" reminder stage so the same worker run
-                    // doesn't immediately send a second email.
+                    // Retainers are collected automatically by Direct Debit, so the invoice is
+                    // portal-only: no email is sent on issue and the reminder worker skips
+                    // schedule-generated invoices. Due the day it's issued; ReminderStage is
+                    // seeded past "due soon" so it's never treated as needing a nudge.
                     DueAt         = DateTime.SpecifyKind(period.Date, DateTimeKind.Utc),
                     Status        = InvoiceStatus.Sent,
                     ReminderStage = (int)InvoiceReminderKind.Upcoming,
@@ -192,32 +189,18 @@ public class RecurringInvoiceService(
                 // invoice on the next run.
                 await db.SaveChangesAsync();
 
+                // Portal-only: the invoice appears in the client's timeline, but no email is
+                // sent — Direct Debit collects the retainer automatically.
                 await timeline.RecordAsync(
                     schedule.ProjectId, TimelineEventType.InvoiceCreated,
                     $"Invoice issued: {invoice.Title}",
                     TimelineVisibility.ClientVisible, actorId: null, occurredAt: utcNow);
 
-                await NotifyClientAsync(schedule.Project, invoice);
                 issued++;
             }
         }
 
         return issued;
-    }
-
-    /// <summary>Emails the client about the generated invoice. Never throws.</summary>
-    private async Task NotifyClientAsync(ClientProject? project, Invoice invoice)
-    {
-        try
-        {
-            if (project?.Client?.Email is not { Length: > 0 }) return;
-            var url = siteOptions.Value.PortalProjectUrl(project.Id);
-            await email.SendInvoiceAddedAsync(project.Client, project, invoice, url);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to send generated-invoice notification for invoice {InvoiceId}", invoice.Id);
-        }
     }
 
     private static void Validate(string title, decimal amount)

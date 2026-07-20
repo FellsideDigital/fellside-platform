@@ -23,10 +23,13 @@ public class InvoiceReminderService(
     {
         var today = utcNow.Date;
 
+        // Recurring/retainer invoices (ScheduleId != null) are collected automatically by Direct
+        // Debit, so they're never chased — only one-off invoices get reminders.
         var candidates = await db.Invoices
             .Include(i => i.Project)
                 .ThenInclude(p => p!.Client)
-            .Where(i => (i.Status == InvoiceStatus.Sent || i.Status == InvoiceStatus.Overdue)
+            .Where(i => i.ScheduleId == null
+                        && (i.Status == InvoiceStatus.Sent || i.Status == InvoiceStatus.Overdue)
                         && i.DueAt != null
                         && i.ReminderStage < (int)InvoiceReminderKind.Final)
             .ToListAsync();
