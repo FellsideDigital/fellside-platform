@@ -18,21 +18,24 @@ public class RecurringInvoiceService(
 
     public async Task<RecurringInvoiceSchedule> CreateAsync(
         Guid projectId, string title, string? description, decimal amount, string currency,
-        string? actorId = null)
+        int? paymentDay = null, string? actorId = null)
     {
         Validate(title, amount);
+        var day = paymentDay ?? PaymentDay;
+        ValidateDay(day);
 
         var schedule = new RecurringInvoiceSchedule
         {
-            Id            = Guid.NewGuid(),
-            ProjectId     = projectId,
-            Title         = title,
-            Description   = description,
-            Amount        = amount,
-            Currency      = currency,
-            IsActive      = true,
-            NextIssueDate = FirstIssueDate(DateTime.UtcNow, PaymentDay),
-            CreatedAt     = DateTime.UtcNow,
+            Id                = Guid.NewGuid(),
+            ProjectId         = projectId,
+            Title             = title,
+            Description       = description,
+            Amount            = amount,
+            Currency          = currency,
+            IsActive          = true,
+            PaymentDayOfMonth = day,
+            NextIssueDate     = FirstIssueDate(DateTime.UtcNow, day),
+            CreatedAt         = DateTime.UtcNow,
         };
 
         db.RecurringInvoiceSchedules.Add(schedule);
@@ -47,9 +50,10 @@ public class RecurringInvoiceService(
     }
 
     public async Task<RecurringInvoiceSchedule> UpdateAsync(
-        Guid id, string title, string? description, decimal amount, string currency)
+        Guid id, string title, string? description, decimal amount, string currency, int paymentDay)
     {
         Validate(title, amount);
+        ValidateDay(paymentDay);
 
         var schedule = await db.RecurringInvoiceSchedules.FindAsync(id)
             ?? throw new InvalidOperationException("That recurring invoice no longer exists.");
@@ -58,6 +62,13 @@ public class RecurringInvoiceService(
         schedule.Description = description;
         schedule.Amount      = amount;
         schedule.Currency    = currency;
+
+        if (schedule.PaymentDayOfMonth != paymentDay)
+        {
+            schedule.PaymentDayOfMonth = paymentDay;
+            // Move the next collection onto the new day without re-issuing a month already billed.
+            schedule.NextIssueDate = ShiftToDay(schedule.NextIssueDate, paymentDay, DateTime.UtcNow);
+        }
 
         await db.SaveChangesAsync();
         return schedule;
@@ -72,7 +83,7 @@ public class RecurringInvoiceService(
 
         // Re-anchor on resume so a long pause doesn't back-issue months of invoices.
         if (isActive)
-            schedule.NextIssueDate = FirstIssueDate(DateTime.UtcNow, PaymentDay);
+            schedule.NextIssueDate = FirstIssueDate(DateTime.UtcNow, schedule.PaymentDayOfMonth);
 
         await db.SaveChangesAsync();
     }
@@ -131,7 +142,7 @@ public class RecurringInvoiceService(
                 };
 
                 db.Invoices.Add(invoice);
-                schedule.NextIssueDate = NextMonthlyDate(period, PaymentDay);
+                schedule.NextIssueDate = NextMonthlyDate(period, schedule.PaymentDayOfMonth);
                 schedule.LastIssuedAt  = utcNow;
 
                 // Persist before emailing so a failed send can't cause a duplicate
@@ -172,6 +183,23 @@ public class RecurringInvoiceService(
             throw new InvalidOperationException("Give the recurring invoice a title.");
         if (amount <= 0)
             throw new InvalidOperationException("The amount must be greater than zero.");
+    }
+
+    private static void ValidateDay(int dayOfMonth)
+    {
+        if (dayOfMonth is < 1 or > 31)
+            throw new InvalidOperationException("The payment day must be between 1 and 31.");
+    }
+
+    /// <summary>
+    /// Moves an existing <c>NextIssueDate</c> onto <paramref name="newDay"/> within the month it
+    /// already sits in, advancing to the following month only if that lands in the past — so a
+    /// day change never back-issues a period that was already (or nearly) billed.
+    /// </summary>
+    internal static DateTime ShiftToDay(DateTime nextIssue, int newDay, DateTime utcNow)
+    {
+        var target = ClampedDate(nextIssue.Year, nextIssue.Month, newDay);
+        return target.Date >= utcNow.Date ? target : NextMonthlyDate(target, newDay);
     }
 
     /// <summary>The first occurrence of <paramref name="dayOfMonth"/> on or after today (UTC).</summary>

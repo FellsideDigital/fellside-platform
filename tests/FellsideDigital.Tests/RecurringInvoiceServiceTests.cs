@@ -160,4 +160,79 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "", null, 10m, "GBP"));
         await Assert.ThrowsAsync<InvalidOperationException>(() => sut.CreateAsync(projectId, "T", null, 0m, "GBP"));
     }
+
+    [Fact]
+    public async Task Create_WithCustomPaymentDay_AnchorsToThatDay()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", paymentDay: 18);
+
+        Assert.Equal(18, schedule.PaymentDayOfMonth);
+        Assert.Equal(18, schedule.NextIssueDate.Day);
+    }
+
+    [Fact]
+    public async Task Create_DefaultsToGlobalPaymentDay_WhenNoneGiven()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP");
+
+        Assert.Equal(PaymentDay, schedule.PaymentDayOfMonth);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(32)]
+    public async Task Create_RejectsOutOfRangePaymentDay(int day)
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => sut.CreateAsync(projectId, "T", null, 10m, "GBP", paymentDay: day));
+    }
+
+    [Fact]
+    public async Task Update_ChangingPaymentDay_ReanchorsNextIssue()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", paymentDay: 1);
+        await sut.UpdateAsync(schedule.Id, "Retainer", null, 100m, "GBP", paymentDay: 18);
+
+        var updated = await db.RecurringInvoiceSchedules.SingleAsync(s => s.Id == schedule.Id);
+        Assert.Equal(18, updated.PaymentDayOfMonth);
+        Assert.Equal(18, updated.NextIssueDate.Day);
+        Assert.True(updated.NextIssueDate.Date >= DateTime.UtcNow.Date);
+    }
+
+    [Fact]
+    public async Task Generate_IssuesOnScheduleOwnPaymentDay_AndAdvancesToSameDayNextMonth()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", paymentDay: 18);
+        var period = schedule.NextIssueDate;
+        Assert.Equal(18, period.Day);
+
+        await sut.GenerateDueInvoicesAsync(period.AddHours(9));
+
+        var invoice = await db.Invoices.SingleAsync(i => i.ScheduleId == schedule.Id);
+        Assert.Equal(18, invoice.DueAt!.Value.Day);
+
+        var updated = await db.RecurringInvoiceSchedules.SingleAsync(s => s.Id == schedule.Id);
+        Assert.Equal(18, updated.NextIssueDate.Day);
+        Assert.True(updated.NextIssueDate > period);
+    }
 }

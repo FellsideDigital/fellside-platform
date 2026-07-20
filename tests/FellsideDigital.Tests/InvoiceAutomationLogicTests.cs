@@ -37,6 +37,35 @@ public class InvoiceAutomationLogicTests
             RecurringInvoiceService.FirstIssueDate(now, 5));
     }
 
+    [Fact]
+    public void ShiftToDay_MovesWithinScheduledMonth_WhenNewDayStillFuture()
+    {
+        // Next issue Aug 1; admin moves the customer to the 18th mid-July — bill shifts to Aug 18.
+        var now = new DateTime(2026, 7, 20, 0, 0, 0, DateTimeKind.Utc);
+        var shifted = RecurringInvoiceService.ShiftToDay(
+            new DateTime(2026, 8, 1, 0, 0, 0, DateTimeKind.Utc), 18, now);
+        Assert.Equal(new DateTime(2026, 8, 18, 0, 0, 0, DateTimeKind.Utc), shifted);
+    }
+
+    [Fact]
+    public void ShiftToDay_AdvancesAMonth_RatherThanBackIssuingAPastDay()
+    {
+        // Next issue Aug 18; lowering to the 1st on Aug 10 must NOT land on the already-passed Aug 1.
+        var now = new DateTime(2026, 8, 10, 0, 0, 0, DateTimeKind.Utc);
+        var shifted = RecurringInvoiceService.ShiftToDay(
+            new DateTime(2026, 8, 18, 0, 0, 0, DateTimeKind.Utc), 1, now);
+        Assert.Equal(new DateTime(2026, 9, 1, 0, 0, 0, DateTimeKind.Utc), shifted);
+    }
+
+    [Fact]
+    public void ShiftToDay_ClampsToShortMonth()
+    {
+        var now = new DateTime(2027, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var shifted = RecurringInvoiceService.ShiftToDay(
+            new DateTime(2027, 2, 1, 0, 0, 0, DateTimeKind.Utc), 31, now);
+        Assert.Equal(new DateTime(2027, 2, 28, 0, 0, 0, DateTimeKind.Utc), shifted);
+    }
+
     [Theory]
     [InlineData(0, -4, null)]                              // too early
     [InlineData(0, -3, InvoiceReminderKind.Upcoming)]      // lead window opens

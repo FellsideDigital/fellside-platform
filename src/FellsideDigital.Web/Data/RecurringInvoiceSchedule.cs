@@ -17,9 +17,16 @@ public class RecurringInvoiceSchedule
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// Day of the month (1–31) this schedule is issued and payment is collected. Seeded from
+    /// the global <c>Billing:PaymentDayOfMonth</c> on creation, but overridable per customer
+    /// (e.g. some are billed on the 18th rather than the 1st). Days 29–31 are clamped to the
+    /// last day of shorter months.
+    /// </summary>
+    public int PaymentDayOfMonth { get; set; } = 1;
+
+    /// <summary>
     /// UTC date the next invoice is issued and payment is collected (time component
-    /// ignored). Always falls on the global <c>Billing:PaymentDayOfMonth</c> — the
-    /// same day for every customer.
+    /// ignored). Always falls on this schedule's <see cref="PaymentDayOfMonth"/>.
     /// </summary>
     public DateTime NextIssueDate { get; set; }
 

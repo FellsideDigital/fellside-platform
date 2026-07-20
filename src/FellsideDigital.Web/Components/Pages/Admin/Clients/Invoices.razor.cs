@@ -45,6 +45,7 @@ public partial class Invoices : ComponentBase
     private string _recTitle = "";
     private decimal _recAmount;
     private string _recCurrency = "GBP";
+    private int _recPaymentDay = 1;
     private bool _recSaving;
     private string? _recError;
     private int _paymentDay => BillingOptions.Value.PaymentDayOfMonth;
@@ -54,6 +55,7 @@ public partial class Invoices : ComponentBase
     private string _editScheduleTitle = "";
     private decimal _editScheduleAmount;
     private string _editScheduleCurrency = "GBP";
+    private int _editSchedulePaymentDay = 1;
     private bool _savingSchedule;
     private string? _editScheduleError;
 
@@ -98,7 +100,11 @@ public partial class Invoices : ComponentBase
         }
     }
 
-    protected override async Task OnInitializedAsync() => await LoadAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        _recPaymentDay = _paymentDay; // default new schedules to the global payment day
+        await LoadAsync();
+    }
 
     private async Task LoadAsync()
     {
@@ -219,10 +225,12 @@ public partial class Invoices : ComponentBase
         _recError = null;
         try
         {
-            await RecurringService.CreateAsync(projectId, _recTitle.Trim(), null, _recAmount, _recCurrency);
+            await RecurringService.CreateAsync(projectId, _recTitle.Trim(), null, _recAmount, _recCurrency,
+                paymentDay: _recPaymentDay);
             _recProjectId = "";
             _recTitle = "";
             _recAmount = 0;
+            _recPaymentDay = _paymentDay;
             await LoadAsync();
             Toasts.Success("Recurring invoice scheduled.");
         }
@@ -242,11 +250,12 @@ public partial class Invoices : ComponentBase
 
     private void OpenScheduleEdit(RecurringInvoiceSchedule schedule)
     {
-        _editingSchedule      = schedule;
-        _editScheduleTitle    = schedule.Title;
-        _editScheduleAmount   = schedule.Amount;
-        _editScheduleCurrency = schedule.Currency;
-        _editScheduleError    = null;
+        _editingSchedule        = schedule;
+        _editScheduleTitle      = schedule.Title;
+        _editScheduleAmount     = schedule.Amount;
+        _editScheduleCurrency   = schedule.Currency;
+        _editSchedulePaymentDay = schedule.PaymentDayOfMonth;
+        _editScheduleError      = null;
     }
 
     private void CloseScheduleEdit() => _editingSchedule = null;
@@ -260,7 +269,7 @@ public partial class Invoices : ComponentBase
         try
         {
             await RecurringService.UpdateAsync(_editingSchedule.Id, _editScheduleTitle.Trim(),
-                _editingSchedule.Description, _editScheduleAmount, _editScheduleCurrency);
+                _editingSchedule.Description, _editScheduleAmount, _editScheduleCurrency, _editSchedulePaymentDay);
             _editingSchedule = null;
             await LoadAsync();
             Toasts.Success("Recurring invoice updated.");

@@ -1,10 +1,8 @@
 using FellsideDigital.Web.Data;
-using FellsideDigital.Web.Models;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 
 namespace FellsideDigital.Web.Components.Pages.Portal;
 
@@ -12,7 +10,6 @@ public partial class Invoices : ComponentBase
 {
     [Inject] private IInvoiceService InvoiceService { get; set; } = default!;
     [Inject] private IRecurringInvoiceService RecurringService { get; set; } = default!;
-    [Inject] private IOptions<BillingSettings> BillingOptions { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthState { get; set; } = default!;
     [Inject] private UserManager<ApplicationUser> UserManager { get; set; } = default!;
     [Inject] private PortalPreviewState PreviewState { get; set; } = default!;
@@ -20,8 +17,6 @@ public partial class Invoices : ComponentBase
     private List<Invoice>? _invoices;
     private List<RecurringInvoiceSchedule> _schedules = [];
     private Dictionary<Guid, FileLinks> _fileLinks = [];
-
-    private int _paymentDay => BillingOptions.Value.PaymentDayOfMonth;
 
     /// <summary>The client's combined recurring bill each month (active schedules only).</summary>
     private decimal _monthlyTotal => _schedules.Sum(s => s.Amount);
