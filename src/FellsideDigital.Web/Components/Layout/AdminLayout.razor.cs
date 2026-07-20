@@ -18,9 +18,13 @@ public partial class AdminLayout : LayoutComponentBase, IDisposable
     [Inject] private IServiceScopeFactory ScopeFactory { get; set; } = default!;
 
     private bool _sidebarOpen;
+    private bool _sidebarCollapsed;
     private string _displayName = "";
     private string _initials = "";
     private ProjectNavContext? _project;
+
+    /// <summary>The desktop sidebar is always shown outside a project; inside one it hides while collapsed.</summary>
+    private bool ShowDesktopSidebar => _project is null || !_sidebarCollapsed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,6 +63,7 @@ public partial class AdminLayout : LayoutComponentBase, IDisposable
 
         if (projectId is null)
         {
+            _sidebarCollapsed = false;
             if (_project is not null)
             {
                 _project = null;
@@ -68,7 +73,18 @@ public partial class AdminLayout : LayoutComponentBase, IDisposable
         }
 
         if (_project?.Id == projectId)
+        {
+            // Navigating between pages of the same project — collapse the nav so the page runs full-width.
+            if (!_sidebarCollapsed)
+            {
+                _sidebarCollapsed = true;
+                await InvokeAsync(StateHasChanged);
+            }
             return;
+        }
+
+        // Entering (or switching to) a project — show the nav first so it stays discoverable.
+        _sidebarCollapsed = false;
 
         await using var scope = ScopeFactory.CreateAsyncScope();
         var projectService = scope.ServiceProvider.GetRequiredService<IProjectService>();
@@ -81,12 +97,14 @@ public partial class AdminLayout : LayoutComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
+    private void ToggleSidebar() => _sidebarCollapsed = !_sidebarCollapsed;
+
     /// <summary>
     /// Extracts the project id from a relative admin URL. Matches <c>Admin/Projects/{guid}[/...]</c>,
     /// and also <c>Admin/Clients/.../Invoices?from={guid}</c> so managing a project's invoices keeps
     /// the project in context.
     /// </summary>
-    private static Guid? ResolveProjectId(string relativePath)
+    internal static Guid? ResolveProjectId(string relativePath)
     {
         var path = relativePath;
         var query = "";

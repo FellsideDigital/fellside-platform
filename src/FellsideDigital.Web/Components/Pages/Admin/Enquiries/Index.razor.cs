@@ -26,29 +26,26 @@ public partial class Index : ComponentBase
         _enquiries = await EnquiryService.GetAllAsync();
     }
 
-    private void OpenEnquiry(ContactEnquiry enquiry)
+    private async Task OpenEnquiry(ContactEnquiry enquiry)
     {
         _selected = enquiry;
-    }
 
-    private void CloseDrawer()
-    {
-        _selected = null;
-    }
-
-    private async Task MarkAsRead()
-    {
-        if (_selected is null) return;
+        // Viewing an enquiry marks it read, clearing the unread dot and header count.
+        if (enquiry.IsRead) return;
 
         try
         {
-            await EnquiryService.MarkAsReadAsync(_selected.Id);
-            _selected.IsRead = true;
+            await EnquiryService.MarkAsReadAsync(enquiry.Id);
+            enquiry.IsRead = true;
         }
         catch (Exception ex)
         {
             Toasts.Error(ErrorHandling.LogAndDescribe(Logger, ex, "updating the enquiry"));
         }
-        StateHasChanged();
+    }
+
+    private void CloseDrawer()
+    {
+        _selected = null;
     }
 }
