@@ -104,8 +104,15 @@ public class RecurringInvoiceService(
     }
 
     public decimal CollectedToDate(RecurringInvoiceSchedule schedule, DateTime asOf)
+        => CollectedFor(schedule, asOf);
+
+    /// <summary>
+    /// Pure estimate of the total collected for a schedule as of <paramref name="asOf"/>, so it can be
+    /// reused (e.g. by <see cref="InvoiceEarnings"/>) without constructing the service. A paused schedule
+    /// stops accruing at its last issued invoice; an active one accrues to now.
+    /// </summary>
+    internal static decimal CollectedFor(RecurringInvoiceSchedule schedule, DateTime asOf)
     {
-        // A paused schedule stops accruing at its last issued invoice; an active one accrues to now.
         var cutoff = schedule.IsActive ? asOf : (schedule.LastIssuedAt ?? asOf);
         return PaymentsCollected(schedule.FirstPaymentDate, cutoff) * schedule.Amount;
     }
@@ -130,6 +137,14 @@ public class RecurringInvoiceService(
             .Include(s => s.Project)
             .Where(s => s.Project!.ClientId == clientId)
             .OrderBy(s => s.CreatedAt)
+            .ToListAsync();
+
+    public async Task<List<RecurringInvoiceSchedule>> GetAllSchedulesAsync()
+        => await db.RecurringInvoiceSchedules
+            .Include(s => s.Project)
+                .ThenInclude(p => p!.Client)
+            .OrderByDescending(s => s.IsActive)
+            .ThenBy(s => s.CreatedAt)
             .ToListAsync();
 
     public async Task<int> GenerateDueInvoicesAsync(DateTime utcNow)

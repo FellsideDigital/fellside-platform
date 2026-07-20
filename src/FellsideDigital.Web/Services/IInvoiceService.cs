@@ -15,6 +15,9 @@ public interface IInvoiceService
     Task<Invoice> UpdateAsync(Guid id, string title, string? description, decimal amount, string currency, DateTime? dueAt, IBrowserFile? newFile, bool notifyClient, string? actorId = null);
     Task<List<Invoice>> GetForProjectAsync(Guid projectId);
     Task<List<Invoice>> GetForClientAsync(string clientId);
+
+    /// <summary>Every invoice across all clients, newest first, with project and client loaded — for the admin-wide invoices view.</summary>
+    Task<List<Invoice>> GetAllAsync();
     Task<Invoice?> GetByIdAsync(Guid id);
     Task UpdateStatusAsync(Guid id, InvoiceStatus status, string? actorId = null);
     Task DeleteAsync(Guid id);

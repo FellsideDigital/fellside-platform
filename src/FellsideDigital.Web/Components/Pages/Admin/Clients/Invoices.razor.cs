@@ -93,6 +93,9 @@ public partial class Invoices : ComponentBase
 
     private decimal _paidTotal => _invoices.Where(i => i.Status == InvoiceStatus.Paid).Sum(i => i.Amount);
 
+    /// <summary>Real revenue: paid one-off invoices plus estimated retainer collections. See <see cref="InvoiceEarnings"/>.</summary>
+    private decimal _totalEarned => InvoiceEarnings.TotalEarned(_invoices, _schedules, DateTime.UtcNow);
+
     private string _outstandingSub
     {
         get

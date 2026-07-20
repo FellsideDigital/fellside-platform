@@ -1,0 +1,234 @@
+@page "/Admin/Invoices"
+@attribute [Authorize(Roles = "SiteAdmin")]
+@layout AdminLayout
+
+@using FellsideDigital.Domain.Enums
+@using FellsideDigital.Domain.Extensions
+@using Microsoft.AspNetCore.Authorization
+@using FellsideDigital.Web.Components.Layout
+
+<PageTitle>Invoices — Fellside Digital Admin</PageTitle>
+
+<PageHeader Eyebrow="Admin" Title="Invoices"
+            Description="Every invoice and retainer across all clients — totals, dues and status in one place." />
+
+@if (_loading)
+{
+    <div class="animate-pulse space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            @for (var i = 0; i < 4; i++)
+            {
+                <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-24"></div>
+            }
+        </div>
+        <div class="rounded-2xl border border-gray-200 dark:border-white/5 bg-white dark:bg-neutral-900 h-64"></div>
+    </div>
+}
+else
+{
+    <!-- Headline totals -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-5">
+        <KpiCard Eyebrow="Total earned"
+                 Value="@($"£{_totalEarned:N0}")"
+                 Sub="Paid invoices + retainers"
+                 IconPath="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                 Tone="emerald" />
+        <KpiCard Eyebrow="Outstanding"
+                 Value="@($"£{_outstandingTotal:N0}")"
+                 Sub="@($"{_outstandingCount} invoice{(_outstandingCount == 1 ? "" : "s")} due")"
+                 IconPath="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                 Tone="blue" />
+        <KpiCard Eyebrow="Overdue"
+                 Value="@($"£{_overdueTotal:N0}")"
+                 Sub="@($"{_overdueCount} invoice{(_overdueCount == 1 ? "" : "s")} overdue")"
+                 IconPath="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+                 Tone="rose" />
+        <KpiCard Eyebrow="Active retainers"
+                 Value="@_activeRetainers.ToString()"
+                 Sub="@($"£{_monthlyRecurring:N0}/mo recurring")"
+                 IconPath="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                 Tone="amber" />
+    </div>
+
+    <!-- All invoices -->
+    <CardSection Title="All invoices" Class="mb-5">
+        <!-- Filter bar -->
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex flex-wrap items-center gap-1.5">
+                <button @onclick="() => SetStatusFilter(null)" class="@FilterPillClass(null)">
+                    All (@_invoices.Count)
+                </button>
+                @foreach (var status in Enum.GetValues<InvoiceStatus>())
+                {
+                    var count = _invoices.Count(i => i.Status == status);
+                    <button @onclick="() => SetStatusFilter(status)" class="@FilterPillClass(status)">
+                        @status.DisplayName() (@count)
+                    </button>
+                }
+            </div>
+            <div class="relative sm:w-64">
+                <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 dark:text-neutral-500"
+                     fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
+                <input @bind="_search" @bind:event="oninput" placeholder="Search client, project or title…"
+                       class="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-white/10
+                              bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-neutral-200
+                              placeholder:text-gray-400 dark:placeholder:text-neutral-500
+                              focus:ring-1 focus:ring-accent outline-none" />
+            </div>
+        </div>
+
+        @if (_filtered.Count == 0)
+        {
+            <div class="px-6 py-12 text-center">
+                <p class="text-sm text-gray-400 dark:text-neutral-500">
+                    @(_invoices.Count == 0 ? "No invoices have been issued yet." : "No invoices match your filters.")
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="@TableStyles.Table">
+                    <thead>
+                        <tr class="@TableStyles.HeadRow">
+                            <Th>Invoice</Th>
+                            <Th>Client</Th>
+                            <Th Class="hidden lg:table-cell">Project</Th>
+                            <Th>Amount</Th>
+                            <Th Class="hidden sm:table-cell">Due</Th>
+                            <Th>Status</Th>
+                            <Th Right>Actions</Th>
+                        </tr>
+                    </thead>
+                    <tbody class="@TableStyles.Body">
+                        @foreach (var inv in _filtered)
+                        {
+                            <tr class="@TableStyles.Row">
+                                <Td>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">@inv.Title</p>
+                                    <p class="text-xs text-gray-500 dark:text-neutral-400">Issued @inv.IssuedAt.ToLocalTime().ToString("d MMM yyyy")</p>
+                                </Td>
+                                <Td>
+                                    @if (ClientHref(inv) is { Length: > 0 } href)
+                                    {
+                                        <a href="@href" class="text-sm text-accent hover:underline">@ClientName(inv.Project?.Client)</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">@ClientName(inv.Project?.Client)</span>
+                                    }
+                                </Td>
+                                <Td Class="hidden lg:table-cell">
+                                    <span class="text-sm text-gray-700 dark:text-neutral-300">@inv.Project?.Name</span>
+                                </Td>
+                                <Td>
+                                    <span class="text-sm text-gray-900 dark:text-white">@inv.Currency @inv.Amount.ToString("N2")</span>
+                                </Td>
+                                <Td Class="hidden sm:table-cell">
+                                    <span class="text-sm text-gray-700 dark:text-neutral-300">@(inv.DueAt?.ToLocalTime().ToString("d MMM yyyy") ?? "—")</span>
+                                </Td>
+                                <Td>
+                                    <select value="@inv.Status"
+                                            @onchange="e => ChangeStatusAsync(inv.Id, e)"
+                                            class="text-xs rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-700 dark:text-neutral-300 px-2 py-1.5 focus:ring-1 focus:ring-accent outline-none">
+                                        @foreach (var opt in EnumExtensions.ToOptions<InvoiceStatus>())
+                                        {
+                                            <option value="@opt.Value">@opt.Display</option>
+                                        }
+                                    </select>
+                                </Td>
+                                <Td>
+                                    <div class="flex items-center justify-end gap-3">
+                                        @if (_fileLinks.TryGetValue(inv.Id, out var links))
+                                        {
+                                            <FileActions ViewUrl="@links.ViewUrl" DownloadUrl="@links.DownloadUrl" />
+                                        }
+                                        @if (ClientHref(inv) is { Length: > 0 } manageHref)
+                                        {
+                                            <a href="@manageHref" class="text-xs font-medium text-accent hover:underline transition-colors">Manage</a>
+                                        }
+                                    </div>
+                                </Td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </CardSection>
+
+    <!-- Recurring retainers -->
+    <CardSection Title="Recurring retainers">
+        @if (_schedules.Count == 0)
+        {
+            <div class="px-6 py-10 text-center">
+                <p class="text-sm text-gray-400 dark:text-neutral-500">No recurring retainers set up yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="@TableStyles.Table">
+                    <thead>
+                        <tr class="@TableStyles.HeadRow">
+                            <Th>Retainer</Th>
+                            <Th>Client</Th>
+                            <Th>Amount</Th>
+                            <Th Class="hidden lg:table-cell">Collected to date</Th>
+                            <Th Class="hidden sm:table-cell">Next issue</Th>
+                            <Th>Status</Th>
+                        </tr>
+                    </thead>
+                    <tbody class="@TableStyles.Body">
+                        @foreach (var s in _schedules)
+                        {
+                            <tr class="@TableStyles.Row">
+                                <Td>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">@s.Title</p>
+                                    <p class="text-xs text-gray-500 dark:text-neutral-400">@s.Project?.Name · @s.PaymentDayOfMonth.ToOrdinal() of the month</p>
+                                </Td>
+                                <Td>
+                                    @if (ClientHref(s) is { Length: > 0 } href)
+                                    {
+                                        <a href="@href" class="text-sm text-accent hover:underline">@ClientName(s.Project?.Client)</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-sm text-gray-500 dark:text-neutral-400">@ClientName(s.Project?.Client)</span>
+                                    }
+                                </Td>
+                                <Td>
+                                    <span class="text-sm text-gray-900 dark:text-white">@s.Currency @s.Amount.ToString("N2")<span class="text-xs text-gray-500 dark:text-neutral-400">/mo</span></span>
+                                </Td>
+                                <Td Class="hidden lg:table-cell">
+                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">@s.Currency @RecurringService.CollectedToDate(s, DateTime.UtcNow).ToString("N2")</span>
+                                    <span class="block text-[11px] text-gray-400 dark:text-neutral-500">since @s.FirstPaymentDate.ToString("MMM yyyy")</span>
+                                </Td>
+                                <Td Class="hidden sm:table-cell">
+                                    <span class="text-sm text-gray-700 dark:text-neutral-300">@(s.IsActive ? s.NextIssueDate.ToString("d MMM yyyy") : "—")</span>
+                                </Td>
+                                <Td>
+                                    <StatusBadge CssClasses="@(s.IsActive ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400" : "bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-neutral-400")"
+                                                 Dot="@(s.IsActive ? "bg-emerald-400" : "bg-gray-400")"
+                                                 Label="@(s.IsActive ? "Active" : "Paused")" />
+                                </Td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </CardSection>
+}
+
+@code {
+    private string FilterPillClass(InvoiceStatus? status)
+    {
+        var active = _statusFilter.Equals(status);
+        return "px-2.5 py-1 text-xs font-medium rounded-lg transition-colors " + (active
+            ? "bg-accent text-white"
+            : "bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-white/10");
+    }
+}

@@ -159,6 +159,13 @@ public class InvoiceService(
             .OrderByDescending(i => i.IssuedAt)
             .ToListAsync();
 
+    public async Task<List<Invoice>> GetAllAsync()
+        => await db.Invoices
+            .Include(i => i.Project)
+                .ThenInclude(p => p!.Client)
+            .OrderByDescending(i => i.IssuedAt)
+            .ToListAsync();
+
     public async Task<Invoice?> GetByIdAsync(Guid id)
         => await db.Invoices
             .Include(i => i.Project)

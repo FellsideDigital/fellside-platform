@@ -16,6 +16,9 @@ public interface IRecurringInvoiceService
     Task DeleteAsync(Guid id);
     Task<List<RecurringInvoiceSchedule>> GetForClientAsync(string clientId);
 
+    /// <summary>Every recurring schedule across all clients, with project and client loaded — for the admin-wide invoices view.</summary>
+    Task<List<RecurringInvoiceSchedule>> GetAllSchedulesAsync();
+
     /// <summary>
     /// Estimated total collected for a schedule so far: the number of monthly payments due since
     /// its <c>FirstPaymentDate</c> (assuming each Direct Debit succeeded) times the monthly amount.
