@@ -27,7 +27,7 @@ public partial class Invoices : ComponentBase
     private ApplicationUser? _client;
     private List<ClientProject> _projects = [];
     private List<Invoice> _invoices = [];
-    private readonly Dictionary<Guid, string> _downloadUrls = [];
+    private readonly Dictionary<Guid, FileLinks> _downloadUrls = [];
 
     // Add-invoice form
     private string _selectedProjectId = "";
@@ -110,7 +110,11 @@ public partial class Invoices : ComponentBase
         _downloadUrls.Clear();
         foreach (var inv in _invoices.Where(i => i.FilePath is not null))
         {
-            try { _downloadUrls[inv.Id] = await InvoiceService.GetDownloadUrlAsync(inv.Id) ?? ""; }
+            try
+            {
+                if (await InvoiceService.GetFileLinksAsync(inv.Id) is { } links)
+                    _downloadUrls[inv.Id] = links;
+            }
             catch { /* non-fatal — download link simply won't appear */ }
         }
 

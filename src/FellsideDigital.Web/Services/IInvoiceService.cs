@@ -19,6 +19,9 @@ public interface IInvoiceService
     Task UpdateStatusAsync(Guid id, InvoiceStatus status, string? actorId = null);
     Task DeleteAsync(Guid id);
 
-    /// <summary>Returns a time-limited presigned download URL for the invoice file, or null if no file is attached.</summary>
+    /// <summary>Returns a time-limited presigned download URL (forces Save) for the invoice file, or null if no file is attached.</summary>
     Task<string?> GetDownloadUrlAsync(Guid id);
+
+    /// <summary>Returns time-limited presigned view + download URLs for the invoice file, or null if no file is attached.</summary>
+    Task<FileLinks?> GetFileLinksAsync(Guid id);
 }

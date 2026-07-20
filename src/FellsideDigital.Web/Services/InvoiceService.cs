@@ -131,9 +131,20 @@ public class InvoiceService(
         var invoice = await db.Invoices.FindAsync(id);
         if (invoice?.FilePath is null) return null;
 
-        var expiry = TimeSpan.FromMinutes(storageOptions.Value.PresignedUrlExpiryMinutes);
-        return await storage.GetPresignedUrlAsync(invoice.FilePath, expiry);
+        return await storage.GetPresignedUrlAsync(invoice.FilePath, PresignExpiry, downloadFileName: invoice.FileName);
     }
+
+    public async Task<FileLinks?> GetFileLinksAsync(Guid id)
+    {
+        var invoice = await db.Invoices.FindAsync(id);
+        if (invoice?.FilePath is null) return null;
+
+        var viewUrl     = await storage.GetPresignedUrlAsync(invoice.FilePath, PresignExpiry);
+        var downloadUrl = await storage.GetPresignedUrlAsync(invoice.FilePath, PresignExpiry, downloadFileName: invoice.FileName);
+        return new FileLinks(viewUrl, downloadUrl);
+    }
+
+    private TimeSpan PresignExpiry => TimeSpan.FromMinutes(storageOptions.Value.PresignedUrlExpiryMinutes);
 
     public async Task<List<Invoice>> GetForProjectAsync(Guid projectId)
         => await db.Invoices

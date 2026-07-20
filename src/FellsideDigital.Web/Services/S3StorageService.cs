@@ -93,7 +93,7 @@ public sealed class S3StorageService : IStorageService, IDisposable
         _logger.LogInformation("Deleted {Key} from bucket {Bucket}", key, _settings.BucketName);
     }
 
-    public Task<string> GetPresignedUrlAsync(string key, TimeSpan expiry, CancellationToken ct = default)
+    public Task<string> GetPresignedUrlAsync(string key, TimeSpan expiry, string? downloadFileName = null, CancellationToken ct = default)
     {
         var request = new GetPreSignedUrlRequest
         {
@@ -103,9 +103,31 @@ public sealed class S3StorageService : IStorageService, IDisposable
             Verb       = HttpVerb.GET,
         };
 
+        if (!string.IsNullOrWhiteSpace(downloadFileName))
+        {
+            // Force the browser to download (Save) rather than render inline. Setting the
+            // response Content-Disposition on the presigned URL is the only reliable way to
+            // trigger a cross-origin download on iOS Safari, which ignores the HTML `download`
+            // attribute for cross-origin links. The override is part of the signed request,
+            // so it can't be tampered with.
+            request.ResponseHeaderOverrides.ContentDisposition =
+                $"attachment; filename=\"{SanitizeFileName(downloadFileName)}\"";
+        }
+
         // Sign against the public endpoint so the URL is valid when the browser uses it.
         var url = _presignClient.GetPreSignedURL(request);
         return Task.FromResult(url);
+    }
+
+    /// <summary>
+    /// Reduces a filename to a safe subset for a Content-Disposition header: ASCII only,
+    /// no quotes/backslashes/control characters. Falls back to "download" if nothing remains.
+    /// </summary>
+    private static string SanitizeFileName(string name)
+    {
+        var cleaned = new string(
+            name.Where(c => c >= 32 && c < 127 && c != '"' && c != '\\').ToArray()).Trim();
+        return string.IsNullOrEmpty(cleaned) ? "download" : cleaned;
     }
 
     public void Dispose()

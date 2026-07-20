@@ -1,0 +1,40 @@
+@* View + Download actions for a stored file (invoice or shared document).
+
+   View opens the file inline in a new tab — browsers (including mobile Safari/Chrome)
+   render PDFs and images inline, which is the fastest way for a client to read it on a phone.
+
+   Download points at a presigned URL whose signed Content-Disposition forces a Save. This is
+   deliberately NOT the HTML `download` attribute: iOS Safari ignores that attribute for
+   cross-origin URLs (the file lives on S3), so the header is the only reliable trigger. *@
+
+<div class="flex items-center gap-3 shrink-0">
+    @if (!string.IsNullOrEmpty(ViewUrl))
+    {
+        <a href="@ViewUrl" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1 text-xs font-medium text-accent hover:opacity-80 transition-opacity">
+            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+            View
+        </a>
+    }
+    @if (!string.IsNullOrEmpty(DownloadUrl))
+    {
+        <a href="@DownloadUrl"
+           class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Download
+        </a>
+    }
+</div>
+
+@code {
+    /// <summary>Presigned URL that opens the file inline in a new tab.</summary>
+    [Parameter] public string? ViewUrl { get; set; }
+
+    /// <summary>Presigned URL that forces the file to download/save.</summary>
+    [Parameter] public string? DownloadUrl { get; set; }
+}

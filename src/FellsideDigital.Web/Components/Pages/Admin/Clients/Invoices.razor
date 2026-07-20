@@ -95,10 +95,9 @@ else
                             </Td>
                             <Td>
                                 <div class="flex items-center justify-end gap-3">
-                                    @if (_downloadUrls.TryGetValue(inv.Id, out var url) && !string.IsNullOrEmpty(url))
+                                    @if (_downloadUrls.TryGetValue(inv.Id, out var links))
                                     {
-                                        <a href="@url" target="_blank" rel="noopener noreferrer"
-                                           class="text-xs font-medium text-accent hover:underline transition-colors">Download</a>
+                                        <FileActions ViewUrl="@links.ViewUrl" DownloadUrl="@links.DownloadUrl" />
                                     }
                                     <button @onclick="() => OpenEdit(inv)"
                                             class="text-xs font-medium text-accent hover:underline transition-colors">

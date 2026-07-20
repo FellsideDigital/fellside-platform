@@ -99,9 +99,20 @@ public class ProjectDocumentService(
         var document = await db.ProjectDocuments.FindAsync(id);
         if (document is null || string.IsNullOrEmpty(document.FilePath)) return null;
 
-        var expiry = TimeSpan.FromMinutes(storageOptions.Value.PresignedUrlExpiryMinutes);
-        return await storage.GetPresignedUrlAsync(document.FilePath, expiry);
+        return await storage.GetPresignedUrlAsync(document.FilePath, PresignExpiry, downloadFileName: document.FileName);
     }
+
+    public async Task<FileLinks?> GetFileLinksAsync(Guid id)
+    {
+        var document = await db.ProjectDocuments.FindAsync(id);
+        if (document is null || string.IsNullOrEmpty(document.FilePath)) return null;
+
+        var viewUrl     = await storage.GetPresignedUrlAsync(document.FilePath, PresignExpiry);
+        var downloadUrl = await storage.GetPresignedUrlAsync(document.FilePath, PresignExpiry, downloadFileName: document.FileName);
+        return new FileLinks(viewUrl, downloadUrl);
+    }
+
+    private TimeSpan PresignExpiry => TimeSpan.FromMinutes(storageOptions.Value.PresignedUrlExpiryMinutes);
 
     public async Task DeleteAsync(Guid id)
     {

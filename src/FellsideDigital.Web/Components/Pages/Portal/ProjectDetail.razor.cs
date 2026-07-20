@@ -20,8 +20,8 @@ public partial class ProjectDetail : ComponentBase
 
     private ClientProject? _project;
     private bool _notFound;
-    private Dictionary<Guid, string> _downloadUrls = [];
-    private Dictionary<Guid, string> _documentUrls = [];
+    private Dictionary<Guid, FileLinks> _downloadUrls = [];
+    private Dictionary<Guid, FileLinks> _documentUrls = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,19 +44,27 @@ public partial class ProjectDetail : ComponentBase
             return;
         }
 
-        // Load presigned S3 download URLs for all invoices that have a file
+        // Presign view + download URLs for all invoices that have a file
         _downloadUrls = [];
         foreach (var inv in _project.Invoices.Where(i => i.FilePath is not null))
         {
-            try { _downloadUrls[inv.Id] = await InvoiceService.GetDownloadUrlAsync(inv.Id) ?? ""; }
+            try
+            {
+                if (await InvoiceService.GetFileLinksAsync(inv.Id) is { } links)
+                    _downloadUrls[inv.Id] = links;
+            }
             catch { /* non-fatal */ }
         }
 
-        // Load presigned S3 download URLs for all shared documents
+        // Presign view + download URLs for all shared documents
         _documentUrls = [];
         foreach (var doc in _project.Documents)
         {
-            try { _documentUrls[doc.Id] = await DocumentService.GetDownloadUrlAsync(doc.Id) ?? ""; }
+            try
+            {
+                if (await DocumentService.GetFileLinksAsync(doc.Id) is { } links)
+                    _documentUrls[doc.Id] = links;
+            }
             catch { /* non-fatal */ }
         }
     }

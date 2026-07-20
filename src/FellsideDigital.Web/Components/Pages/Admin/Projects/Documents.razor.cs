@@ -20,7 +20,7 @@ public partial class Documents : ComponentBase
 
     private ClientProject? _project;
     private List<ProjectDocument> _documents = [];
-    private Dictionary<Guid, string> _downloadUrls = [];
+    private Dictionary<Guid, FileLinks> _downloadUrls = [];
 
     private string _newTitle = "";
     private IBrowserFile? _selectedFile;
@@ -39,7 +39,11 @@ public partial class Documents : ComponentBase
         _downloadUrls = [];
         foreach (var doc in _documents)
         {
-            try { _downloadUrls[doc.Id] = await DocumentService.GetDownloadUrlAsync(doc.Id) ?? ""; }
+            try
+            {
+                if (await DocumentService.GetFileLinksAsync(doc.Id) is { } links)
+                    _downloadUrls[doc.Id] = links;
+            }
             catch { /* non-fatal */ }
         }
     }

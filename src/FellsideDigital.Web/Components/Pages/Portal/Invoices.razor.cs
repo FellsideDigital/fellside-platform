@@ -19,6 +19,7 @@ public partial class Invoices : ComponentBase
 
     private List<Invoice>? _invoices;
     private List<RecurringInvoiceSchedule> _schedules = [];
+    private Dictionary<Guid, FileLinks> _fileLinks = [];
 
     private int _paymentDay => BillingOptions.Value.PaymentDayOfMonth;
 
@@ -35,5 +36,18 @@ public partial class Invoices : ComponentBase
         _schedules = (await RecurringService.GetForClientAsync(clientId))
             .Where(s => s.IsActive)
             .ToList();
+
+        // Presign view + download URLs for every invoice that has a file. The raw FilePath is
+        // an S3 object key, not a browsable URL, so it must go through the storage service.
+        _fileLinks = [];
+        foreach (var inv in _invoices.Where(i => i.FilePath is not null))
+        {
+            try
+            {
+                if (await InvoiceService.GetFileLinksAsync(inv.Id) is { } links)
+                    _fileLinks[inv.Id] = links;
+            }
+            catch { /* non-fatal — the file actions simply won't render for this row */ }
+        }
     }
 }

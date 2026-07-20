@@ -22,7 +22,7 @@ public partial class Detail : ComponentBase
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
     private ClientProject? _project;
-    private Dictionary<Guid, string> _downloadUrls = [];
+    private Dictionary<Guid, FileLinks> _downloadUrls = [];
 
     private bool _showDelete;
     private bool _deleting;
@@ -117,7 +117,11 @@ public partial class Detail : ComponentBase
         {
             foreach (var inv in _project.Invoices.Where(i => i.FilePath is not null))
             {
-                try { _downloadUrls[inv.Id] = await InvoiceService.GetDownloadUrlAsync(inv.Id) ?? ""; }
+                try
+                {
+                    if (await InvoiceService.GetFileLinksAsync(inv.Id) is { } links)
+                        _downloadUrls[inv.Id] = links;
+                }
                 catch { /* non-fatal — download link simply won't appear */ }
             }
         }

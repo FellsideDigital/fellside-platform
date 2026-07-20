@@ -1,6 +1,7 @@
 @using FellsideDigital.Domain.Enums
 @using FellsideDigital.Domain.Extensions
 @using FellsideDigital.Web.Data
+@using FellsideDigital.Web.Services
 @* BadgeHelpers is in FellsideDigital.Web.Components.Shared, already imported via _Imports.razor *@
 
 @{
@@ -231,10 +232,9 @@
                                     <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">@doc.Title</p>
                                     <p class="text-xs text-gray-400 dark:text-neutral-500">Shared @doc.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</p>
                                 </div>
-                                @if (DocumentUrls.TryGetValue(doc.Id, out var durl) && !string.IsNullOrEmpty(durl))
+                                @if (DocumentUrls.TryGetValue(doc.Id, out var dlinks))
                                 {
-                                    <a href="@durl" target="_blank" rel="noopener noreferrer"
-                                       class="text-xs font-medium text-accent hover:opacity-80 transition-opacity shrink-0">View ↗</a>
+                                    <FileActions ViewUrl="@dlinks.ViewUrl" DownloadUrl="@dlinks.DownloadUrl" />
                                 }
                             </li>
                         }
@@ -271,10 +271,9 @@
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
                                     <StatusBadge CssClasses="@BadgeHelpers.InvoiceStatusBadge(inv.Status)" Label="@inv.Status.ToString()" />
-                                    @if (DownloadUrls.TryGetValue(inv.Id, out var url) && !string.IsNullOrEmpty(url))
+                                    @if (DownloadUrls.TryGetValue(inv.Id, out var ilinks))
                                     {
-                                        <a href="@url" target="_blank" rel="noopener noreferrer"
-                                           class="text-xs font-medium text-accent hover:opacity-80 transition-opacity">Download</a>
+                                        <FileActions ViewUrl="@ilinks.ViewUrl" DownloadUrl="@ilinks.DownloadUrl" />
                                     }
                                 </div>
                             </li>
@@ -288,8 +287,8 @@
 
 @code {
     [Parameter, EditorRequired] public ClientProject Project { get; set; } = default!;
-    [Parameter, EditorRequired] public Dictionary<Guid, string> DownloadUrls { get; set; } = [];
-    [Parameter] public Dictionary<Guid, string> DocumentUrls { get; set; } = [];
+    [Parameter, EditorRequired] public Dictionary<Guid, FileLinks> DownloadUrls { get; set; } = [];
+    [Parameter] public Dictionary<Guid, FileLinks> DocumentUrls { get; set; } = [];
     [Parameter] public string? BackHref { get; set; }
     [Parameter] public string? BackLabel { get; set; }
 
