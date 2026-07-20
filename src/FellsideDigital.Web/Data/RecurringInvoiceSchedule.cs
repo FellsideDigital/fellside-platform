@@ -17,6 +17,14 @@ public class RecurringInvoiceSchedule
     public bool IsActive { get; set; } = true;
 
     /// <summary>
+    /// UTC date of the customer's first payment on this retainer (date component only). Anchors
+    /// the "collected to date" running total — each whole month elapsed since this date counts as
+    /// one collected payment. Defaults to the first issue date on creation, but is admin-editable
+    /// so retainers that began before the platform existed can record their true start.
+    /// </summary>
+    public DateTime FirstPaymentDate { get; set; }
+
+    /// <summary>
     /// Day of the month (1–31) this schedule is issued and payment is collected. Seeded from
     /// the global <c>Billing:PaymentDayOfMonth</c> on creation, but overridable per customer
     /// (e.g. some are billed on the 18th rather than the 1st). Days 29–31 are clamped to the

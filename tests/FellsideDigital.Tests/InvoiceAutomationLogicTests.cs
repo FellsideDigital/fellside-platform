@@ -67,6 +67,21 @@ public class InvoiceAutomationLogicTests
     }
 
     [Theory]
+    [InlineData(2024, 3, 1, 2026, 7, 20, 29)]  // ~2.5 years of monthly payments, this month's already collected
+    [InlineData(2026, 6, 15, 2026, 7, 20, 2)]  // anniversary day passed this month → both June and July count
+    [InlineData(2026, 6, 25, 2026, 7, 20, 1)]  // anniversary not yet reached this month → only June counts
+    [InlineData(2026, 7, 1, 2026, 7, 20, 1)]   // first payment this month
+    [InlineData(2026, 7, 1, 2026, 7, 1, 1)]    // exactly on the first payment day
+    [InlineData(2026, 8, 1, 2026, 7, 20, 0)]   // first payment still in the future
+    public void PaymentsCollected_CountsMonthlyAnniversaries(
+        int sy, int sm, int sd, int ay, int am, int ad, int expected)
+    {
+        var first = new DateTime(sy, sm, sd, 0, 0, 0, DateTimeKind.Utc);
+        var asOf  = new DateTime(ay, am, ad, 12, 0, 0, DateTimeKind.Utc);
+        Assert.Equal(expected, RecurringInvoiceService.PaymentsCollected(first, asOf));
+    }
+
+    [Theory]
     [InlineData(0, -4, null)]                              // too early
     [InlineData(0, -3, InvoiceReminderKind.Upcoming)]      // lead window opens
     [InlineData(0, 0, InvoiceReminderKind.Upcoming)]       // due day still counts as upcoming

@@ -1,3 +1,4 @@
+using FellsideDigital.Domain.Enums;
 using FellsideDigital.Web.Data;
 using FellsideDigital.Web.Services;
 using Microsoft.AspNetCore.Components;
@@ -20,6 +21,19 @@ public partial class Invoices : ComponentBase
 
     /// <summary>The client's combined recurring bill each month (active schedules only).</summary>
     private decimal _monthlyTotal => _schedules.Sum(s => s.Amount);
+
+    /// <summary>Estimated total collected from active retainers to date (months elapsed × amount).</summary>
+    private decimal _retainerCollected =>
+        _schedules.Sum(s => RecurringService.CollectedToDate(s, DateTime.UtcNow));
+
+    /// <summary>
+    /// Total paid to date: retainer payments collected by Direct Debit, plus one-off invoices
+    /// marked paid. Schedule-generated invoices are excluded here — they're counted via the
+    /// retainer estimate above, so they aren't double-counted.
+    /// </summary>
+    private decimal _paidTotal =>
+        _retainerCollected
+        + (_invoices?.Where(i => i.Status == InvoiceStatus.Paid && i.ScheduleId is null).Sum(i => i.Amount) ?? 0m);
 
     protected override async Task OnInitializedAsync()
     {

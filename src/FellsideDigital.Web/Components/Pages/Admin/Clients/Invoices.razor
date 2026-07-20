@@ -128,6 +128,7 @@ else
                         <Th>Schedule</Th>
                         <Th Class="hidden md:table-cell">Project</Th>
                         <Th>Amount</Th>
+                        <Th Class="hidden lg:table-cell">Collected to date</Th>
                         <Th Class="hidden sm:table-cell">Next issue</Th>
                         <Th>Status</Th>
                         <Th Right>Actions</Th>
@@ -146,6 +147,10 @@ else
                             </Td>
                             <Td>
                                 <span class="text-sm text-gray-900 dark:text-white">@s.Currency @s.Amount.ToString("N2")<span class="text-xs text-gray-500 dark:text-neutral-400">/mo</span></span>
+                            </Td>
+                            <Td Class="hidden lg:table-cell">
+                                <span class="text-sm font-semibold text-gray-900 dark:text-white">@s.Currency @RecurringService.CollectedToDate(s, DateTime.UtcNow).ToString("N2")</span>
+                                <span class="block text-[11px] text-gray-400 dark:text-neutral-500">since @s.FirstPaymentDate.ToString("MMM yyyy")</span>
                             </Td>
                             <Td Class="hidden sm:table-cell">
                                 <span class="text-sm text-gray-700 dark:text-neutral-300">@(s.IsActive ? s.NextIssueDate.ToString("d MMM yyyy") : "—")</span>
@@ -222,6 +227,11 @@ else
                         <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Payment day *</label>
                         <input @bind="_recPaymentDay" type="number" min="1" max="31" class="@InputClass" />
                         <p class="mt-1 text-[11px] text-gray-400 dark:text-neutral-500">Day of month (1–31)</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">First payment *</label>
+                        <input @bind="_recFirstPaymentDate" type="date" class="@InputClass" />
+                        <p class="mt-1 text-[11px] text-gray-400 dark:text-neutral-500">Back-date for existing retainers</p>
                     </div>
                     <div class="sm:col-span-4 flex justify-end">
                         <SpinnerButton IsLoading="@_recSaving"
@@ -420,6 +430,11 @@ else
                 <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">Payment day *</label>
                 <input @bind="_editSchedulePaymentDay" type="number" min="1" max="31" class="@InputClass" />
                 <p class="mt-1 text-[11px] text-gray-400 dark:text-neutral-500">Day of month (1–31)</p>
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-xs font-medium text-gray-500 dark:text-neutral-400 mb-1.5">First payment date *</label>
+                <input @bind="_editScheduleFirstPaymentDate" type="date" class="@InputClass" />
+                <p class="mt-1 text-[11px] text-gray-400 dark:text-neutral-500">Anchors the collected-to-date total. Back-date for retainers that began before the platform.</p>
             </div>
         </div>
 

@@ -207,7 +207,8 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var (sut, _) = MakeSut(db);
 
         var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", paymentDay: 1);
-        await sut.UpdateAsync(schedule.Id, "Retainer", null, 100m, "GBP", paymentDay: 18);
+        await sut.UpdateAsync(schedule.Id, "Retainer", null, 100m, "GBP", paymentDay: 18,
+            firstPaymentDate: schedule.FirstPaymentDate);
 
         var updated = await db.RecurringInvoiceSchedules.SingleAsync(s => s.Id == schedule.Id);
         Assert.Equal(18, updated.PaymentDayOfMonth);
@@ -234,5 +235,57 @@ public class RecurringInvoiceServiceTests(PostgresFixture fx)
         var updated = await db.RecurringInvoiceSchedules.SingleAsync(s => s.Id == schedule.Id);
         Assert.Equal(18, updated.NextIssueDate.Day);
         Assert.True(updated.NextIssueDate > period);
+    }
+
+    [Fact]
+    public async Task Create_DefaultsFirstPaymentDate_ToFirstIssue()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP");
+
+        Assert.Equal(schedule.NextIssueDate.Date, schedule.FirstPaymentDate.Date);
+    }
+
+    [Fact]
+    public async Task Create_AcceptsBackdatedFirstPaymentDate()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var start = new DateTime(2024, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 250m, "GBP", firstPaymentDate: start);
+
+        var stored = await db.RecurringInvoiceSchedules.SingleAsync(s => s.Id == schedule.Id);
+        Assert.Equal(start, stored.FirstPaymentDate);
+    }
+
+    [Fact]
+    public async Task CollectedToDate_IsMonthsElapsed_TimesAmount()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var start = DateTime.UtcNow.Date.AddMonths(-3); // 4 payments so far (start + 3 anniversaries)
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", firstPaymentDate: start);
+
+        Assert.Equal(400m, sut.CollectedToDate(schedule, DateTime.UtcNow));
+    }
+
+    [Fact]
+    public async Task CollectedToDate_IsZero_BeforeFirstPayment()
+    {
+        await using var db = fx.CreateContext();
+        var projectId = await SeedProjectAsync(db);
+        var (sut, _) = MakeSut(db);
+
+        var start = DateTime.UtcNow.Date.AddMonths(2); // starts in the future
+        var schedule = await sut.CreateAsync(projectId, "Retainer", null, 100m, "GBP", firstPaymentDate: start);
+
+        Assert.Equal(0m, sut.CollectedToDate(schedule, DateTime.UtcNow));
     }
 }

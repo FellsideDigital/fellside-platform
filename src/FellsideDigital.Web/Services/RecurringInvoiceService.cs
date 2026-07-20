@@ -18,12 +18,13 @@ public class RecurringInvoiceService(
 
     public async Task<RecurringInvoiceSchedule> CreateAsync(
         Guid projectId, string title, string? description, decimal amount, string currency,
-        int? paymentDay = null, string? actorId = null)
+        int? paymentDay = null, DateTime? firstPaymentDate = null, string? actorId = null)
     {
         Validate(title, amount);
         var day = paymentDay ?? PaymentDay;
         ValidateDay(day);
 
+        var firstIssue = FirstIssueDate(DateTime.UtcNow, day);
         var schedule = new RecurringInvoiceSchedule
         {
             Id                = Guid.NewGuid(),
@@ -34,7 +35,10 @@ public class RecurringInvoiceService(
             Currency          = currency,
             IsActive          = true,
             PaymentDayOfMonth = day,
-            NextIssueDate     = FirstIssueDate(DateTime.UtcNow, day),
+            NextIssueDate     = firstIssue,
+            // First payment defaults to the first collection; admins can back-date it for
+            // retainers that started before the platform. Stored as a UTC date.
+            FirstPaymentDate  = DateTime.SpecifyKind((firstPaymentDate ?? firstIssue).Date, DateTimeKind.Utc),
             CreatedAt         = DateTime.UtcNow,
         };
 
@@ -50,7 +54,8 @@ public class RecurringInvoiceService(
     }
 
     public async Task<RecurringInvoiceSchedule> UpdateAsync(
-        Guid id, string title, string? description, decimal amount, string currency, int paymentDay)
+        Guid id, string title, string? description, decimal amount, string currency, int paymentDay,
+        DateTime firstPaymentDate)
     {
         Validate(title, amount);
         ValidateDay(paymentDay);
@@ -58,10 +63,11 @@ public class RecurringInvoiceService(
         var schedule = await db.RecurringInvoiceSchedules.FindAsync(id)
             ?? throw new InvalidOperationException("That recurring invoice no longer exists.");
 
-        schedule.Title       = title;
-        schedule.Description = description;
-        schedule.Amount      = amount;
-        schedule.Currency    = currency;
+        schedule.Title            = title;
+        schedule.Description      = description;
+        schedule.Amount           = amount;
+        schedule.Currency         = currency;
+        schedule.FirstPaymentDate = DateTime.SpecifyKind(firstPaymentDate.Date, DateTimeKind.Utc);
 
         if (schedule.PaymentDayOfMonth != paymentDay)
         {
@@ -95,6 +101,28 @@ public class RecurringInvoiceService(
 
         db.RecurringInvoiceSchedules.Remove(schedule);
         await db.SaveChangesAsync();
+    }
+
+    public decimal CollectedToDate(RecurringInvoiceSchedule schedule, DateTime asOf)
+    {
+        // A paused schedule stops accruing at its last issued invoice; an active one accrues to now.
+        var cutoff = schedule.IsActive ? asOf : (schedule.LastIssuedAt ?? asOf);
+        return PaymentsCollected(schedule.FirstPaymentDate, cutoff) * schedule.Amount;
+    }
+
+    /// <summary>
+    /// Number of monthly payments collected from <paramref name="firstPayment"/> up to and
+    /// including <paramref name="asOf"/> — 0 if the first payment is still in the future.
+    /// </summary>
+    internal static int PaymentsCollected(DateTime firstPayment, DateTime asOf)
+    {
+        var start = firstPayment.Date;
+        var today = asOf.Date;
+        if (today < start) return 0;
+
+        var months = (today.Year - start.Year) * 12 + (today.Month - start.Month);
+        if (today.Day < start.Day) months--; // this month's anniversary hasn't arrived yet
+        return months + 1;                    // include the first payment itself
     }
 
     public async Task<List<RecurringInvoiceSchedule>> GetForClientAsync(string clientId)
