@@ -106,6 +106,25 @@ else
                     </div>
                     <ProgressRing Value="@ProgressPct" Size="128" Stroke="11" />
                 </div>
+
+                <!-- Key stats (compact, replaces the separate KPI cards) -->
+                <div class="relative mt-6 pt-6 border-t border-gray-100 dark:border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Current phase</p>
+                        <p class="mt-2 text-base font-bold text-gray-900 dark:text-white truncate">@CurrentPhaseShort</p>
+                        <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500 truncate">@CurrentPhaseSub</p>
+                    </div>
+                    <div class="min-w-0 sm:border-l border-gray-100 dark:border-white/5 sm:pl-6">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Days to launch</p>
+                        <p class="mt-2 text-base font-bold text-gray-900 dark:text-white truncate">@DaysToLaunchStr</p>
+                        <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500 truncate">@TargetLaunchSub</p>
+                    </div>
+                    <div class="min-w-0 sm:border-l border-gray-100 dark:border-white/5 sm:pl-6">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Outstanding</p>
+                        <p class="mt-2 text-base font-bold text-gray-900 dark:text-white truncate">@OutstandingStr</p>
+                        <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500 truncate">@OutstandingSub</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Client card -->
@@ -397,25 +416,6 @@ else
                         </div>
                     </CardSection>
                 }
-        </div>
-
-        <!-- ── At-a-glance stats (small summary tiles, kept at the bottom) ── -->
-        <div class="rounded-2xl border border-gray-200/80 dark:border-white/5 bg-white dark:bg-neutral-900 shadow-sm p-6 grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div class="min-w-0">
-                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Current phase</p>
-                <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white truncate">@CurrentPhaseShort</p>
-                <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500 truncate">@CurrentPhaseSub</p>
-            </div>
-            <div class="min-w-0 sm:border-l border-gray-100 dark:border-white/5 sm:pl-8">
-                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Days to launch</p>
-                <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white truncate">@DaysToLaunchStr</p>
-                <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500 truncate">@TargetLaunchSub</p>
-            </div>
-            <div class="min-w-0 sm:border-l border-gray-100 dark:border-white/5 sm:pl-8">
-                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-neutral-500">Outstanding</p>
-                <p class="mt-2 text-lg font-bold text-gray-900 dark:text-white truncate">@OutstandingStr</p>
-                <p class="mt-0.5 text-xs text-gray-400 dark:text-neutral-500 truncate">@OutstandingSub</p>
-            </div>
         </div>
     </div>
 
