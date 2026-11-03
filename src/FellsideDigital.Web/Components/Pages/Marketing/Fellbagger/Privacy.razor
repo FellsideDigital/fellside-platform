@@ -5,7 +5,7 @@
     listings — do not move or rename it.
 
     The text is a hand-rendered copy of privacy-policy.md in this folder (canonical source:
-    wainwrights-tracker/docs/privacy-policy.md). Keep the wording identical to the markdown.
+    wainwrights-tracker/docs/1-privacy-policy.md). Keep the wording identical to the markdown.
 *@
 
 <PageTitle>Fellbagger privacy policy | Fellside Digital</PageTitle>
@@ -24,29 +24,19 @@
 
     <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight text-slate-900 dark:text-white mb-4">Fellbagger privacy policy</h1>
 
-    <p><strong>Last updated:</strong> 17 September 2026</p>
+    <p><strong>Last updated:</strong> 3 November 2026</p>
 
-    <p>
-        Fellbagger is made by Fellside Digital ("we", "us"). This policy explains what the app does with
-        information about you. The short version: almost everything stays on your phone, and we have
-        designed it that way on purpose.
-    </p>
+    <p>Fellbagger is made by Fellside Digital ("we", "us"). This policy explains what the app does with information about you. The short version: almost everything stays on your phone, and we have designed it that way on purpose.</p>
 
     <p>If you have any questions, email <strong><a href="mailto:oliver.lewington@fellsidedigital.co.uk">oliver.lewington@fellsidedigital.co.uk</a></strong>.</p>
 
     <h2>Who is responsible</h2>
 
-    <p>
-        Fellside Digital, Cumbria, United Kingdom, is the data controller for anything described here.
-        Contact: <a href="mailto:oliver.lewington@fellsidedigital.co.uk">oliver.lewington@fellsidedigital.co.uk</a>.
-    </p>
+    <p>Fellside Digital, Cumbria, United Kingdom, is the data controller for anything described here. Contact: <a href="mailto:oliver.lewington@fellsidedigital.co.uk">oliver.lewington@fellsidedigital.co.uk</a>.</p>
 
     <h2>What stays on your phone</h2>
 
-    <p>
-        Fellbagger has no accounts and no sign-in. The following is stored only on your device and is
-        never sent to us:
-    </p>
+    <p>Fellbagger has no accounts of its own. Unless you choose to connect Strava or Garmin Connect (both described below), there is no sign-in at all. The following is stored only on your device and is never sent to us:</p>
 
     <ul>
         <li>Your ascent log — which fells you have bagged and when</li>
@@ -55,11 +45,7 @@
         <li>The app's diagnostics log (used only if you choose to copy it and send it to us yourself)</li>
     </ul>
 
-    <p>
-        Because we never receive this information, we cannot see it, recover it, or delete it for you.
-        <strong>Deleting the app deletes all of it.</strong> You can export any walk or route as a GPX file at any time
-        if you want a copy.
-    </p>
+    <p>Because we never receive this information, we cannot see it, recover it, or delete it for you. <strong>Deleting the app deletes all of it.</strong> You can export any walk or route as a GPX file at any time if you want a copy.</p>
 
     <h2>Location</h2>
 
@@ -69,27 +55,18 @@
         <li>Show where you are on the map and how far you are from each fell</li>
         <li>Record the track of a walk while you are recording one</li>
         <li>Bag summits automatically as you reach them (a Fellbagger Pro feature)</li>
+        <li>Show the weather where you are, and sunsets, clear nights and other outdoor events near you</li>
     </ul>
 
-    <p>
-        While you are recording a walk, the app keeps using your location in the background — with your
-        phone in your pocket or the screen off — so the recording continues and summits are still
-        detected. This stops when you end the walk. On iPhone the app also reads the barometer, on-device,
-        to measure ascent more accurately than GPS alone.
-    </p>
+    <p>While you are recording a walk, the app keeps using your location with your phone in your pocket or the screen off, so the recording continues and summits are still detected. It only does this for a walk you started, and it stops when you end the walk. The app never asks for location "all the time" and never uses your location when you aren't recording or using it. Where your phone has a barometer, the app also reads it on the phone to measure ascent more accurately than GPS alone.</p>
 
-    <p>
-        <strong>Your location is processed entirely on your phone.</strong> It is not sent to us or to anyone else.
-        You can turn location access off at any time in your phone's settings; the app still works for
-        logging fells by hand.
-    </p>
+    <p><strong>Your precise location stays on your phone.</strong> It is never sent to us, and walks you record in Fellbagger, with their GPS tracks, never leave your phone. Activities you choose to bring in from Garmin Connect work differently and reach your phone through our server, as described under <em>Connecting Garmin Connect</em>. To show the weather where you are and outdoor events near you, the app sends an <strong>approximate</strong> position — rounded to about 1 km — to the weather service (Open-Meteo, below), and your phone's own place-name lookup (Apple's or Google's) uses the same approximate position to show the name of the nearest town. Nothing sent with it identifies you. For event alerts, the app remembers the approximate position it last used, on your phone, so it can check the forecast there later; it never tracks where you are in the background for this.</p>
+
+    <p>You can turn location access off at any time in your phone's settings; the app still works for logging fells by hand.</p>
 
     <h2>What leaves your phone, and where it goes</h2>
 
-    <p>
-        Some features need the internet. Each is listed below with exactly what is sent. None of them
-        includes your name, an account, or your ascent history.
-    </p>
+    <p>Some features need the internet. Each is listed below with exactly what is sent. Apart from the Strava and Garmin connections you choose to make, none of them includes your name, an account, or your ascent history.</p>
 
     <div class="overflow-x-auto mb-4 -mx-6 px-6 sm:mx-0 sm:px-0">
         <table class="w-full text-sm text-left border-collapse">
@@ -103,8 +80,18 @@
             <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
                 <tr>
                     <td class="py-3 pr-4 align-top"><strong>Open-Meteo</strong> (<a href="https://open-meteo.com">open-meteo.com</a>)</td>
-                    <td class="py-3 pr-4 align-top">The coordinates and height of a <em>fell</em> — never your own position</td>
-                    <td class="py-3 align-top">Mountain weather forecasts</td>
+                    <td class="py-3 pr-4 align-top">The coordinates and height of a <em>fell</em>; and, for the weather where you are and events near you, your approximate position (rounded to about 1 km) and points about 50 km either side of it</td>
+                    <td class="py-3 align-top">Mountain and local weather forecasts</td>
+                </tr>
+                <tr>
+                    <td class="py-3 pr-4 align-top"><strong>Apple or Google</strong> (your phone's built-in place lookup)</td>
+                    <td class="py-3 pr-4 align-top">Your approximate position (rounded to about 1 km)</td>
+                    <td class="py-3 align-top">The name of the nearest town</td>
+                </tr>
+                <tr>
+                    <td class="py-3 pr-4 align-top"><strong>NOAA Space Weather Prediction Center</strong> (<a href="https://www.swpc.noaa.gov">swpc.noaa.gov</a>)</td>
+                    <td class="py-3 pr-4 align-top">Nothing about you: a request for its public three-day aurora forecast</td>
+                    <td class="py-3 align-top">The northern lights chance</td>
                 </tr>
                 <tr>
                     <td class="py-3 pr-4 align-top"><strong>Our content server</strong> (api.fellbagger.app)</td>
@@ -117,7 +104,7 @@
                     <td class="py-3 align-top">Fell photography</td>
                 </tr>
                 <tr>
-                    <td class="py-3 pr-4 align-top"><strong>OpenStreetMap, OpenTopoMap and Ordnance Survey</strong></td>
+                    <td class="py-3 pr-4 align-top"><strong>OpenStreetMap, OpenTopoMap, Ordnance Survey and Mapbox</strong></td>
                     <td class="py-3 pr-4 align-top">Requests for map tiles, which reveal roughly which area of the map you are looking at</td>
                     <td class="py-3 align-top">Map display</td>
                 </tr>
@@ -126,90 +113,100 @@
                     <td class="py-3 pr-4 align-top">Crash reports: what went wrong in the app, your phone model, operating system version and app version</td>
                     <td class="py-3 align-top">Finding and fixing crashes</td>
                 </tr>
+                <tr>
+                    <td class="py-3 pr-4 align-top"><strong>Our server</strong> (api.fellbagger.app) — only if you connect Strava</td>
+                    <td class="py-3 pr-4 align-top">The sign-in code or refresh token Strava issues, passed straight to Strava with our app secret and not kept</td>
+                    <td class="py-3 align-top">Signing in to Strava</td>
+                </tr>
+                <tr>
+                    <td class="py-3 pr-4 align-top"><strong>Strava</strong> — only if you connect Strava</td>
+                    <td class="py-3 pr-4 align-top">Requests for your activities; and, if you turn on fell lines, the line added to a post you approve</td>
+                    <td class="py-3 align-top">Bringing your walks in, and adding fell lines</td>
+                </tr>
+                <tr>
+                    <td class="py-3 pr-4 align-top"><strong>Our server</strong> (api.fellbagger.app) and <strong>Garmin</strong> — only if you connect Garmin Connect</td>
+                    <td class="py-3 pr-4 align-top">See <em>Connecting Garmin Connect</em> below</td>
+                    <td class="py-3 align-top">Bringing your Garmin activities in</td>
+                </tr>
+                <tr>
+                    <td class="py-3 pr-4 align-top"><strong>Our content server</strong> (api.fellbagger.app) — only when you send a report</td>
+                    <td class="py-3 pr-4 align-top">What you write in <em>Report a problem</em> or <em>Suggest a feature</em>, your email address if you choose to give one, and the app version, phone model and operating system version</td>
+                    <td class="py-3 align-top">Fixing problems you report, and replying if you asked us to</td>
+                </tr>
             </tbody>
         </table>
     </div>
 
-    <p>
-        Like any internet request, these carry your phone's IP address to the service receiving them.
-        Our own servers keep standard, short-lived access logs (IP address, time, what was requested) for
-        security and to see how much capacity we need. Crash reports never include your location, your
-        walks, or your ascent log, and are kept by Sentry for 30 days. Map tiles are cached on your phone
-        so that the maps work offline and the same area is not requested again.
-    </p>
+    <p>Like any internet request, these carry your phone's IP address to the service receiving them. Our own servers keep standard, short-lived access logs (IP address, time, what was requested) for security and to see how much capacity we need. Crash reports never include your location, your walks, or your ascent log, and are kept by Sentry for 30 days. Map tiles are cached on your phone so that the maps work offline and the same area is not requested again.</p>
 
-    <p>
-        Open-Meteo, OpenStreetMap, OpenTopoMap and Ordnance Survey each have their own privacy policies
-        covering the requests they receive.
-    </p>
+    <p>Reports you send from Settings → Help &amp; Support are only sent when you press Send, and the page shows you exactly what goes with them first. Giving an email address is optional; we use it only to reply to that report. We keep reports until they are dealt with and for at most 12 months after that, and you can ask us to delete one at any time.</p>
+
+    <p>Open-Meteo, OpenStreetMap, OpenTopoMap, Ordnance Survey and Mapbox each have their own privacy policies covering the requests they receive. Open-Meteo keeps its web server logs, which can include the coordinates asked about, for up to 90 days to troubleshoot its service, and does not share them. Mapbox's own usage-analytics feature (which would otherwise report your approximate location to Mapbox) is switched off in the app; only ordinary map-tile requests are made, the same as the other map providers above.</p>
+
+    <p>Our server (api.fellbagger.app) runs on <strong>Railway</strong> (Railway Corporation, United States), which hosts the server and its database for us as our processor. Fell photographs and terrain data are served through <strong>Cloudflare</strong>.</p>
+
+    <h2>Connecting Strava</h2>
+
+    <p>Connecting Strava is optional. Strava's sign-in screen sets out what you are allowing. Your Strava sign-in tokens are kept in your phone's secure storage. Your activities are downloaded directly from Strava to your phone, and the walks and tracks you bring in are stored only there. Our server only completes the sign-in, as listed above, and keeps nothing from it. If you turn on fell lines, the app writes a line to the Strava posts you approve, and only those.</p>
+
+    <p>Disconnecting in the app removes the tokens from your phone. Walks you have already brought in stay on your phone until you delete them. Strava's handling of your data is covered by its own privacy policy.</p>
+
+    <h2>Connecting Garmin Connect</h2>
+
+    <p>Connecting Garmin Connect is optional, needs Fellbagger Pro, and only happens if you agree on Garmin's own consent screen. It works differently from everything else in this policy, because Garmin delivers activities to a server rather than to a phone. <strong>This is the one case where your activity data passes through us.</strong></p>
+
+    <p><strong>What we receive.</strong> Once you connect, Garmin sends our server each new activity you sync to Garmin Connect, including outdoor activities and any others on your account. That data is linked to your Garmin user ID, and can include the GPS track, times, distance, ascent, activity type, and whatever else your device recorded, such as heart rate. We also hold the Garmin user ID and the connection credentials Garmin issues for you, encrypted, so that we can keep your connection working and end it when you ask.</p>
+
+    <p><strong>How we use it.</strong> Only to deliver your activities to your Fellbagger app, where the app looks for the fells you climbed so that you can review them and log them. We use the track, times, distance, ascent and activity type. We do not use heart rate or other health measurements for anything. We do not look at your activities ourselves, except where you ask us to help with a problem or where it is needed to keep the service secure and working.</p>
+
+    <p><strong>How long we keep it.</strong> Each activity stays on our server only until your phone has collected it, and is then deleted from the server. Anything not collected within 30 days is deleted anyway. If you disconnect, we delete everything waiting for you. If your app collects nothing for 60 days, we end the Garmin connection and delete what we hold; you can connect again at any time. Activities you have collected are stored only on your phone.</p>
+
+    <p><strong>Who else receives it.</strong> Garmin data on our server is held with Railway, our hosting provider, as our processor. It is not sent to any other company. It is not included in crash reports, and it does not go to Sentry, RevenueCat or any map or weather provider. Your Garmin data is not sold or shared with anyone, and it is not used for advertising.</p>
+
+    <p><strong>AI.</strong> No AI system processes your Garmin data, and it is never used to train, evaluate or improve AI models.</p>
+
+    <p><strong>Your control.</strong> You can withdraw consent at any time by disconnecting in the app, or by removing Fellbagger from Connected Apps in your Garmin Connect account; either ends delivery and deletes what is waiting on our server. Collected walks are on your phone, where you can see them, correct which fells were logged, delete them, or export any of them as a GPX file. To ask what we hold or to have it deleted, email <a href="mailto:oliver.lewington@fellsidedigital.co.uk">oliver.lewington@fellsidedigital.co.uk</a>.</p>
+
+    <p>Garmin handles your Garmin account under its own privacy policy. Garmin and Garmin Connect are trademarks of Garmin Ltd. or its subsidiaries. Fellbagger is not made by or affiliated with Garmin.</p>
 
     <h2>Purchases</h2>
 
-    <p>
-        Fellbagger Pro is a one-time purchase made through the Apple App Store or Google Play. Apple or
-        Google handle the payment and hold your payment details; we never see them. The app records on
-        your phone that the purchase was made, and can restore it from your Apple or Google account if
-        you reinstall.
-    </p>
+    <p>Fellbagger Pro is sold through the Apple App Store or Google Play as a yearly or monthly subscription, or as a one-off lifetime purchase. Apple or Google handle the payment and hold your payment details; we never see them.</p>
+
+    <p>To check that a purchase is genuine and whether a subscription is still active, the app uses <strong>RevenueCat</strong> (RevenueCat, Inc.) as our processor. RevenueCat receives a random identifier created by the app (not your name, email or Apple/Google account), your purchase and subscription history for Fellbagger, and basic device information (platform, app version, country of your store account). It uses this only to validate purchases for us. See RevenueCat's privacy policy at <a href="https://www.revenuecat.com/privacy">revenuecat.com/privacy</a>. The app also keeps a copy of your Pro status on your phone so that Pro works offline on the hill.</p>
+
+    <p>If a subscription ends, Pro features lock again; nothing you have logged is ever deleted.</p>
 
     <h2>Notifications</h2>
 
-    <p>
-        Summit notifications are generated on your phone. The app does not use push notifications and
-        does not send a notification token to any server.
-    </p>
+    <p>Summit notifications and outdoor event alerts (for example "Sunset worth catching") are generated and scheduled on your phone. Event alerts are off until you switch them on, and you can switch them off at any time in the app's Settings. To keep them up to date, the app checks the forecast in the background from time to time, using the approximate position described under Location. The app does not use push notifications and does not send a notification token to any server.</p>
 
     <h2>Children</h2>
 
-    <p>
-        There is no minimum age for using Fellbagger. The app collects no personal information that
-        requires consent, and shows no advertising. Any future feature that involves sharing photos or
-        other content with us will be open only to people aged 16 or over, and will have its own clear
-        consent step.
-    </p>
+    <p>There is no minimum age for using Fellbagger. Unless you choose to connect Strava or Garmin Connect, which need accounts of their own, the app collects no personal information that requires consent. It shows no advertising. Any future feature that involves sharing photos or other content with us will be open only to people aged 16 or over, and will have its own clear consent step.</p>
 
     <h2>The legal basis for what we do</h2>
 
     <p>Under UK data protection law we rely on:</p>
 
     <ul>
-        <li>
-            <strong>Performance of a contract</strong> — providing the app you have installed, including the weather,
-            map and content features above
-        </li>
-        <li>
-            <strong>Legitimate interests</strong> — crash reporting, so that we can keep the app working; and short-lived
-            server logs for security
-        </li>
+        <li><strong>Performance of a contract</strong> — providing the app you have installed, including the weather, map and content features above</li>
+        <li><strong>Consent</strong> — receiving your activities from Garmin Connect, which you give on Garmin's consent screen and can withdraw at any time as described above</li>
+        <li><strong>Legitimate interests</strong> — crash reporting, so that we can keep the app working; short-lived server logs for security; and reading the problem reports and suggestions you choose to send</li>
     </ul>
 
-    <p>
-        We do not sell information about you, we do not use advertising or tracking SDKs, and we do not
-        use analytics that profile you.
-    </p>
+    <p>We do not sell information about you, we do not use advertising or tracking SDKs, and we do not use analytics that profile you.</p>
 
     <h2>Your rights</h2>
 
-    <p>
-        Because we hold almost nothing about you, most rights are exercised simply by managing the app on
-        your own phone. You still have the right to ask us what we hold, to have it corrected or deleted,
-        to object to our use of it, and to complain to the Information Commissioner's Office
-        (<a href="https://ico.org.uk">ico.org.uk</a>). Email <a href="mailto:oliver.lewington@fellsidedigital.co.uk">oliver.lewington@fellsidedigital.co.uk</a> and we will respond within one month.
-    </p>
+    <p>Because we hold almost nothing about you, most rights are exercised simply by managing the app on your own phone. The exception is Garmin activities waiting on our server, covered under <em>Connecting Garmin Connect</em>. You still have the right to ask us what we hold, to have it corrected or deleted, to object to our use of it, and to complain to the Information Commissioner's Office (<a href="https://ico.org.uk">ico.org.uk</a>). Email <a href="mailto:oliver.lewington@fellsidedigital.co.uk">oliver.lewington@fellsidedigital.co.uk</a> and we will respond within one month.</p>
 
     <h2>Hill data</h2>
 
-    <p>
-        Fell and summit data in the app comes from the Database of British and Irish Hills
-        (<a href="https://www.hill-bagging.co.uk/dobih">hill-bagging.co.uk/dobih</a>), used under the CC BY 4.0 licence. This is about the hills, not you.
-    </p>
+    <p>Fell and summit data in the app comes from the Database of British and Irish Hills (<a href="https://www.hill-bagging.co.uk/dobih">hill-bagging.co.uk/dobih</a>), used under the CC BY 4.0 licence. This is about the hills, not you.</p>
 
     <h2>Changes to this policy</h2>
 
-    <p>
-        If we change what the app does with your information, we will update this page and the "last
-        updated" date, and describe the change in the app's release notes. Continuing to use the app
-        after a change means the new policy applies.
-    </p>
+    <p>If we change what the app does with your information, we will update this page and the "last updated" date, and describe the change in the app's release notes. Continuing to use the app after a change means the new policy applies.</p>
 
 </article>
