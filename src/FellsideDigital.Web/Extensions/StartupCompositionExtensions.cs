@@ -96,6 +96,9 @@ public static class StartupCompositionExtensions
 
         app.MapStaticAssets();
 
+        // The Fellbagger site moved to fellbagger.com. Older app builds and store listings still link here.
+        app.MapGet("/fellbagger/privacy", () => Results.Redirect("https://fellbagger.com/privacy", permanent: true));
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
